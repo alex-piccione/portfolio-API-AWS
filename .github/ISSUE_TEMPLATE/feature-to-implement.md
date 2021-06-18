@@ -8,12 +8,11 @@ assignees: alex-piccione
 ---
 
 As the owner of the project
-I want the Ping function deployed within Serverless
-So that the deploy happens without using AWS UI
+I want ...
+So that ...
 
 ---
 
 ## Acceptance Criteria
-- [] serverless.yml contains the necessary to deploy the Ping function
-- [] It is documented how to run serverless.yml
-- [] running serverless.yml update the Ping function
+- [] criteria
+- [] criteria
