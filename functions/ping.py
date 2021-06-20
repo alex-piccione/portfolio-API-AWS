@@ -1,5 +1,9 @@
 import json
 
-def ping(event, context):
+def lambda_handler(event, context):
 
-    return "pong"
+    return {
+        "statusCode": 200,
+        "headers": { "Content-Type": "text"},
+        "body": "pong"
+    }

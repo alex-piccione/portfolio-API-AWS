@@ -7,6 +7,16 @@ AWS API for Portfolio project
 AWS Python lambda documentation: https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
 
+### API GAteway
+
+Create API Gateway "REST API" on eu-central-1 regios called "Portfolio".  
+se Proxy.  
+
+- GET ping
+arn:aws:lambda:eu-central-1:151404309046:function:ping
+
+
+
 ## MongoDB
 
 Access granted to user with permission ``readWrite`` on ``Portfolio`` database.  
