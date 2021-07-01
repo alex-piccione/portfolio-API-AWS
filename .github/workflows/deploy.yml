@@ -2,7 +2,8 @@ name: Portfolio deploy master
 
 on:
   push:
-  - main
+    branches:
+    - main
 
 jobs:
   deploy:
