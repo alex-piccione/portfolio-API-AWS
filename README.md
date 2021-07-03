@@ -16,6 +16,10 @@ se Proxy.
 arn:aws:lambda:eu-central-1:151404309046:function:ping
 
 
+## GitHub Actions
+docs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+
 
 ## MongoDB
 

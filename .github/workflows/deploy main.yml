@@ -1,0 +1,30 @@
+name: Portfolio deploy master
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+        
+    env:
+      AWS_STAGE: live
+      AWS_REGION: eu-central-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Zip python functions
+        run: |
+          cd functions
+          zip -r functions.zip ./*.py
+
+      - name: Serverless Ping
+        uses: serverless/github-action@master
+        with:          
+          args: deploy --config ./serverless/ping.yml  --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
