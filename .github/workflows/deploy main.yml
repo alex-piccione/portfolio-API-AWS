@@ -10,7 +10,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
-        
+
     env:
       AWS_STAGE: live
       AWS_REGION: eu-central-1
@@ -23,6 +23,7 @@ jobs:
         run: |
           cd functions
           zip -r functions.zip ./*.py
+          cp functions.zip ../functions.zip
 
       - name: Serverless Ping
         uses: serverless/github-action@master
