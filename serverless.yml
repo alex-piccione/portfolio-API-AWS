@@ -1,4 +1,5 @@
 service: Ping
+configValidationMode: error
 
 provider:
   name: aws
