@@ -32,4 +32,4 @@ jobs:
         # - AWS_SECRET_ACCESS_KEY
         with:          
           # args: deploy --config ./serverless/ping.yml  --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
-          args: deploy --config ./serverless/ping.yml  --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
+          args: deploy --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}

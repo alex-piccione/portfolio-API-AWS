@@ -1,9 +1,3 @@
-service: Ping
-
-provider:
-  name: aws
-  runtime: python3.8
-
 functions:
   ping:
     handler: ping.handle
