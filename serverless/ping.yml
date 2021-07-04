@@ -11,6 +11,6 @@ functions:
       artifact: functions.zip
     events:          
       - http:
-        method: GET
-        path: ping
+          method: GET
+          path: ping
       

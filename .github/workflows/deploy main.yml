@@ -24,8 +24,6 @@ jobs:
           cd functions
           zip -r functions.zip ./*.py
           cp functions.zip ../functions.zip
-          cd ..
-          ls ./
 
       - name: Serverless Ping
         uses: serverless/github-action@master
