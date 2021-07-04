@@ -13,4 +13,5 @@ functions:
       - http:
           method: GET
           path: ping
+          cors: true
       
