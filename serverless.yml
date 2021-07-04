@@ -5,4 +5,5 @@ provider:
   name: aws
   runtime: python3.8
 
-functions: ${file(./serverless/ping_copy.yml)}
+functions:
+  ${file(./serverless/ping_copy.yml)}
