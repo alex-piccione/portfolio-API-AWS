@@ -1,11 +1,10 @@
-functions:
-  ping:
-    handler: ping.handle
-    package:
-      artifact: functions.zip
-    events:          
-      - http:
-          method: GET
-          path: ping
-          cors: true
-      
+ping:
+  handler: ping.handle
+  package:
+    artifact: functions.zip
+  events:          
+    - http:
+        method: GET
+        path: ping
+        cors: true
+    
