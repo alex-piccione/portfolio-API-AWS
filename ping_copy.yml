@@ -1,0 +1,17 @@
+service: Ping
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  ping:
+    handler: ping.handle
+    package:
+      artifact: functions.zip
+    events:          
+      - http:
+          method: GET
+          path: ping
+          cors: true
+      
