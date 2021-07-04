@@ -1,4 +1,4 @@
-service: Pingggg
+service: PingService
 configValidationMode: error
 # lambdaHashingVersion: "20201221"
 
@@ -10,8 +10,7 @@ functions:
   #${file(./serverless/ping_copy.yml)}
   ping:
     handler: functions.ping.handle
-    package:    
-      artifact: functions.zip
+
     events:          
       - http:
           method: GET

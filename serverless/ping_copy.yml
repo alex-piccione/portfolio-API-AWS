@@ -1,6 +1,6 @@
 ping:
   handler: functions.ping.handle
-  package:    
+  package:
     artifact: functions.zip
   events:          
     - http:
