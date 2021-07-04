@@ -1,6 +1,6 @@
 service: Pingggg
 configValidationMode: error
-lambdaHashingVersion: "20201221"
+# lambdaHashingVersion: "20201221"
 
 provider:
   name: aws
