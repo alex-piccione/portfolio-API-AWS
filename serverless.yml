@@ -7,4 +7,14 @@ provider:
   runtime: python3.8
 
 functions:
-  ${file(./serverless/ping_copy.yml)}
+  #${file(./serverless/ping_copy.yml)}
+  ping:
+    handler: functions.ping.handle
+    package:    
+      artifact: functions.zip
+    events:          
+      - http:
+          method: GET
+          path: ping
+          cors: true
+      
