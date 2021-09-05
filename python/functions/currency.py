@@ -1,5 +1,5 @@
 import json
-from python.entities import Currency
+from entities import Currency
 from uuid import uuid4
 
 def handle_create(event, context):
