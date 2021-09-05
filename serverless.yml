@@ -4,7 +4,7 @@ configValidationMode: error
 provider:
   name: aws
   runtime: python3.8
-  apiName: Portfolio # Use a custom name for the API Gateway API
+  apiName: Portfolio # API Gateway name
   lambdaHashingVersion: "20201221"
 
 functions:
@@ -15,4 +15,6 @@ functions:
           method: GET
           path: ping
           cors: true
+
+  asset: ${file(./serverless/currency.yml):functions}
       

@@ -1,8 +1,8 @@
 functions:
   create:
-    handler: portfolio.handle
+    handler: currency.handle
     events:
     - http:
       method: GET
-      path: /
+      path: currency
       cors: true
