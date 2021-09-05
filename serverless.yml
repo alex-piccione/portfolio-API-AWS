@@ -9,7 +9,7 @@ provider:
 
 functions:
   portfolio_ping:
-    handler: ping.handle
+    handler: python/functions/ping.handle
     events:          
       - http:
           method: GET
