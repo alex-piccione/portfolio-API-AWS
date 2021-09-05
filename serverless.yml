@@ -4,10 +4,10 @@ configValidationMode: error
 provider:
   name: aws
   runtime: python3.8
+  apiName: Portfolio # Use a custom name for the API Gateway API
   lambdaHashingVersion: "20201221"
 
-functions:  
-  #${file(./serverless/ping_copy.yml)}
+functions:
   portfolio_ping:
     handler: ping.handle
     events:          
