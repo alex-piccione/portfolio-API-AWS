@@ -16,5 +16,5 @@ functions:
           path: ping
           cors: true
 
-  asset: ${file(./serverless/currency.yml):functions}
+  asset_list: ${file(./serverless/currency.yml):list}
       

@@ -1,8 +1,7 @@
-functions:
-  create:
-    handler: currency.handle
-    events:
-    - http:
-      method: GET
-      path: currency
-      cors: true
+list:
+  handler: currency.handle_list
+  events:
+  - http:
+    method: GET
+    path: currency
+    cors: true

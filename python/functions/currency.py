@@ -1,6 +1,11 @@
 import json
+from python.entities import Currency
+import currency
 
-def handle(event, context):
+def handle_list(event, context):
+
+    eur = Currency("EUR", "Euro")
+    xrp = Currency("XRP", "Ripple", 8)
 
     currencies = [
         "EUR",
