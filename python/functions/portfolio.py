@@ -1,6 +1,6 @@
 import json
 
-def lambda_handler(event, context):
+def handle(event, context):
 
     return {
         "statusCode": 200,

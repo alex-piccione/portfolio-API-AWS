@@ -1,0 +1,8 @@
+functions:
+  create:
+    handler: portfolio.handle
+    events:
+    - http:
+      method: GET
+      path: /
+      cors: true

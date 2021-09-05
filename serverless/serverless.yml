@@ -1,16 +1,15 @@
-service: PingService
+service: Portfolio
 configValidationMode: error
-# lambdaHashingVersion: "20201221"
 
 provider:
   name: aws
   runtime: python3.8
+  lambdaHashingVersion: "20201221"
 
-functions:
+functions:  
   #${file(./serverless/ping_copy.yml)}
-  ping:
-    handler: functions.ping.handle
-
+  portfolio_ping:
+    handler: ping.handle
     events:          
       - http:
           method: GET
