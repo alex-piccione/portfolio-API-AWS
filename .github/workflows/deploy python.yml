@@ -19,11 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Zip python functions
-        run: |
-          cd python/functions
-          zip -r functions.zip ./*.py
-          cp functions.zip ../../functions.zip
+      #- name: Zip python functions
+      #  if: "false" # DISABLED
+      #  run: |
+      #    cd python/functions
+      #    zip -r functions.zip ./*.py
+      #    cp functions.zip ../../functions.zip
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

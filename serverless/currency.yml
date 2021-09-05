@@ -1,5 +1,5 @@
 list:
-  handler: currency.handle_list
+  handler: python/functions/currency.handle_list
   events:
   - http:
       method: GET
