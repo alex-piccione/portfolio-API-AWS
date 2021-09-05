@@ -3,7 +3,7 @@ name: Portfolio deploy Python
 on:
   push:
     branches:
-      - main
+    - main
 
 jobs:
   deploy:
@@ -21,9 +21,9 @@ jobs:
 
       - name: Zip python functions
         run: |
-          cd functions
+          cd python/functions
           zip -r functions.zip ./*.py
-          cp functions.zip ../functions.zip
+          cp functions.zip ../../functions.zip
 
       - name: Serverless Ping
         uses: serverless/github-action@master

@@ -3,7 +3,7 @@ name: Portfolio deploy F#
 on:
   push:
     branches: 
-      - main
+    - main
 
 jobs:
   deploy:
