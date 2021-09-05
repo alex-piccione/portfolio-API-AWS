@@ -1,4 +1,4 @@
-name: Portfolio deploy Python
+name: Deploy Python API
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Portfolio deploy F#
+name: Deploy F# API
 
 on:
   push:
