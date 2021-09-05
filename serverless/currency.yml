@@ -2,6 +2,6 @@ list:
   handler: currency.handle_list
   events:
   - http:
-    method: GET
-    path: currency
-    cors: true
+      method: GET
+      path: currency
+      cors: true
