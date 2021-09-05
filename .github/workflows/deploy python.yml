@@ -1,4 +1,4 @@
-name: Portfolio deploy master
+name: Portfolio deploy Python
 
 on:
   push:

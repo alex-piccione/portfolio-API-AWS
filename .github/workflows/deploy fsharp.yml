@@ -1,1 +1,18 @@
 name: Portfolio deploy F#
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      AWS_STAGE: live
+      AWS_REGION: eu-central-1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
