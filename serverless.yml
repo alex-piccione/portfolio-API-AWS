@@ -4,7 +4,7 @@ configValidationMode: error
 provider:
   name: aws
   runtime: python3.8
-  stackName: Portfolio-Python.2021
+  stackName: PortfolioPython
   apiName: Portfolio-Python.2021 # API Gateway name
   lambdaHashingVersion: "20201221"
 

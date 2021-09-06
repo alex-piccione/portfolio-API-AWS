@@ -5,7 +5,7 @@ configValidationMode: error
 provider:
   name: aws
   runtime: dotnetcore3.1
-  stackName: Portfolio-FSharp # CloudFormation stack name
+  stackName: PortfolioFSharp # CloudFormation stack name
   apiName: Portfolio-FSharp # API Gateway name
   #restApiId: 
   deploymentBucket:
