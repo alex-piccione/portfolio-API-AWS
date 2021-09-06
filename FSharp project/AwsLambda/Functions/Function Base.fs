@@ -11,12 +11,11 @@ type FunctionBase () =
     member this.createOk<'T> (data:'T option) =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- 200
-        
+        response.Headers <- dict["Content-Type", "application/json"]
         response.Body <-
             match data with
             | None -> ""
             | Some x -> Json.JsonSerializer.Serialize(x)
-
         response
 
     member this.createError (message:string) =
