@@ -14,5 +14,14 @@ jobs:
       AWS_STAGE: live
       AWS_REGION: eu-central-1
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Create datetime output
+      id: datetime
+      run: echo "::set-output name=datetime::$(date +'%Y-%m-%d_%H-%M-%S')"
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with: 
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+        aws-region: eu-central-1
