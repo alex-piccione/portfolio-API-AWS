@@ -2,6 +2,8 @@
 
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
+open System.Collections.Generic
+open System.Linq
 
 [<Class>]
 type Currency_List () = 
@@ -10,7 +12,7 @@ type Currency_List () =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- 204
         response.Body <- body
-        response.Headers.Add("Content-Type", "application/json")
+        response.Headers <- dict["Content-Type", "application/json"]
         response
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
