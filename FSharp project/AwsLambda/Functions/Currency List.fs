@@ -10,7 +10,7 @@ type Currency_List () =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- 204
         response.Body <- body
-        response.Headers.["Content-Type"] <- "application/json"
+        response.Headers.Add("Content-Type", "application/json")
         response
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
