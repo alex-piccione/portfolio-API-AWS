@@ -30,11 +30,11 @@ jobs:
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
     #- name: Unit Tests
     #  run: dotnet test src/UnitTests/UnitTests.fsproj -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
-    #- name: Publish zip
-    #  run: |
-    #    dotnet publish src/Functions/Functions.csproj -c RELEASE -o src/publish
-    #    cd src/publish
-    #    zip -r functions.zip ./*
+    - name: Publish zip
+      run: |
+        dotnet publish "FSharp project/AwsLambda/AwsLambda.fsproj" -c RELEASE -o src/publish
+        cd src/publish
+        zip -r functions.zip ./*
     - name: Serverless
       uses: serverless/github-action@master
       with:
