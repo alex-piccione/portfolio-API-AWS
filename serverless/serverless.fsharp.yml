@@ -22,7 +22,7 @@ functions:
   currency_list:
     handler: ${self:provider.environment.handler_prefix}.Currency_List::Handle   # assembly::namespace.class::method
     package: &package
-      artifact: functions.zip
+      artifact: fsharp-functions.zip
     events:
     - http:
         method: GET
