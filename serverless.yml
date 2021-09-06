@@ -17,4 +17,3 @@ functions:
           cors: true
 
   asset_list: ${file(./serverless/currency.yml):list}
-      

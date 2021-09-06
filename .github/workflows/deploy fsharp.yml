@@ -1,4 +1,5 @@
 name: Deploy F# API
+# Severless syntax: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
 
 on:
   push:
@@ -27,3 +28,15 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
     - name: Buid VS solution
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
+    #- name: Unit Tests
+    #  run: dotnet test src/UnitTests/UnitTests.fsproj -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+    #- name: Publish zip
+    #  run: |
+    #    dotnet publish src/Functions/Functions.csproj -c RELEASE -o src/publish
+    #    cd src/publish
+    #    zip -r functions.zip ./*
+    - name: Serverless
+      uses: serverless/github-action@master
+      with:
+        # --deploy is deprecated but I don't know any other way to use multiple serverless.yml files
+        args: deploy --config ./serverless/serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}

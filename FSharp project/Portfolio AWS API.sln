@@ -8,6 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7706DF1B-5C20-4E75-978C-30A532C5357D}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\deploy fsharp.yml = ..\.github\workflows\deploy fsharp.yml
+		..\serverless\serverless.fsharp.yml = ..\serverless\serverless.fsharp.yml
+		..\serverless.yml = ..\serverless.yml
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AwsLambda", "AwsLambda\AwsLambda.fsproj", "{8BB90204-0FAD-4762-A87E-3538E3876B7F}"
