@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Portfolio.API</AssemblyName>
-    <DefaultNamesapce>Portfolio.Lambda</DefaultNamesapce>
+    <RootNamespace>Portfolio.Lambda</RootNamespace>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Portfolio_AWS_API</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Portfolio.API.Core</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
 
