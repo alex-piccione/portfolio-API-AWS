@@ -7,9 +7,10 @@ provider:
   runtime: dotnetcore3.1
   stackName: Portfolio-FSharp # CloudFormation stack name
   apiName: Portfolio-FSharp # API Gateway name
-  #restApiId: 
+  restApiId: portfolio2021
   deploymentBucket:
     name: portfolio.api.fsharp-functions
+  memorySize: 512
   lambdaHashingVersion: "20201221"
 
   environment:
