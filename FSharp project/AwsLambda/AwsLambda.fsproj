@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Functions\Function Base.fs" />
     <Compile Include="Functions\Currency List.fs" />
     <Compile Include="Functions\Currency Create.fs" />
     <Compile Include="Library.fs" />

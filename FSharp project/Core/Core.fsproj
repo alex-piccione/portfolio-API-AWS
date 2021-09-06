@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="entities.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
 
