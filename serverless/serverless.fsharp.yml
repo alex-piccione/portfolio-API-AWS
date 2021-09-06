@@ -6,14 +6,14 @@ provider:
   name: aws
   runtime: dotnetcore3.1
   stackName: Portfolio-FSharp # CloudFormation stack name
-  apiName: Portfolio-FSharp # API Gateway name  
+  apiName: Portfolio-FSharp.2021 # API Gateway name  
   deploymentBucket:
     name: portfolio.api.fsharp-functions
   memorySize: 512
   lambdaHashingVersion: "20201221"
 
-  apiGateWay:
-    restApiId: portfolio-fsharp
+  apiGateway:
+    restApiId: portfolio-fsharp-2021
 
   environment:
     handler_prefix: "Portfolio.API::Portfolio.Lambda.Functions" # Assembly::Namespace prefix, contatenate .Class::Method
