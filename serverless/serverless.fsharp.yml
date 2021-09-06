@@ -1,5 +1,5 @@
 # syntax ref.: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
-service: Portfolio AWS API F#
+service: Portfolio AWS API F#Sharp
 configValidationMode: error
 
 provider:
@@ -9,7 +9,7 @@ provider:
   apiName: Portfolio # API Gateway name
   #restApiId: 
   deploymentBucket:
-    name: Portfolio-AWS-API-fsharp-functions
+    name: Portfolio.API.fsharp-functions
   lambdaHashingVersion: "20201221"
 
   environment:
@@ -26,6 +26,6 @@ functions:
       artifact: ${self:provider.environment.zipFile}
     events:
     - http:
-      method: GET
-      path: currency
-      cors: true
+        method: GET
+        path: currency
+        cors: true
