@@ -12,8 +12,9 @@ provider:
   memorySize: 512
   lambdaHashingVersion: "20201221"
 
-  apiGateway:
-    restApiId: portfolio-fsharp-2021
+  #apiGateway:
+  #  restApiId: portfolio-fsharp-2021
+  # The CloudFormation template is invalid: Template error: instance of Fn::GetAtt references undefined resource ApiGatewayRestApi
 
   environment:
     handler_prefix: "Portfolio.API::Portfolio.Lambda.Functions" # Assembly::Namespace prefix, contatenate .Class::Method
