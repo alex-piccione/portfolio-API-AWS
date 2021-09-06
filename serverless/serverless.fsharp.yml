@@ -1,15 +1,15 @@
 # syntax ref.: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
-service: Portfolio AWS API F#Sharp
+service: PortfolioAPISharp
 configValidationMode: error
 
 provider:
   name: aws
-  runtime: dotnetcore3.1  
+  runtime: dotnetcore3.1
   stackName: Portfolio # CloudFormation stack name
   apiName: Portfolio # API Gateway name
   #restApiId: 
   deploymentBucket:
-    name: Portfolio.API.fsharp-functions
+    name: portfolio.api.fsharp-functions
   lambdaHashingVersion: "20201221"
 
   environment:
