@@ -14,7 +14,6 @@ provider:
 
   environment:
     handler_prefix: "Portfolio.API::Portfolio.Lambda.Functions" # Assembly::Namespace prefix, contatenate .Class::Method
-    zipFile: functions.zip
 
 package:
   individually: true
@@ -23,7 +22,7 @@ functions:
   currency_list:
     handler: ${self:provider.environment.handler_prefix}.Currency_List::Handle   # assembly::namespace.class::method
     package: &package
-      artifact: ${self:provider.environment.zipFile}
+      artifact: functions.zip
     events:
     - http:
         method: GET
