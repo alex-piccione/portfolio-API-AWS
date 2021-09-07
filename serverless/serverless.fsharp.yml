@@ -23,7 +23,7 @@ package:
   individually: true
 
 functions:
-  currency_list:
+  List:
     handler: ${self:provider.environment.functionCurrencyPrefix}.List::Handle   # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
