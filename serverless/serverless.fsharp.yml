@@ -1,5 +1,5 @@
 # syntax ref.: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
-service: PortfolioAPIFSharp
+service: Portfolio-FSharp
 configValidationMode: error
 
 provider:
