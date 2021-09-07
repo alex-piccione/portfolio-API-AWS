@@ -2,10 +2,11 @@
 
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
-open Portfolio.entities
+open Portfolio.Api.Core.Entities
+open Portfolio.Api.Core
 
 [<Class>]
-type Currency_List () = 
+type Currency_List (repository:ICurrencyRepository) = 
     inherit FunctionBase()
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 

@@ -2,6 +2,7 @@
 
 open System.Text
 open Amazon.Lambda.APIGatewayEvents
+open Portfolio.Api.Core
 
 
 type FunctionBase () =

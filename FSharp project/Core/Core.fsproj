@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Portfolio.API.Core</RootNamespace>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AssemblyName>Portfolio.Api.Core</AssemblyName>
+    <RootNamespace>Portfolio.Api.Core</RootNamespace>
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="entities.fs" />
-    <Compile Include="Library.fs" />
+    <Compile Include="ICurrencyRepository.fs" />
   </ItemGroup>
 
   <ItemGroup>
