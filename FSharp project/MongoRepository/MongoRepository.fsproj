@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Repolsitory.fs" />
+    <Compile Include="Repository.fs" />
   </ItemGroup>
 
   <ItemGroup>
