@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Portfolio.API</AssemblyName>
-    <RootNamespace>Portfolio.Lambda</RootNamespace>
+    <AssemblyName>Portfolio.Api</AssemblyName>
+    <RootNamespace>Portfolio.Api</RootNamespace>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>

@@ -17,14 +17,14 @@ provider:
   # The CloudFormation template is invalid: Template error: instance of Fn::GetAtt references undefined resource ApiGatewayRestApi
 
   environment:
-    handler_prefix: "Portfolio.API::Portfolio.Lambda.Functions" # Assembly::Namespace prefix, contatenate .Class::Method
+    functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency" # Assembly::Namespace prefix, contatenate .Class::Method
 
 package:
   individually: true
 
 functions:
   currency_list:
-    handler: ${self:provider.environment.handler_prefix}.Currency_List::Handle   # assembly::namespace.class::method
+    handler: ${self:provider.environment.functionCurrencyPrefix}.List::Handle   # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
