@@ -8,13 +8,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7706DF1B-5C20-4E75-978C-30A532C5357D}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\deploy fsharp.yml = ..\.github\workflows\deploy fsharp.yml
+		..\README.md = ..\README.md
 		..\serverless\serverless.fsharp.yml = ..\serverless\serverless.fsharp.yml
 		..\serverless.yml = ..\serverless.yml
 	EndProjectSection
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "AwsLambda", "AwsLambda\AwsLambda.fsproj", "{8BB90204-0FAD-4762-A87E-3538E3876B7F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "AWS Lambda", "AwsLambda\AWS Lambda.fsproj", "{8BB90204-0FAD-4762-A87E-3538E3876B7F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MongoRepository", "MongoRepository\MongoRepository.fsproj", "{B9738F8C-259C-4834-A61A-802F4B4BB696}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "MongoRepository", "MongoRepository\MongoRepository.fsproj", "{B9738F8C-259C-4834-A61A-802F4B4BB696}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

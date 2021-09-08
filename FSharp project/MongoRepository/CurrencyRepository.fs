@@ -3,7 +3,7 @@
 open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
 
-type CurrencyRepository () =
+type CurrencyRepository (conenctionString:string) =
 
     interface ICurrencyRepository with
 

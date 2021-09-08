@@ -17,15 +17,25 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Create datetime output
       id: datetime
       run: echo "::set-output name=datetime::$(date +'%Y-%m-%d_%H-%M-%S')"
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with: 
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
+
+    - name: Substitute configuration variables
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: "src/Functions/configuration.json"
+      env:
+        MongoDB_connection_string: ${{secrets.MONGODB_CONNECTION_STRING}}
+
     - name: Buid VS solution
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
     #- name: Unit Tests

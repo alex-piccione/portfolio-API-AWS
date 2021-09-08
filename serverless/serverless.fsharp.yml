@@ -17,14 +17,14 @@ provider:
   # The CloudFormation template is invalid: Template error: instance of Fn::GetAtt references undefined resource ApiGatewayRestApi
 
   environment:
-    functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency" # Assembly::Namespace prefix, contatenate .Class::Method
+    functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  # Assembly::Namespace prefix, contatenate .Class::Method
 
 package:
   individually: true
 
 functions:
   List:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.List::Handle   # assembly::namespace.class::method
+    handler: ${self:provider.environment.functionCurrencyPrefix}.List::Handle  # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
@@ -34,9 +34,9 @@ functions:
         cors: true
 
   Get:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.Get::Handle   # assembly::namespace.class::method
-    package: &package
-      artifact: "FSharp project/publish/fsharp-functions.zip"
+    handler: ${self:provider.environment.functionCurrencyPrefix}.Get::Handle  # assembly::namespace.class::method
+    package:
+      <<: *package
     events:
     - http:
         method: GET
