@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.fsproj" />
+    <ProjectReference Include="..\MongoRepository\MongoRepository.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

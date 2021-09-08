@@ -34,11 +34,15 @@ functions:
         cors: true
 
   Get:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.List::Get   # assembly::namespace.class::method
+    handler: ${self:provider.environment.functionCurrencyPrefix}.Get::Handle   # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
         method: GET
-        path: currency?code={code}
+        path: currency
         cors: true
+        requestParameters:
+        - method.request.querystring.code:
+          required: true
+

@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Portfolio.Api.MongoRepository</AssemblyName>
     <RootNamespace>Portfolio.Api.MongoRepository</RootNamespace>
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Repository.fs" />
+    <Compile Include="CurrencyRepository.fs" />
   </ItemGroup>
 
   <ItemGroup>
