@@ -4,7 +4,7 @@ open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
-open Portfolio.Lambda.Functions
+open Portfolio.Api.Functions
 
 [<Class>]
 type List (repository:ICurrencyRepository) = 
