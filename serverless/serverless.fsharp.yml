@@ -45,5 +45,3 @@ functions:
         request:
           template:
             application/json: '{"code": "$input.params(''code'')"}'
-          required: true
-
