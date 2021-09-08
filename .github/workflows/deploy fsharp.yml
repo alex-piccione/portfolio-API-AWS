@@ -42,7 +42,7 @@ jobs:
     #  run: dotnet test src/UnitTests/UnitTests.fsproj -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
     - name: Publish zip
       run: |
-        dotnet publish "FSharp project/AwsLambda/AwsLambda.fsproj" -c RELEASE -o "FSharp project/publish"
+        dotnet publish "FSharp project/AwsLambda/AWS Lambda.fsproj" -c RELEASE -o "FSharp project/publish"
         cd "FSharp project/publish"
         zip -r fsharp-functions.zip ./*
     - name: Serverless
