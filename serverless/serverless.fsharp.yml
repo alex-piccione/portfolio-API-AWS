@@ -30,7 +30,7 @@ functions:
     events:
     - http:
         method: GET
-        path: currency
+        path: currency/all
         cors: true
 
   Get:

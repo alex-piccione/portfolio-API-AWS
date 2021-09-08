@@ -45,7 +45,7 @@ type Get () =
 
 
 [<Class>]
-type List () = 
+type All () = 
     inherit CurrencyFunction()
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
