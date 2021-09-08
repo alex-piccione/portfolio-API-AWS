@@ -34,6 +34,9 @@ type Get () =
     inherit CurrencyFunction()
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) =
+
+        context.Logger.Log($"request.QueryStringParameters: {request.QueryStringParameters}")
+
         match request.QueryStringParameters.TryGetValue("code") with
         | (true, id) -> this.Repository.Get id
         | _ -> failwith @"Missing querystring parameter ""code""."
