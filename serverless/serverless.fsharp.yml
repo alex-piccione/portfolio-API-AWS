@@ -29,7 +29,7 @@ functions:
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
-        method: List
+        method: GET
         path: currency
         cors: true
 
