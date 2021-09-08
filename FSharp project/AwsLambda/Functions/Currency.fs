@@ -41,7 +41,7 @@ type Get () =
 
 [<Class>]
 type List (repository:ICurrencyRepository) = 
-    inherit FunctionBase()
+    inherit CurrencyFunction(repository)
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
 
@@ -50,19 +50,16 @@ type List (repository:ICurrencyRepository) =
             { Code="XRP"; Name="Ripple"}
         ]
 
-        base.createOk(Some(list))
+        base.createOkWithData(Some(list))
 
 
 [<Class>]
-type Create () = 
-
-    let createOk () =
-        let response = APIGatewayProxyResponse()
-        response.StatusCode <- 204
+type Create (repository:ICurrencyRepository) = 
+    inherit CurrencyFunction(repository)
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
 
         // TODO: validate
         // TODO: store in repository
 
-        createOk()
+        this.createOkWithStatus (201)
