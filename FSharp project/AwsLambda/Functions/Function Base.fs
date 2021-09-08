@@ -28,22 +28,3 @@ type FunctionBase () =
         //response.Headers <- dict["Content-Type", "application/json"]
         response
 
-[<AbstractClass>]
-type CurrencyFunction (repository:ICurrencyRepository) =
-    inherit FunctionBase()
-
-    member this.Repository = repository
-
-    new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        let repository = CurrencyRepository(connectionString)
-        CurrencyFunction(repository)
