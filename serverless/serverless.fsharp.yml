@@ -24,7 +24,7 @@ package:
 
 functions:
   List:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.List::Handle  # assembly::namespace.class::method
+    handler: ${self:provider.environment.functionCurrencyPrefix}.All::Handle  # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
