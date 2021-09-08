@@ -29,7 +29,7 @@ functions:
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
-        method: GET
+        method: List
         path: currency
         cors: true
 
@@ -42,7 +42,8 @@ functions:
         method: GET
         path: currency
         cors: true
-        requestParameters:
-        - method.request.querystring.code:
+        request:
+          template:
+            application/json: '{"code": "$input.params(''code'')"}'
           required: true
 
