@@ -37,16 +37,20 @@ type Get () =
 
         context.Logger.Log($"request.QueryStringParameters: {request.QueryStringParameters}")
 
-        match request.QueryStringParameters.TryGetValue("code") with
-        | (true, id) -> this.Repository.Get id
-        | _ -> failwith @"Missing querystring parameter ""code""."
+        if request.QueryStringParameters = null then this.createError("Missing querystring")
+        else
+            match request.QueryStringParameters.TryGetValue("code") with
+            | (true, id) -> this.createOkWithData(this.Repository.Get id)
+            | _ -> failwith @"Missing querystring parameter ""code""."
 
 
 [<Class>]
-type List (repository:ICurrencyRepository) = 
-    inherit CurrencyFunction(repository)
+type List () = 
+    inherit CurrencyFunction()
 
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
+
+        context.Logger.Log("List")
 
         let list = [
             { Code="EUR"; Name="Euro"}

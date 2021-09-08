@@ -24,8 +24,8 @@ type FunctionBase () =
     member this.createOkWithStatus (statusCode:int) =
         this.createResponse(statusCode, None)
 
-    member this.createOkWithData<'T> (data:'T option) =
-        this.createResponse(200, data)
+    member this.createOkWithData<'T> (data:'T) =
+        this.createResponse(200, Some data)
 
     member this.createCreated<'T> (data:'T option) =
         this.createResponse(201, data)
