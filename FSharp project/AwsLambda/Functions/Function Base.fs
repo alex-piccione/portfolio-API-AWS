@@ -1,4 +1,4 @@
-﻿namespace Portfolio.Lambda.Functions
+﻿namespace Portfolio.Api.Functions
 
 open System.Text
 open Amazon.Lambda.APIGatewayEvents
