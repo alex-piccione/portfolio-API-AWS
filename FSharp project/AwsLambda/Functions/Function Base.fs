@@ -4,6 +4,11 @@ open System.Text
 open Amazon.Lambda.APIGatewayEvents
 open Microsoft.Extensions.Configuration
 
+
+[<LambdaSerializer>]
+
+
+
 type FunctionBase () =
 
     //let jsonOptions = Options.ISO8601CamelCase;

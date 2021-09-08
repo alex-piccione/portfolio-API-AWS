@@ -43,6 +43,7 @@ type Get () =
 type List (repository:ICurrencyRepository) = 
     inherit CurrencyFunction(repository)
 
+    [<LambdaSerializer()>]
     member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
 
         let list = [
