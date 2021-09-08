@@ -14,9 +14,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Functions\Function Base.fs" />
-    <Compile Include="Functions\Currency Get.fs" />
-    <Compile Include="Functions\Currency List.fs" />
-    <Compile Include="Functions\Currency Create.fs" />
+    <Compile Include="Functions\Currency.fs" />
   </ItemGroup>
 
   <ItemGroup>
