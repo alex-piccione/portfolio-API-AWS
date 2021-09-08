@@ -32,7 +32,7 @@ jobs:
     - name: Substitute configuration variables
       uses: microsoft/variable-substitution@v1
       with:
-        files: "src/Functions/configuration.json"
+        files: "FSharp project/Portfolio AWS API/configuration.json"
       env:
         MongoDB_connection_string: ${{secrets.MONGODB_CONNECTION_STRING}}
 
