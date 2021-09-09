@@ -40,7 +40,7 @@ type Get () =
         if request.QueryStringParameters = null then this.createError("Missing querystring")
         else
             match request.QueryStringParameters.TryGetValue("code") with
-            | (true, id) -> this.createOkWithData(this.Repository.Get id)
+            | (true, id) -> this.createOkWithData(this.Repository.Single id)
             | _ -> failwith @"Missing querystring parameter ""code""."
 
 

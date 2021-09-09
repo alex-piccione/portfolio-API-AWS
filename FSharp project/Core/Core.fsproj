@@ -9,8 +9,7 @@
 
   <ItemGroup>
     <Compile Include="entities.fs" />
-    <Compile Include="IUserRepository.fs" />
-    <Compile Include="ICurrencyRepository.fs" />
+    <Compile Include="repositories.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,14 +6,18 @@ open Portfolio.Api.Core.Entities
 type CurrencyRepository (conenctionString:string) =
 
     interface ICurrencyRepository with
+        member this.Delete(arg1: string): unit = 
+            raise (System.NotImplementedException())
+        member this.Update(arg1: Currency, arg2: string): unit = 
+            raise (System.NotImplementedException())
 
-        member this.Create(arg1: Currency): unit = 
+        member this.Create(currency: Currency): unit = 
             ()
 
-        member this.Get(code: string): Currency = 
+        member this.Single(code: string): Currency = 
             { Code=code; Name=code.ToLowerInvariant() }
 
-        member this.List(): Currency list = 
+        member this.All(): Currency list = 
             [
                 { Code="EUR"; Name="Euro"}
                 { Code="XRP"; Name="Ripple"}
