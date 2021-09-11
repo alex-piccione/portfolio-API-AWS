@@ -1,9 +1,8 @@
 ﻿namespace Portfolio.Api.MongoRepository
 
-open MongoDB.Driver
-open Portfolio.Api.Core
-open MongoDB.Bson.Serialization
 open System
+open MongoDB.Driver
+open MongoDB.Bson.Serialization
 
 type RepositoryBase<'T>(connectionString:string, collectionName:string,
                         idField:System.Linq.Expressions.Expression<System.Func<'T, string>> 
@@ -19,18 +18,11 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string,
 
     do 
         if not(BsonClassMap.IsClassMapRegistered(typeof<'T>)) then
-            //let mapper:Action<BsonClassMap<'T>> = Action<_>()
-        //        map.AutoMap();
-        //        map.MapIdMember(fund => fund.Id);
-                //map.SetIgnoreExtraElements(true);
-            let map:BsonClassMap<'T> = BsonClassMap<'T>()
+            let map = BsonClassMap<'T>()
             map.AutoMap()
             map.MapIdMember(idField) |> ignore
             map.SetIgnoreExtraElements true
             BsonClassMap.RegisterClassMap(map);
-
-            //Action<>
-            //BsonClassMap.RegisterClassMap<'T>(map);
 
     member this.IdFilter id = FilterDefinitionBuilder<'T>().Eq(idField, id);
     member this.Collection = database.GetCollection<'T>(collectionName);
@@ -39,8 +31,7 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
                         idField:System.Linq.Expressions.Expression<System.Func<'T, string>>) =
     inherit RepositoryBase<'T>(connectionString, collectionName, idField)
 
-    //interface CRUD<'T> with
-        member this.Create(item: 'T): unit = this.Collection.InsertOne item
-        member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
-        member this.Single(id: string): 'T = this.Collection.FindSync(this.IdFilter id).FirstOrDefault()
-        member this.Update (item: 'T) (id: string) = this.Collection.FindOneAndReplace(this.IdFilter id, item)
+    member this.Create(item: 'T): unit = this.Collection.InsertOne item
+    member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
+    member this.Single(id: string): 'T = this.Collection.FindSync(this.IdFilter id).FirstOrDefault()
+    member this.Update (item: 'T) (id: string) = this.Collection.FindOneAndReplace(this.IdFilter id, item)
