@@ -34,7 +34,15 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
 
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
     member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
-    member this.Single(id: string): 'T = this.Collection.Find(this.IdFilter id).SingleOrDefault()
+    member this.Single(id: string): 'T option= 
+        let f = this.Collection.Find(this.IdFilter id)
+        match f.CountDocuments() with
+        | 1L -> Some(f.Single())
+        | 0L -> None
+        | _ -> None
+        //match this.Collection.Find(this.IdFilter id).SingleOrDefault() with
+        //| d when (idField d) = ""
+        //| _ -> None
     member this.Update(id: string, item: 'T): unit = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
 
     member this.All() = this.Collection.FindSync(FilterDefinitionBuilder<'T>().Empty).ToEnumerable()

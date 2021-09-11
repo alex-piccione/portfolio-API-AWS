@@ -5,7 +5,7 @@ open System.Collections.Generic
 
 type CRUD<'T> =
     abstract member Create: 'T -> unit
-    abstract member Single: string -> 'T
+    abstract member Single: string -> 'T option
     abstract member Update: 'T -> unit
     abstract member Delete: string -> unit
 

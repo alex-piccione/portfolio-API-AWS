@@ -36,7 +36,7 @@ type ``User Repository`` () =
 
         let storedUser = repository.Single(TEST_EMAIL)
 
-        storedUser |> should equal user
+        storedUser |> should equal (Some user)
 
     [<Test>]
     member this.Delete () =
@@ -67,8 +67,9 @@ type ``User Repository`` () =
         repository.Update updatedUser
 
         let storedUser = repository.Single TEST_EMAIL
-
-        Assert.AreEqual(updatedUser, storedUser)
+        storedUser |> should not' (be Null)        
+        storedUser.Value |> should equal updatedUser
+        //Assert.AreEqual(updatedUser, storedUser)
 
     [<Test>]
     member this.All () =

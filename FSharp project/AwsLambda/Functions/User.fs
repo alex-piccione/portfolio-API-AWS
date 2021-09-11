@@ -35,9 +35,12 @@ type UserFunctions (repository:IUserRepository) =
         // TODO: validate and normalize input
 
         try
-            repository.Create(user)
-            context.Logger.Log($"User {user.Email} created")
-            this.createCreated (Some(user.ObfuscatePassword()))
+            if repository.Single(user.Email).IsSome then 
+                this.createError "An user with this same email already exists."
+            else
+                repository.Create(user)
+                context.Logger.Log($"User {user.Email} created")
+                this.createCreated (Some(user.ObfuscatePassword()))
         with exc ->
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
             this.createError $"Failed to create User. {exc.Message}"

@@ -29,4 +29,4 @@ type ``Currency Repository`` () =
         let currency:Currency = { Code=TEST_CODE; Name="Currency Test" }
         repository.Create(currency)
         let storedCurrency = repository.Single(TEST_CODE)
-        storedCurrency |> should equal currency
+        storedCurrency |> should equal (Some currency)
