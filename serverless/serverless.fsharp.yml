@@ -65,7 +65,7 @@ functions:
     events:
     - http:
         method: GET
-        path: user
+        path: user/all
         cors: true
   
   # Currency
