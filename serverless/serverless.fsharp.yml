@@ -19,12 +19,13 @@ provider:
   environment:
     functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  # Assembly::Namespace prefix, concatenate .Class::Method
     userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
+    currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
 
 package:
   individually: true
 
 functions:
-
+  # User
   UserCreate:
     handler: ${self:provider.environment.userFunctions}::Create  # assembly::namespace.class::method
     package: &package
@@ -37,26 +38,17 @@ functions:
 
   UserAll:
     handler: ${self:provider.environment.userFunctions}::All  # assembly::namespace.class::method
-    package: &package
-      artifact: "FSharp project/publish/fsharp-functions.zip"
+    package: 
+      <<: *package
     events:
     - http:
         method: GET
         path: user
         cors: true
-
-  Create:
+  
+  # Currency
+  CurrencyCreate:
     handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::Create"  # assembly::namespace.class::method
-    package: &package
-      artifact: "FSharp project/publish/fsharp-functions.zip"
-    events:
-    - http:
-        method: GET
-        path: currency/all
-        cors: true
-
-  List:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.All::Handle  # assembly::namespace.class::method
     package: 
       <<: *package
     events:
@@ -65,7 +57,17 @@ functions:
         path: currency/all
         cors: true
 
-  Get:
+  CurrencyAll:
+    handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::All"  # assembly::namespace.class::method
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: currency/all
+        cors: true
+
+  CurrencyGet:
     handler: ${self:provider.environment.functionCurrencyPrefix}.Get::Handle  # assembly::namespace.class::method
     package:
       <<: *package
