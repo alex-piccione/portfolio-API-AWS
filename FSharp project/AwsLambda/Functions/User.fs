@@ -37,7 +37,6 @@ type UserFunctions (repository:IUserRepository) =
             repository.Create(user)
             context.Logger.Log($"User {user.Email} created")
         with exc ->
-            user.Password <- "***"
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
