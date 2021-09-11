@@ -15,7 +15,7 @@ type ``User Repository`` () =
     let TEST_EMAIL_2 = "test_2@test.com"
     let repository = UserRepository(configuration.connectionString) :> IUserRepository
 
-    let delete id = repository.Delete id
+    let delete (id:string) = repository.Delete (id.ToLowerInvariant())
 
     [<SetUp>]
     member this.Setup () =
@@ -37,6 +37,18 @@ type ``User Repository`` () =
         let storedUser = repository.Single(TEST_EMAIL)
 
         storedUser |> should equal (Some user)
+
+    [<Test>]
+    member this.``Create <when> email already exists <should> return Error`` () =
+
+        let user:User = { Email = TEST_EMAIL; Username = "username";  Password = "password"; CreatedOn = DateTime.UtcNow.Date;
+                      IsEmailValidated = true; PasswordHint = "password hint"; IsBlocked = false; 
+                    }
+        repository.Create(user)
+
+        (fun _ -> repository.Create({user with Email = "tEst@TEST.com"}) |> ignore)
+        |> should throw typeof<Exception>
+
 
     [<Test>]
     member this.Delete () =
@@ -67,9 +79,9 @@ type ``User Repository`` () =
         repository.Update updatedUser
 
         let storedUser = repository.Single TEST_EMAIL
-        storedUser |> should not' (be Null)        
+        storedUser |> should not' (be Null)
         storedUser.Value |> should equal updatedUser
-        //Assert.AreEqual(updatedUser, storedUser)
+
 
     [<Test>]
     member this.All () =
