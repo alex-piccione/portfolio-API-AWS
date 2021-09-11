@@ -28,13 +28,16 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
 
-        context.Logger.Log $"Create: {request}"
+        context.Logger.Log $"Create: {request.Body}"
 
-        let code = "aaa"
-        let name = "name"
-
-        let currency = { Code = code; Name = name }
         try
+            let currency = base.Deserialize request.Body
             repository.Create(currency)
         with exc ->
-            context.Logger.Log $"Failed to create Currency. Data: {currency}. Error: {exc}"
+            context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
+
+    
+    member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log("All")
+        repository.All()
+        //base.createOkWithData(Some(list))

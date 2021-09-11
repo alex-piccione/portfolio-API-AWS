@@ -45,22 +45,6 @@ type Get () =
 
 
 [<Class>]
-type All () = 
-    inherit CurrencyFunction()
-
-    member this.Handle (request:APIGatewayProxyRequest, context:ILambdaContext) = 
-
-        context.Logger.Log("List")
-
-        let list = [
-            { Code="EUR"; Name="Euro"}
-            { Code="XRP"; Name="Ripple"}
-        ]
-
-        base.createOkWithData(Some(list))
-
-
-[<Class>]
 type Create (repository:ICurrencyRepository) = 
     inherit CurrencyFunction(repository)
 

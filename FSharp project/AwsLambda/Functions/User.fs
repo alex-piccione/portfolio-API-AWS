@@ -29,7 +29,8 @@ type UserFunctions (repository:IUserRepository) =
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
 
-        context.Logger.Log $"Create: {request}"
+        // TODO: do not log the request within sensitive data
+        context.Logger.Log $"Create: {request.Body}"
 
         let user = base.Deserialize request.Body
 
