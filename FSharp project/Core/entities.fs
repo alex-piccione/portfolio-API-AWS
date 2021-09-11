@@ -14,6 +14,12 @@ type User = {
     IsBlocked:bool
     } with
     member this.ObfuscatePassword () = { this with Password = "***" }
+    member this.Normalize () = 
+        { this with 
+            Username = this.Username.Trim()
+            Email = this.Email.Trim().ToLowerInvariant()
+            Password = this.Password.Trim().ToLowerInvariant()
+        }
 
 
 

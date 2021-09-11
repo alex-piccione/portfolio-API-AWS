@@ -32,17 +32,18 @@ type UserFunctions (repository:IUserRepository) =
         context.Logger.Log $"Create: {request.Body}"
 
         try
-            let user = base.Deserialize request.Body
-            // TODO: validate and normalize input
+            let user:User = base.Deserialize request.Body
+            let normalizedUser = user.Normalize()
+            // TODO: validate
 
-            // TODO: Mocked in unit tests but fails with Method Not Implemented Exception ?!            
-            //let a = repository.Single(user.Email)
+            // TODO: Mocked in unit tests but fails with Method Not Implemented Exception ?!
+            //let a = repository.Single(normalizedUser.Email)
 
-            if repository.Single(user.Email).IsSome then 
+            if repository.Single(normalizedUser.Email.ToLowerInvariant()).IsSome then 
                 this.createError "An user with this same email already exists."
             else
                 repository.Create(user)
-                context.Logger.Log($"User {user.Email} created")
+                context.Logger.Log($"User {normalizedUser.Email} created")
                 this.createCreated (user.ObfuscatePassword())
         with exc ->
             context.Logger.Log $"Failed to create User. {exc}"
