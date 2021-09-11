@@ -34,7 +34,7 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
 
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
     member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
-    member this.Single(id: string): 'T = this.Collection.FindSync(this.IdFilter id).FirstOrDefault()
+    member this.Single(id: string): 'T = this.Collection.Find(this.IdFilter id).SingleOrDefault()
     member this.Update(id: string, item: 'T): unit = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
 
     member this.All() = this.Collection.FindSync(FilterDefinitionBuilder<'T>().Empty).ToEnumerable()

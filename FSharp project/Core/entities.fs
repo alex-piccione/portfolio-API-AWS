@@ -7,11 +7,13 @@ type Currency = { Code:string; Name:string}
 type User = {
     Username:string
     Email:string
-    mutable Password:string
+    Password:string
     PasswordHint:string
     CreatedOn:DateTime
     IsEmailValidated:bool
     IsBlocked:bool
+    } with
+    member this.ObfuscatePassword () = { this with Password = "***" }
 
-    //member P = PAsswo
-}
+
+

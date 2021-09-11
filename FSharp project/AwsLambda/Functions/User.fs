@@ -1,5 +1,6 @@
 ﻿namespace Portfolio.Api.Functions
 
+open System.Linq
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
@@ -37,8 +38,7 @@ type UserFunctions (repository:IUserRepository) =
             context.Logger.Log($"User {user.Email} created")
         with exc ->
             user.Password <- "***"
-            context.Logger.Log $"Failed to create User. Data: {user}. Error: {exc}"
+            context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        // TODO: obfuscate passwords
-        repository.All()
+        repository.All().Select (fun user -> user.ObfuscatePassword())

@@ -36,7 +36,8 @@ type UserRepositoryTest () =
 
         let storedUser = repository.Single(TEST_EMAIL)
 
-        Assert.AreEqual(user, storedUser)
+        storedUser |> should equal user
+        //Assert.AreEqual(user, storedUser)
 
     [<Test>]
     member this.Delete () =
