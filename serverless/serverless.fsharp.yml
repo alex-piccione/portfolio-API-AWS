@@ -46,6 +46,8 @@ functions:
         path: user/{email}
         cors: true
   
+# Update
+
   UserDelete:
     handler: ${self:provider.environment.userFunctions}::Delete 
     package: 
@@ -57,7 +59,7 @@ functions:
         cors: true
 
   UserAll:
-    handler: ${self:provider.environment.userFunctions}::All  
+    handler: ${self:provider.environment.userFunctions}::All
     package: 
       <<: *package
     events:
@@ -68,7 +70,7 @@ functions:
   
   # Currency
   CurrencyCreate:
-    handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::Create"  # assembly::namespace.class::method
+    handler: ${self:provider.environment.currencyFunctions}::Create  # assembly::namespace.class::method
     package: 
       <<: *package
     events:
@@ -77,18 +79,8 @@ functions:
         path: currency/all
         cors: true
 
-  CurrencyAll:
-    handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::All"  # assembly::namespace.class::method
-    package: 
-      <<: *package
-    events:
-    - http:
-        method: GET
-        path: currency/all
-        cors: true
-
-  CurrencyGet:
-    handler: ${self:provider.environment.functionCurrencyPrefix}.Get::Handle  # assembly::namespace.class::method
+  CurrencySingle:
+    handler: ${self:provider.environment.currencyFunctions}::Single
     package:
       <<: *package
     events:
@@ -99,3 +91,17 @@ functions:
         request:
           template:
             application/json: '{"code": "$input.params(''code'')"}'
+
+            # Update
+
+            # Delete
+
+  CurrencyAll:
+    handler: ${self:provider.environment.currencyFunctions}::All
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: currency/all
+        cors: true
