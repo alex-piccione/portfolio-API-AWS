@@ -31,9 +31,9 @@ functions:
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
-      method: POST
-      path: user
-      cors: true
+        method: POST
+        path: user
+        cors: true
 
   UserAll:
     handler: ${self:provider.environment.userFunctions}::All  # assembly::namespace.class::method
@@ -41,9 +41,9 @@ functions:
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
-      method: GET
-      path: user
-      cors: true
+        method: GET
+        path: user
+        cors: true
 
   Create:
     handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::Create"  # assembly::namespace.class::method
