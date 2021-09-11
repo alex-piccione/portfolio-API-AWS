@@ -39,7 +39,7 @@ type FunctionBase () =
 
     member this.Deserialize<'T>(requestBody:string) =
 
-        if String.IsNullOrEmpty requestBody then failwith $"Reqeust body is empty"
+        if String.IsNullOrEmpty requestBody then failwith $"Request body is empty"
 
         let jsonOption = JsonSerializerOptions()
         jsonOption.PropertyNameCaseInsensitive <- true

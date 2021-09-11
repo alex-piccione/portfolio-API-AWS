@@ -37,7 +37,7 @@ type UserFunctions (repository:IUserRepository) =
         try
             repository.Create(user)
             context.Logger.Log($"User {user.Email} created")
-            this.createCreated (Some(user))
+            this.createCreated (Some(user.ObfuscatePassword()))
         with exc ->
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
             this.createError $"Failed to create User. {exc.Message}"
