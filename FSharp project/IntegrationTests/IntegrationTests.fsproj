@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="configuration.fs" />
+    <Compile Include="UserRepository.tests.fs" />
     <Compile Include="CurrencyRepository.tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -25,6 +27,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MongoRepository\MongoRepository.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

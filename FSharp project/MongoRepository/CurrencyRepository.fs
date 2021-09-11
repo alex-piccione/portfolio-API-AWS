@@ -2,23 +2,16 @@
 
 open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
+open MongoDB.Driver
 
-type CurrencyRepository (conenctionString:string) =
+type CurrencyRepository (connectionString:string) as this =
+    inherit CrudRepository<Currency>(connectionString, "Currency", (fun x -> x.Code))
 
-    interface ICurrencyRepository with
-        member this.Delete(arg1: string): unit = 
-            raise (System.NotImplementedException())
-        member this.Update(arg1: Currency, arg2: string): unit = 
-            raise (System.NotImplementedException())
+    let crud = this :> CRUD<Currency>
 
-        member this.Create(currency: Currency): unit = 
-            ()
-
-        member this.Single(code: string): Currency = 
-            { Code=code; Name=code.ToLowerInvariant() }
-
-        member this.All(): Currency list = 
-            [
-                { Code="EUR"; Name="Euro"}
-                { Code="XRP"; Name="Ripple"}
-            ]
+    interface ICurrencyRepository with 
+        member this.Create(item: Currency) = (this :> CRUD<Currency>).Create item
+        member this.Delete(id: string) = crud.Delete id
+        member this.Single(id: string) = crud.Single id
+        member this.Update(item: Currency) (id: string) = crud.Update item id
+        member this.All() = this.Collection.FindSync(FilterDefinitionBuilder<Currency>().Empty).ToEnumerable()
