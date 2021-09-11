@@ -46,7 +46,15 @@ functions:
         path: user/{email}
         cors: true
   
-# Update
+  UserUpdate:
+    handler: ${self:provider.environment.userFunctions}::Update 
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: PUT
+        path: user
+        cors: true
 
   UserDelete:
     handler: ${self:provider.environment.userFunctions}::Delete 
