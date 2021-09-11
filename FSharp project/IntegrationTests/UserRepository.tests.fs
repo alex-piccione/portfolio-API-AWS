@@ -9,7 +9,7 @@ open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
 
 
-type UserRepositoryTest () =
+type ``User Repository`` () =
 
     let TEST_EMAIL = "test@test.com"
     let TEST_EMAIL_2 = "test_2@test.com"
@@ -37,7 +37,6 @@ type UserRepositoryTest () =
         let storedUser = repository.Single(TEST_EMAIL)
 
         storedUser |> should equal user
-        //Assert.AreEqual(user, storedUser)
 
     [<Test>]
     member this.Delete () =
