@@ -25,13 +25,23 @@ package:
 
 functions:
 
-  User.Create:
+  UserCreate:
     handler: ${self:provider.environment.userFunctions}::Create  # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
     events:
     - http:
       method: POST
+      path: user
+      cors: true
+
+  UserAll:
+    handler: ${self:provider.environment.userFunctions}::All  # assembly::namespace.class::method
+    package: &package
+      artifact: "FSharp project/publish/fsharp-functions.zip"
+    events:
+    - http:
+      method: GET
       path: user
       cors: true
 
