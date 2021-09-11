@@ -4,7 +4,6 @@ open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
 open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
 open Microsoft.Extensions.Configuration
 open Portfolio.Api.MongoRepository
 
@@ -27,17 +26,27 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
-
         context.Logger.Log $"Create: {request.Body}"
-
         try
             let currency = base.Deserialize request.Body
             repository.Create(currency)
+            this.createOkWithStatus (201)
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
+            this.createError $"Failed to create Currency. Error: {exc.Message}"
 
     
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log("All")
         repository.All()
         //base.createOkWithData(Some(list))
+
+    member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
+
+        context.Logger.Log($"request.QueryStringParameters: {request.QueryStringParameters}")
+
+        if request.QueryStringParameters = null then this.createError("Missing querystring")
+        else
+            match request.QueryStringParameters.TryGetValue("code") with
+            | (true, id) -> this.createOkWithData(repository.Single id)
+            | _ -> failwith @"Missing querystring parameter ""code""."

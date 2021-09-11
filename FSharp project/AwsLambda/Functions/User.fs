@@ -28,17 +28,19 @@ type UserFunctions (repository:IUserRepository) =
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
-
         // TODO: do not log the request within sensitive data
         context.Logger.Log $"Create: {request.Body}"
-
         let user = base.Deserialize request.Body
+        
+        // TODO: validate and normalize input
 
         try
             repository.Create(user)
             context.Logger.Log($"User {user.Email} created")
+            this.createCreated (Some(user))
         with exc ->
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
+            this.createError $"Failed to create User. {exc.Message}"
 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         repository.All().Select (fun user -> user.ObfuscatePassword())
