@@ -45,5 +45,19 @@ type UserFunctions (repository:IUserRepository) =
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
             this.createError $"Failed to create User. {exc.Message}"
 
+    member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
+
+        let found, email = request.PathParameters.TryGetValue "email"
+        if not found then failwith $"PAth should contain \"email\"."
+
+        try
+            match repository.Single (email.ToLowerInvariant()) with
+            | Some user -> this.createResponse (200, Some user)
+            | _ -> this.createResponse(404, None)
+
+        with exc ->
+            context.Logger.Log $"Failed to read User. {exc}"
+            this.createError $"Failed to read User. {exc.Message}"
+
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         repository.All().Select (fun user -> user.ObfuscatePassword())

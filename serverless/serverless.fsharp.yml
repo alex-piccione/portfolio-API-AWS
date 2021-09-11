@@ -36,8 +36,28 @@ functions:
         path: user
         cors: true
 
+  UserSingle:
+    handler: ${self:provider.environment.userFunctions}::Single 
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: user/{email}
+        cors: true
+  
+  UserDelete:
+    handler: ${self:provider.environment.userFunctions}::Delete 
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: DELETE
+        path: user/{email}
+        cors: true
+
   UserAll:
-    handler: ${self:provider.environment.userFunctions}::All  # assembly::namespace.class::method
+    handler: ${self:provider.environment.userFunctions}::All  
     package: 
       <<: *package
     events:
