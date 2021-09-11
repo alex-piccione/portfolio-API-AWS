@@ -1,12 +1,13 @@
 namespace IntegrationTests.Repository
 
+open System
+open System.Linq
 open NUnit.Framework
+open FsUnit
 open Portfolio.Api.MongoRepository
 open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
-open System
-open FsUnit
-open System.Linq
+
 
 type UserRepositoryTest () =
 
@@ -63,7 +64,7 @@ type UserRepositoryTest () =
                           IsEmailValidated = false; PasswordHint = "password hint update"; IsBlocked = true; 
                         }
 
-        repository.Update updatedUser TEST_EMAIL 
+        repository.Update updatedUser
 
         let storedUser = repository.Single TEST_EMAIL
 

@@ -27,6 +27,7 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string,
     member this.IdFilter id = FilterDefinitionBuilder<'T>().Eq(idField, id);
     member this.Collection = database.GetCollection<'T>(collectionName);
 
+
 type CrudRepository<'T>(connectionString:string, collectionName:string,
                         idField:System.Linq.Expressions.Expression<System.Func<'T, string>>) =
     inherit RepositoryBase<'T>(connectionString, collectionName, idField)
@@ -34,4 +35,6 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
     member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
     member this.Single(id: string): 'T = this.Collection.FindSync(this.IdFilter id).FirstOrDefault()
-    member this.Update (item: 'T) (id: string) = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
+    member this.Update(id: string, item: 'T): unit = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
+
+    member this.All() = this.Collection.FindSync(FilterDefinitionBuilder<'T>().Empty).ToEnumerable()
