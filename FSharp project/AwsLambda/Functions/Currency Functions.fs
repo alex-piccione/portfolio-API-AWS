@@ -30,7 +30,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
         try
             let currency = base.Deserialize request.Body
             repository.Create(currency)
-            this.createOkWithStatus (201)
+            this.createOkWithStatus 201
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
@@ -48,5 +48,5 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
         if request.QueryStringParameters = null then this.createError("Missing querystring")
         else
             match request.QueryStringParameters.TryGetValue("code") with
-            | (true, id) -> this.createOkWithData(repository.Single id)
+            | (true, id) -> base.createOkWithData (repository.Single id)
             | _ -> failwith @"Missing querystring parameter ""code""."

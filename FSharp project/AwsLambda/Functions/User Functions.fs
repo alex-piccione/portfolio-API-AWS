@@ -40,7 +40,7 @@ type UserFunctions (repository:IUserRepository) =
             else
                 repository.Create(user)
                 context.Logger.Log($"User {user.Email} created")
-                this.createCreated (Some(user.ObfuscatePassword()))
+                this.createCreated (user.ObfuscatePassword())
         with exc ->
             context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
             this.createError $"Failed to create User. {exc.Message}"
@@ -48,16 +48,29 @@ type UserFunctions (repository:IUserRepository) =
     member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
 
         let found, email = request.PathParameters.TryGetValue "email"
-        if not found then failwith $"PAth should contain \"email\"."
+        if not found then failwith $"Path should contain \"email\"."
 
         try
             match repository.Single (email.ToLowerInvariant()) with
-            | Some user -> this.createResponse (200, Some user)
-            | _ -> this.createResponse(404, None)
+            | Some user -> this.createResponse 200 (Some user)
+            | _ -> this.createResponse 404 None
 
         with exc ->
             context.Logger.Log $"Failed to read User. {exc}"
             this.createError $"Failed to read User. {exc.Message}"
+
+    member this.Delete (request:APIGatewayProxyRequest, context:ILambdaContext) =
+
+        let found, email = request.PathParameters.TryGetValue "email"
+        if not found then failwith $"Path should contain \"email\"."
+
+        try
+            repository.Delete (email.ToLowerInvariant()) 
+            this.createResponse 201 None
+
+        with exc ->
+            context.Logger.Log $"Failed to delete User. {exc}"
+            this.createError $"Failed to delete User. {exc.Message}"
 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         repository.All().Select (fun user -> user.ObfuscatePassword())

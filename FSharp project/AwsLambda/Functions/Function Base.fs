@@ -6,12 +6,15 @@ open System.Text.Json
 open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 
+type DataOrOption<'T> =
+    | Option of Option<'T>
+    | Data of 'T
+
 type FunctionBase () =
 
     //let jsonOptions = Options.ISO8601CamelCase;
 
-
-    member this.createResponse<'T> (statusCode:int, data:'T option) =
+    member this.createResponse<'T> statusCode (data:'T option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- statusCode
         response.Headers <- dict["Content-Type", "application/json"]
@@ -22,19 +25,19 @@ type FunctionBase () =
         response
 
     member this.createOk () =
-        this.createResponse(200, None)
+        this.createResponse 200 None
 
-    member this.createOkWithStatus (statusCode:int) =
-        this.createResponse(statusCode, None)
+    member this.createOkWithStatus statusCode =
+        this.createResponse statusCode None
 
-    member this.createOkWithData<'T> (data:'T) =
-        this.createResponse(200, Some data)
+    member this.createOkWithData<'T> data =
+        this.createResponse<'T> 200 (Some data)
 
-    member this.createCreated<'T> (data:'T option) =
-        this.createResponse(201, data)
+    member this.createCreated<'T> data =
+        this.createResponse<'T> 201 (Some data)
 
-    member this.createError (message:string) =
-        this.createResponse(500, Some(message))
+    member this.createError message =
+        this.createResponse<string> 500 (Some message)
 
 
     member this.Deserialize<'T>(requestBody:string) =
