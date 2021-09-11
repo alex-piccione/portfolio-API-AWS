@@ -25,7 +25,7 @@ package:
 
 functions:
 
-  User Create:
+  User.Create:
     handler: ${self:provider.environment.userFunctions}::Create  # assembly::namespace.class::method
     package: &package
       artifact: "FSharp project/publish/fsharp-functions.zip"
