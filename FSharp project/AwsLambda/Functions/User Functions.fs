@@ -30,11 +30,14 @@ type UserFunctions (repository:IUserRepository) =
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         // TODO: do not log the request within sensitive data
         context.Logger.Log $"Create: {request.Body}"
-        let user = base.Deserialize request.Body
-        
-        // TODO: validate and normalize input
 
         try
+            let user = base.Deserialize request.Body
+            // TODO: validate and normalize input
+
+            // TODO: Mocked in unit tests but fails with Method Not Implemented Exception ?!            
+            //let a = repository.Single(user.Email)
+
             if repository.Single(user.Email).IsSome then 
                 this.createError "An user with this same email already exists."
             else
@@ -42,7 +45,7 @@ type UserFunctions (repository:IUserRepository) =
                 context.Logger.Log($"User {user.Email} created")
                 this.createCreated (user.ObfuscatePassword())
         with exc ->
-            context.Logger.Log $"Failed to create User. Data: {user.ObfuscatePassword()}. Error: {exc}"
+            context.Logger.Log $"Failed to create User. {exc}"
             this.createError $"Failed to create User. {exc.Message}"
 
     member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =

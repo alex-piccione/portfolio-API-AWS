@@ -38,7 +38,7 @@ type ``User Repository`` () =
 
         storedUser |> should equal (Some user)
 
-    [<Test>]
+    // Unit test
     member this.``Create <when> email already exists <should> return Error`` () =
 
         let user:User = { Email = TEST_EMAIL; Username = "username";  Password = "password"; CreatedOn = DateTime.UtcNow.Date;
