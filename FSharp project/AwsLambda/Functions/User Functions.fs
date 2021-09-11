@@ -77,4 +77,10 @@ type UserFunctions (repository:IUserRepository) =
             this.createError $"Failed to delete User. {exc.Message}"
 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        repository.All().Select (fun user -> user.ObfuscatePassword())
+        try
+            let list = repository.All().Select (fun user -> user.ObfuscatePassword())
+            this.createOkWithData (Some list)
+
+        with exc ->
+            context.Logger.Log $"Failed to retrieve users. {exc}"
+            this.createError $"Failed to retrieve users. {exc.Message}"
