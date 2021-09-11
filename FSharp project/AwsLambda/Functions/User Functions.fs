@@ -69,7 +69,7 @@ type UserFunctions (repository:IUserRepository) =
 
         try
             repository.Delete (email.ToLowerInvariant()) 
-            this.createResponse 204 None
+            this.createOk()
 
         with exc ->
             context.Logger.Log $"Failed to delete User. {exc}"
