@@ -7,9 +7,11 @@ type Currency = { Code:string; Name:string}
 type User = {
     Username:string
     Email:string
-    Password:string
+    mutable Password:string
     PasswordHint:string
     CreatedOn:DateTime
     IsEmailValidated:bool
     IsBlocked:bool
+
+    //member P = PAsswo
 }

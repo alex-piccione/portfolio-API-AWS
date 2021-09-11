@@ -18,11 +18,23 @@ provider:
 
   environment:
     functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  # Assembly::Namespace prefix, concatenate .Class::Method
+    userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
 
 package:
   individually: true
 
 functions:
+
+  User Create:
+    handler: ${self:provider.environment.userFunctions}::Create  # assembly::namespace.class::method
+    package: &package
+      artifact: "FSharp project/publish/fsharp-functions.zip"
+    events:
+    - http:
+      method: POST
+      path: user
+      cors: true
+
   Create:
     handler: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions::Create"  # assembly::namespace.class::method
     package: &package
