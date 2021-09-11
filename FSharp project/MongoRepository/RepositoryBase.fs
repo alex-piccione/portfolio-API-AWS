@@ -34,4 +34,4 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
     member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore
     member this.Single(id: string): 'T = this.Collection.FindSync(this.IdFilter id).FirstOrDefault()
-    member this.Update (item: 'T) (id: string) = this.Collection.FindOneAndReplace(this.IdFilter id, item)
+    member this.Update (item: 'T) (id: string) = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
