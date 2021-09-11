@@ -1,12 +1,15 @@
 ﻿namespace Portfolio.Api.Functions
 
+open System
 open System.Text
-open Amazon.Lambda.APIGatewayEvents
+open System.Text.Json
 open Microsoft.Extensions.Configuration
+open Amazon.Lambda.APIGatewayEvents
 
 type FunctionBase () =
 
     //let jsonOptions = Options.ISO8601CamelCase;
+
 
     member this.createResponse<'T> (statusCode:int, data:'T option) =
         let response = APIGatewayProxyResponse()
@@ -32,4 +35,15 @@ type FunctionBase () =
 
     member this.createError (message:string) =
         this.createResponse(500, Some(message))
+
+
+    member this.Deserialize<'T>(requestBody:string) =
+
+        if String.IsNullOrEmpty requestBody then failwith $"Reqeust body is empty"
+
+        let jsonOption = JsonSerializerOptions()
+        jsonOption.PropertyNameCaseInsensitive <- true
+
+        try JsonSerializer.Deserialize<'T>(requestBody, jsonOption)
+        with e -> failwith $"Failed to deserialize request body to {typeof<'T>}. {e}"
 
