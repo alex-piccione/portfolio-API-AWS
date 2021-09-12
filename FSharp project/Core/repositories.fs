@@ -1,5 +1,6 @@
 ﻿namespace Portfolio.Api.Core
 
+open System
 open Portfolio.Api.Core.Entities
 open System.Collections.Generic
 
@@ -22,3 +23,8 @@ type IUserRepository =
 type ICurrencyRepository =
     inherit CRUD<Currency>
     inherit All<Currency>
+
+type ISessionRepository =
+    abstract member Find: token:string -> Session option
+    abstract member FindByEmail: email:string -> Session option
+    abstract member Create: session:Session -> unit

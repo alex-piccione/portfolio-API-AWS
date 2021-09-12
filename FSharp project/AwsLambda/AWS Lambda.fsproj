@@ -10,10 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="assembly.fs" />
     <None Include="configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="assembly.fs" />
+    <Compile Include="Business\SessionManager.fs" />
+    <Compile Include="Functions\Request and Responses\User Login.fs" />
     <Compile Include="Functions\Function Base.fs" />
     <Compile Include="Functions\User Functions.fs" />
     <Compile Include="Functions\Currency Functions.fs" />

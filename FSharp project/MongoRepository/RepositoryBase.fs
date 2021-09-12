@@ -1,12 +1,11 @@
 ﻿namespace Portfolio.Api.MongoRepository
 
 open System
+open System.Linq.Expressions
 open MongoDB.Driver
 open MongoDB.Bson.Serialization
 
-type RepositoryBase<'T>(connectionString:string, collectionName:string,
-                        idField:System.Linq.Expressions.Expression<System.Func<'T, string>> 
-                        ) =
+type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
 
     let DATABASE = "Portfolio"
 
@@ -28,8 +27,7 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string,
     member this.Collection = database.GetCollection<'T>(collectionName);
 
 
-type CrudRepository<'T>(connectionString:string, collectionName:string,
-                        idField:System.Linq.Expressions.Expression<System.Func<'T, string>>) =
+type CrudRepository<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
     inherit RepositoryBase<'T>(connectionString, collectionName, idField)
 
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
@@ -46,3 +44,4 @@ type CrudRepository<'T>(connectionString:string, collectionName:string,
     member this.Update(id: string, item: 'T): unit = this.Collection.ReplaceOne(this.IdFilter id, item) |> ignore
 
     member this.All() = this.Collection.FindSync(FilterDefinitionBuilder<'T>().Empty).ToEnumerable()
+

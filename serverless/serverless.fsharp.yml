@@ -76,6 +76,16 @@ functions:
         path: user/all
         cors: true
   
+  UserLogin:
+    handler: ${self:provider.environment.userFunctions}::Login
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: POST
+        path: user/login
+        cors: true
+
   # Currency
   CurrencyCreate:
     handler: ${self:provider.environment.currencyFunctions}::Create  # assembly::namespace.class::method

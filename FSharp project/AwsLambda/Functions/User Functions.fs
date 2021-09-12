@@ -8,9 +8,11 @@ open Portfolio.Api.Core
 open Portfolio.Api.Core.Entities
 open Microsoft.Extensions.Configuration
 open Portfolio.Api.MongoRepository
+open UserLogin
+open SessionManager
 
 
-type UserFunctions (repository:IUserRepository) =
+type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) =
     inherit FunctionBase()
 
     new () =
@@ -24,7 +26,11 @@ type UserFunctions (repository:IUserRepository) =
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        UserFunctions(UserRepository(connectionString))
+        let sessionRepository = SessionRepository(connectionString)
+
+        let sessionManager = SessionManager(sessionRepository)
+
+        UserFunctions(UserRepository(connectionString), sessionManager)
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
@@ -84,3 +90,20 @@ type UserFunctions (repository:IUserRepository) =
         with exc ->
             context.Logger.Log $"Failed to retrieve users. {exc}"
             this.createError $"Failed to retrieve users. {exc.Message}"
+
+    member this.Login (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log $"Login"
+        try 
+            let input:LoginInput = this.Deserialize request.Body
+
+            match repository.Single input.Email with
+            | None -> this.createResponse 200 (Some { IsSuccess=false; Error=(Some"User not found"); AuthToken=None})
+            | Some user when user.IsBlocked -> this.createResponse 503 (Some"User is blocked")
+            | Some user -> 
+                let authToken = sessionManager.GetSession(user.Email).Token
+                this.createResponse 200 (Some { IsSuccess=false; Error=(Some"User not found"); AuthToken=Some(authToken)})
+
+        with exc ->
+            context.Logger.Log $"Failed to login. {exc}"
+            this.createError $"Failed to login. {exc.Message}"
+

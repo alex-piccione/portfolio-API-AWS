@@ -11,6 +11,7 @@ open Portfolio.Api.Functions
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Foq.Linq
+open SessionManager
 
 
 type ``User Functions`` () =
@@ -45,7 +46,9 @@ type ``User Functions`` () =
 
         //let aa = repository.Single(email)
 
-        let functions:UserFunctions = UserFunctions(repository)
+        let sessionManager = Mock<ISessionManager>().Create()
+
+        let functions:UserFunctions = UserFunctions(repository, sessionManager)
 
         //(fun _ -> functions.Create <| this.emulateApi user |> ignore)
         let a = functions.Create( this.emulateApi user)

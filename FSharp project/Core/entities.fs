@@ -21,5 +21,10 @@ type User = {
             Password = this.Password.Trim().ToLowerInvariant()
         }
 
-
+type Session = {
+    Email:string
+    Token:string
+    CreatedOn:DateTime
+    ExpireOn:DateTime
+}
 
