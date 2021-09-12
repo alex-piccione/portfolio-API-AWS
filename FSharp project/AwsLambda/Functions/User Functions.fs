@@ -101,7 +101,7 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             | Some user when user.IsBlocked -> this.createResponse 503 (Some"User is blocked")
             | Some user -> 
                 let authToken = sessionManager.GetSession(user.Email).Token
-                this.createResponse 200 (Some { IsSuccess=false; Error=(Some"User not found"); AuthToken=Some(authToken)})
+                this.createResponse 200 (Some { IsSuccess=true; Error=None; AuthToken=Some(authToken)})
 
         with exc ->
             context.Logger.Log $"Failed to login. {exc}"
@@ -110,4 +110,4 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
     member this.ClenupExpiredSessions (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"ClenupExpiredSessions"
 
-        // TODO: implement
+        sessionManager.CleanupExpiredSessions()

@@ -6,10 +6,12 @@ open Portfolio.Api.Core.Entities
 
 type ISessionManager =
     abstract member GetSession: email:string -> Session
+    abstract member CleanupExpiredSessions: unit -> unit
 
 type SessionManager (sessionRepository:ISessionRepository) =
 
     let SESSION_HIDLE = TimeSpan.FromMinutes 30.
+    let EXPIRED_CLEANUP_THRESHOLD = TimeSpan.FromDays 1.
 
     let createSession email =
         let token = Guid.NewGuid().ToString()
@@ -23,6 +25,7 @@ type SessionManager (sessionRepository:ISessionRepository) =
         session
 
     interface ISessionManager with
+        member this.CleanupExpiredSessions(): unit = sessionRepository.DeleteExpiredSessions (DateTime.UtcNow - EXPIRED_CLEANUP_THRESHOLD)
 
         member this.GetSession email =
             try 

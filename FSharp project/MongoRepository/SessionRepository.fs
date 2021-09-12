@@ -27,6 +27,6 @@ type SessionRepository (connectionString:string) =
             let filter = this.CreateFilter( (fun x -> x.Email) , email)
             this.Collection.FindOneOrNone(filter)
 
-        member this.DeleteExpiredSessions(): unit = 
-            let filter = FilterDefinitionBuilder<Session>().Gt( (fun x -> x.ExpireOn), DateTime.UtcNow.AddDays(-1.))
+        member this.DeleteExpiredSessions (thresholdDate:DateTime): unit = 
+            let filter = FilterDefinitionBuilder<Session>().Lt((fun x -> x.ExpireOn), thresholdDate)
             this.Collection.DeleteMany(filter) |> ignore
