@@ -97,11 +97,11 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             let input:LoginInput = this.Deserialize request.Body
 
             match repository.Single input.Email with
-            | None -> this.createResponse 200 (Some { IsSuccess=false; Error=(Some"User not found"); AuthToken=None})
+            | None -> this.createResponse 200 (Some { IsSuccess=false; Error="User not found"; AuthToken=null})
             | Some user when user.IsBlocked -> this.createResponse 503 (Some"User is blocked")
             | Some user -> 
                 let authToken = sessionManager.GetSession(user.Email).Token
-                this.createResponse 200 (Some { IsSuccess=true; Error=None; AuthToken=Some(authToken)})
+                this.createResponse 200 (Some { IsSuccess=true; Error=null; AuthToken=authToken})
 
         with exc ->
             context.Logger.Log $"Failed to login. {exc}"

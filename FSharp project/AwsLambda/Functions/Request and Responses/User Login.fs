@@ -7,6 +7,6 @@ type LoginInput = { Email:string; Password:string }
 
 type LoginResult = { 
     IsSuccess: bool;
-    Error: string option
-    AuthToken: string option
+    Error: string 
+    AuthToken: string 
 }
