@@ -28,3 +28,4 @@ type ISessionRepository =
     abstract member Find: token:string -> Session option
     abstract member FindByEmail: email:string -> Session option
     abstract member Create: session:Session -> unit
+    abstract member DeleteExpiredSessions: unit -> unit
