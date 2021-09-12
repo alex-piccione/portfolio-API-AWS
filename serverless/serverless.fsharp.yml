@@ -86,13 +86,13 @@ functions:
         path: user/login
         cors: true
 
-  UserCleanupExpiredSessions:
-    handler: ${self:provider.environment.userFunctions}::ClenupExpiredSessions
-    package: 
-      <<: *package
-    events:
-    - schedule: cron(15 * * * * *)
-      # cron(Minutes Hours Day-of-month Month Day-of-week Year)
+  #UserCleanupExpiredSessions:
+  #  handler: ${self:provider.environment.userFunctions}::ClenupExpiredSessions
+  #  package: 
+  #    <<: *package
+  #  events:
+  #  - schedule: cron(15 * * * * *)
+  #    # cron(Minutes Hours Day-of-month Month Day-of-week Year)
 
   # Currency
   CurrencyCreate:
