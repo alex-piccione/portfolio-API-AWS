@@ -107,3 +107,7 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             context.Logger.Log $"Failed to login. {exc}"
             this.createError $"Failed to login. {exc.Message}"
 
+    member this.ClenupExpiredSessions (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log $"ClenupExpiredSessions"
+
+        // TODO: implement
