@@ -40,7 +40,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
         context.Logger.Log("All")
         try
             let list = repository.All()
-            base.createOkWithData(Some(list))
+            base.createOkWithData(list)
         with exc ->
             context.Logger.Log $"Failed to retrieve Currencies. {exc}"
             this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"

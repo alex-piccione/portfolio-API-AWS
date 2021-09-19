@@ -85,7 +85,7 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         try
             let list = repository.All().Select (fun user -> user.ObfuscatePassword())
-            this.createOkWithData (Some list)
+            this.createOkWithData list
 
         with exc ->
             context.Logger.Log $"Failed to retrieve users. {exc}"
