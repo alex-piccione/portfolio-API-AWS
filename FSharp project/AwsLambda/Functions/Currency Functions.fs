@@ -38,8 +38,12 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
     
     member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log("All")
-        repository.All()
-        //base.createOkWithData(Some(list))
+        try
+            let list = repository.All()
+            base.createOkWithData(Some(list))
+        with exc ->
+            context.Logger.Log $"Failed to retrieve Currencies. {exc}"
+            this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
 
     member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
 
