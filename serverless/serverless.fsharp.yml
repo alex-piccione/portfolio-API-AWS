@@ -101,8 +101,8 @@ functions:
       <<: *package
     events:
     - http:
-        method: GET
-        path: currency/all
+        method: POST
+        path: currency
         cors: true
 
   CurrencySingle:
