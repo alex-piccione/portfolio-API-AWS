@@ -49,7 +49,6 @@ type ``User Repository`` () =
         (fun _ -> repository.Create({user with Email = "tEst@TEST.com"}) |> ignore)
         |> should throw typeof<Exception>
 
-
     [<Test>]
     member this.Delete () =
 
