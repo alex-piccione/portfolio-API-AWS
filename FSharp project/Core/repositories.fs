@@ -29,3 +29,5 @@ type ISessionRepository =
     abstract member FindByEmail: email:string -> Session option
     abstract member Create: session:Session -> unit
     abstract member DeleteExpiredSessions: thresholdDate:DateTime -> unit
+
+type ICompanyRepository = 

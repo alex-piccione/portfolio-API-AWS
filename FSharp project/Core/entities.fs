@@ -2,8 +2,6 @@
 
 open System
 
-type Currency = { Code:string; Name:string}
-
 type User = {
     Username:string
     Email:string
@@ -28,3 +26,38 @@ type Session = {
     ExpireOn:DateTime
 }
 
+type Currency = { Code:string; Name:string}
+
+type CompanyType =
+    | Bank
+    | Exchange
+
+
+type Company = {
+    Id: string
+    Name: string
+    Types: 
+}
+
+
+//type FundManager = {
+//    Company: Company
+//}
+
+type Fund = {
+    Currency: Currency
+    Manager: Company
+    Quantity: decimal
+}
+
+type FundAggregate = {
+    Currency: Currency
+    TotalQuantity: decimal
+    TotalValue: decimal
+    Managers: FundManager list
+}
+
+type Balance = {
+    Date:DateTime
+    AggregateFunds: FundAggregate list
+}
