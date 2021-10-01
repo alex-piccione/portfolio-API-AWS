@@ -5,12 +5,12 @@ open NUnit.Framework
 open FsUnit
 open Foq
 open Foq.Linq
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 open Portfolio.Api.Functions
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
-open Foq.Linq
+
 open SessionManager
 
 
@@ -22,7 +22,7 @@ type ``User Functions`` () =
 
     member this.emulateApi<'T> (user:'T) =
         let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns( Mock<ILambdaLogger>().Create()) 
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock<ILambdaLogger>().Create()) 
                           .Create()
         let request = APIGatewayProxyRequest()
         request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> user
@@ -44,14 +44,88 @@ type ``User Functions`` () =
                 .Setup(fun rep -> rep.Single email).Returns(Some user)
                 .Create()
 
-        //let aa = repository.Single(email)
-
         let sessionManager = Mock<ISessionManager>().Create()
 
         let functions:UserFunctions = UserFunctions(repository, sessionManager)
 
-        //(fun _ -> functions.Create <| this.emulateApi user |> ignore)
-        let a = functions.Create( this.emulateApi user)
+        // execute
+        let response = functions.Create(this.emulateApi user)
 
-        (fun _ -> functions.Create( this.emulateApi user) |> ignore)
-        |> should throw typeof<Exception>
+        response |> should not' (be Null)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "An user with this same email already exists."
+
+        (*
+    [<Test>]
+    member this.TestUserRepository() =
+
+        let email = "aaa"
+        let user:User = { testUser with Email = email }
+
+        let repository:IUserRepository =
+            Mock<IUserRepository>()
+                .Setup(fun rep -> rep.Single email).Returns(Some user)
+                .Create()
+
+        let loadUser = repository.Single email
+
+        ()
+
+        *)
+  
+
+type IWriter =
+    abstract member Write: string -> string
+
+type ISpecialWriter =
+    inherit IWriter
+
+type ClassToTest(writer:ISpecialWriter) =
+    member this.DoSomething text = 
+        writer.Write text
+
+
+// open Foq.Linq
+[<Test>]
+let ``Mock_should_work_with_exact_input``() =
+    let input = "aaa"
+    let output = "bbb"
+    let specialWriter:ISpecialWriter = 
+        Mock<ISpecialWriter>()
+            //.Setup(fun w -> w.Write (It.any()) ).Returns("bbb")
+            .Setup(fun w -> w.Write input).Returns(output)
+            .Create()
+
+    let classToTest = ClassToTest(specialWriter)
+
+    // execute
+    let result = classToTest.DoSomething("aaa")
+
+    result |> should equal "bbb"
+
+type ClassToTest_2(userRepository:IUserRepository) =
+    member this.DoSomething email = 
+        userRepository.Single email
+
+[<Test>]
+let ``Mock_should_work_when_use_IUserRepository``() =
+    
+    //let user:User = { testUser }
+    let email = "EmaiL@Test.COM"
+    let user:User = 
+        { Username="test"; Email="test@test.com"; Password="password"; PasswordHint="password hint"; 
+            CreatedOn=DateTime.UtcNow; IsEmailValidated=false; IsBlocked=false }
+
+    let userRepository:IUserRepository = 
+        Mock<IUserRepository>()
+            .Setup(fun rep -> rep.Single (It.IsAny<string>()) ).Returns(Some user)
+            //.Setup(fun rep -> rep.Single(email) ).Returns(Some user)            
+            .Create()
+
+    let classToTest = ClassToTest_2(userRepository)
+
+    // execute
+    let result = classToTest.DoSomething("aaa")
+
+    result.IsSome |> should be True
+

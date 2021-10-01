@@ -13,7 +13,6 @@
     <Compile Include="configuration.fs" />
     <Compile Include="UserRepository.tests.fs" />
     <Compile Include="CurrencyRepository.tests.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace Portfolio.Api.MongoRepository
+﻿namespace Portfolio.MongoRepository
 
 open System
 open System.Linq.Expressions

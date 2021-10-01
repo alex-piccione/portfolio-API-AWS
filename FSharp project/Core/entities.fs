@@ -1,4 +1,4 @@
-﻿module Portfolio.Api.Core.Entities
+﻿module Portfolio.Core.Entities
 
 open System
 
@@ -36,7 +36,7 @@ type CompanyType =
 type Company = {
     Id: string
     Name: string
-    Types: 
+    Type: string
 }
 
 
@@ -44,20 +44,10 @@ type Company = {
 //    Company: Company
 //}
 
-type Fund = {
-    Currency: Currency
-    Manager: Company
+type FundAtDate = {
+    Date: DateTime
+    CurrencyCode: string
+    FundCompanyId: string
     Quantity: decimal
 }
 
-type FundAggregate = {
-    Currency: Currency
-    TotalQuantity: decimal
-    TotalValue: decimal
-    Managers: FundManager list
-}
-
-type Balance = {
-    Date:DateTime
-    AggregateFunds: FundAggregate list
-}

@@ -39,6 +39,9 @@ type FunctionBase () =
     member this.createError message =
         this.createResponse<string> 500 (Some message)
 
+    member this.createErrorForConflict message =
+        this.createResponse<string> 409 (Some message)
+
 
     member this.Deserialize<'T>(requestBody:string) =
 

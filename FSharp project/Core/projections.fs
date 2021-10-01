@@ -1,6 +1,7 @@
-﻿namespace Portfolio.Core.Projections
+﻿module Portfolio.Core.Projections
 
-open Portfolio.Api.Core.Entities
+open System
+open Portfolio.Core.Entities
 
 
 type BalanceListItem = {
@@ -8,4 +9,24 @@ type BalanceListItem = {
     Quantity: decimal
     Value: decimal
     // 
+}
+
+type Fund = {
+    Currency: Currency
+    Manager: Company
+    Quantity: decimal
+}
+
+type FundAggregate = {
+    Currency: Currency
+    TotalQuantity: decimal
+    Price: decimal
+    TotalValue: decimal
+    FundCompanies: string list
+    //Managers: FundManager list
+}
+
+type Balance = {
+    Date:DateTime
+    AggregateFunds: FundAggregate list
 }

@@ -4,10 +4,10 @@ open System.Linq
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 open Microsoft.Extensions.Configuration
-open Portfolio.Api.MongoRepository
+open Portfolio.MongoRepository
 open UserLogin
 open SessionManager
 
@@ -46,7 +46,7 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             //let a = repository.Single(normalizedUser.Email)
 
             if repository.Single(normalizedUser.Email.ToLowerInvariant()).IsSome then 
-                this.createError "An user with this same email already exists."
+                this.createErrorForConflict "An user with this same email already exists."
             else
                 repository.Create(user)
                 context.Logger.Log($"User {normalizedUser.Email} created")

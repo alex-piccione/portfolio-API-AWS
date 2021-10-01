@@ -3,9 +3,9 @@
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Api.Core
+open Portfolio.Core
 open Microsoft.Extensions.Configuration
-open Portfolio.Api.MongoRepository
+open Portfolio.MongoRepository
 
 
 type CurrencyFunctions (repository:ICurrencyRepository) =
