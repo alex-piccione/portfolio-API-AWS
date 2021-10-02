@@ -66,3 +66,43 @@ type ``User Functions`` () =
         response.StatusCode |> should equal 409
         response.Body |> should contain "An user with this same email already exists."
 
+    [<Test>]
+    member this.``Create <should> check exixting email lowercase``() =
+
+        let email = "EmaiL@Test.COM"
+        let searchedEmail = email.ToLowerInvariant()
+        let user:User = { testUser with Email = email }
+
+        let userRepository = Mock<IUserRepository>().Create() 
+
+        let sessionManager = Mock<ISessionManager>().Create()
+
+        let functions:UserFunctions = UserFunctions(userRepository, sessionManager)
+
+        // execute
+        let _ = functions.Create(this.emulateApi user)
+
+        verify <@ userRepository.Single searchedEmail @> once
+
+    [<Test>]
+    member this.``Create <should> store normalized user``() =
+
+        let email = "  EmaiL@Test.COM "
+        let savedEmail = email.Trim().ToLowerInvariant()
+        let user:User = { testUser with Email = email }
+        let savedUser = user.Normalize() // { user with Email = savedEmail }
+        
+
+        let userRepository = 
+            Mock<IUserRepository>()
+                .Setup(fun rep -> rep.Single(It.IsAny<string>())).Returns(None)
+                .Create() 
+
+        let sessionManager = Mock<ISessionManager>().Create()
+
+        let functions:UserFunctions = UserFunctions(userRepository, sessionManager)
+
+        // execute
+        let _ = functions.Create(this.emulateApi user)
+
+        verify <@ userRepository.Create savedUser @> once

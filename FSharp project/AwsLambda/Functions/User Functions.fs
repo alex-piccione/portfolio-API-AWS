@@ -48,9 +48,9 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             if repository.Single(normalizedUser.Email).IsSome then 
                 this.createErrorForConflict "An user with this same email already exists."
             else
-                repository.Create(user)
+                repository.Create(normalizedUser)
                 context.Logger.Log($"User {normalizedUser.Email} created")
-                this.createCreated (user.ObfuscatePassword())
+                this.createCreated (normalizedUser.ObfuscatePassword())
         with exc ->
             context.Logger.Log $"Failed to create User. {exc}"
             this.createError $"Failed to create User. {exc.Message}"
