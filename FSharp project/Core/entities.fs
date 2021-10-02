@@ -36,13 +36,13 @@ type CompanyType =
 type Company = {
     Id: string
     Name: string
-    Type: string
+    Types: CompanyType list
 }
 
 
-//type FundManager = {
-//    Company: Company
-//}
+type FundAdministrator = {
+    Company: Company
+}
 
 type FundAtDate = {
     Date: DateTime
@@ -51,3 +51,22 @@ type FundAtDate = {
     Quantity: decimal
 }
 
+(*
+type Fund = {
+    Currency: Currency
+    Manager: Company
+    Quantity: decimal
+}
+
+type FundAggregate = {
+    Currency: Currency
+    TotalQuantity: decimal
+    TotalValue: decimal
+    Managers: FundAdministrator list
+}
+
+type Balance = {
+    Date:DateTime
+    AggregateFunds: FundAggregate list
+}
+*)
