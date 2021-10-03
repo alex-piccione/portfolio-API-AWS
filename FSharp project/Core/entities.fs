@@ -42,33 +42,13 @@ type Company = {
 
 // it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Hsndler" and "Admin".
 // Custodian, Holder, Producer, Organizer, Governor, Provider, Custodian. Keeper
-type FundKeeper = {
+(*type FundKeeper = {
     Company: Company
-}
+}*)
 
-type FundAtDate = {
+(*type FundAtDate = {
     Date: DateTime
     CurrencyCode: string
     FundCompanyId: string
     Quantity: decimal
-}
-
-(*
-type Fund = {
-    Currency: Currency
-    Manager: Company
-    Quantity: decimal
-}
-
-type FundAggregate = {
-    Currency: Currency
-    TotalQuantity: decimal
-    TotalValue: decimal
-    Managers: FundAdministrator list
-}
-
-type Balance = {
-    Date:DateTime
-    AggregateFunds: FundAggregate list
-}
-*)
+}*)
