@@ -1,11 +1,12 @@
 ﻿namespace Portfolio.Api.Functions
 
+open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Api.Core
-open Microsoft.Extensions.Configuration
-open Portfolio.Api.MongoRepository
+open Portfolio.Core
+open Portfolio.MongoRepository
+
 
 
 type CompanyFunctions (repository:ICompanyRepository) =
@@ -22,7 +23,7 @@ type CompanyFunctions (repository:ICompanyRepository) =
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        CurrencyFunctions(CompanyRepository(connectionString))
+        CompanyFunctions(CompanyRepository(connectionString))
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
@@ -35,15 +36,6 @@ type CompanyFunctions (repository:ICompanyRepository) =
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
 
-    
-    member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log("All")
-        try
-            let list = repository.All()
-            base.createOkWithData(list)
-        with exc ->
-            context.Logger.Log $"Failed to retrieve Currencies. {exc}"
-            this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
 
     member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
 
