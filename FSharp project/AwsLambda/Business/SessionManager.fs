@@ -1,8 +1,8 @@
 ﻿module SessionManager
 
 open System
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 
 type ISessionManager =
     abstract member GetSession: email:string -> Session

@@ -1,7 +1,7 @@
-﻿namespace Portfolio.Api.Core
+﻿namespace Portfolio.Core
 
 open System
-open Portfolio.Api.Core.Entities
+open Portfolio.Core.Entities
 open System.Collections.Generic
 
 type CRUD<'T> =
@@ -29,3 +29,8 @@ type ISessionRepository =
     abstract member FindByEmail: email:string -> Session option
     abstract member Create: session:Session -> unit
     abstract member DeleteExpiredSessions: thresholdDate:DateTime -> unit
+
+type IFundRepository = 
+    //inherit CRUD<Fund>
+    abstract member Save: fund:FundAtDate -> unit
+    abstract member GetFundsAtDate: date:DateTime -> FundAtDate list

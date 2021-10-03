@@ -1,9 +1,9 @@
 namespace IntegrationTests.Repository
 
 open NUnit.Framework
-open Portfolio.Api.Core
-open Portfolio.Api.MongoRepository
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.MongoRepository
+open Portfolio.Core.Entities
 open FsUnit
 
 type ``Currency Repository`` () =

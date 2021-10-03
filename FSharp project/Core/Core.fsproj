@@ -9,7 +9,9 @@
 
   <ItemGroup>
     <Compile Include="entities.fs" />
+    <Compile Include="projections.fs" />
     <Compile Include="repositories.fs" />
+    <Compile Include="Logic\BalanceLogic.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,9 +1,9 @@
-﻿namespace Portfolio.Api.MongoRepository
+﻿namespace Portfolio.MongoRepository
 
 open System
 open System.Linq.Expressions
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 open MongoDB.Driver
 open Extensions
 

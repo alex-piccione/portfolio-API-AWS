@@ -1,7 +1,7 @@
-﻿namespace Portfolio.Api.MongoRepository
+﻿namespace Portfolio.MongoRepository
 
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 
 type CurrencyRepository (connectionString:string) =
     inherit CrudRepository<Currency>(connectionString, "Currency", (fun x -> x.Code))
