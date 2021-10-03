@@ -13,6 +13,7 @@
     <Compile Include="UserRepository.fs" />
     <Compile Include="SessionRepository.fs" />
     <Compile Include="CurrencyRepository.fs" />
+    <Compile Include="CompanyRepository.fs" />
   </ItemGroup>
 
   <ItemGroup>
