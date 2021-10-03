@@ -13,7 +13,7 @@ type BalanceListItem = {
 
 type Fund = {
     Currency: Currency
-    Manager: Company
+    Custodian: Company
     Quantity: decimal
 }
 

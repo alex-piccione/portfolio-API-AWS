@@ -31,6 +31,7 @@ type Currency = { Code:string; Name:string}
 type CompanyType =
     | Bank
     | Exchange
+    | Stacking
 
 
 type Company = {
@@ -39,8 +40,9 @@ type Company = {
     Types: CompanyType list
 }
 
-
-type FundAdministrator = {
+// it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Hsndler" and "Admin".
+// Custodian, Holder, Producer, Organizer, Governor, Provider, Custodian. Keeper
+type FundKeeper = {
     Company: Company
 }
 
