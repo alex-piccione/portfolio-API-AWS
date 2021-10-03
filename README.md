@@ -1,4 +1,4 @@
-# portfolio-API-AWS
+# Portfolio API on AWS
 AWS API for Portfolio project
 
 ## AWS
