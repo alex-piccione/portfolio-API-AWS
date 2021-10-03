@@ -4,9 +4,9 @@ open System
 open System.Linq
 open NUnit.Framework
 open FsUnit
-open Portfolio.Api.MongoRepository
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.MongoRepository
+open Portfolio.Core
+open Portfolio.Core.Entities
 
 
 type ``User Repository`` () =

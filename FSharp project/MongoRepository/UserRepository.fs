@@ -1,7 +1,7 @@
-﻿namespace Portfolio.Api.MongoRepository
+﻿namespace Portfolio.MongoRepository
 
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 
 type UserRepository (connectionString:string) =
     inherit CrudRepository<User>(connectionString, "User", (fun x -> x.Email))

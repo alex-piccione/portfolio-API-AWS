@@ -5,14 +5,25 @@ open NUnit.Framework
 open FsUnit
 open Foq
 open Foq.Linq
-open Portfolio.Api.Core
-open Portfolio.Api.Core.Entities
+open Portfolio.Core
+open Portfolio.Core.Entities
 open Portfolio.Api.Functions
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
-open Foq.Linq
+
 open SessionManager
 
+
+type MyObject(repository:IUserRepository) =
+
+    member this.Single email = 
+        try
+            if repository.Single(email).IsSome then
+                true
+            else
+                false
+        with exc ->
+            failwith $"Something went wrong. {exc}"
 
 type ``User Functions`` () =
 
@@ -22,7 +33,7 @@ type ``User Functions`` () =
 
     member this.emulateApi<'T> (user:'T) =
         let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns( Mock<ILambdaLogger>().Create()) 
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock<ILambdaLogger>().Create()) 
                           .Create()
         let request = APIGatewayProxyRequest()
         request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> user
@@ -36,22 +47,62 @@ type ``User Functions`` () =
     member this.``Create <when> Email exists <should> return Error``() =
                 
         let email = "EmaiL@Test.COM"
-        let existingEmail = email.ToLowerInvariant()
-        let user:User = { testUser with Email = existingEmail }
+        let searchedEmail = email.ToLowerInvariant()
+        let user:User = { testUser with Email = email }
 
-        let repository:IUserRepository =
+        let userRepository =
             Mock<IUserRepository>()
-                .Setup(fun rep -> rep.Single email).Returns(Some user)
+                .Setup(fun rep -> rep.Single searchedEmail).Returns(Some user)
                 .Create()
-
-        //let aa = repository.Single(email)
 
         let sessionManager = Mock<ISessionManager>().Create()
 
-        let functions:UserFunctions = UserFunctions(repository, sessionManager)
+        let functions:UserFunctions = UserFunctions(userRepository, sessionManager)
 
-        //(fun _ -> functions.Create <| this.emulateApi user |> ignore)
-        let a = functions.Create( this.emulateApi user)
+        // execute
+        let response = functions.Create(this.emulateApi user)
 
-        (fun _ -> functions.Create( this.emulateApi user) |> ignore)
-        |> should throw typeof<Exception>
+        response |> should not' (be Null)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "An user with this same email already exists."
+
+    [<Test>]
+    member this.``Create <should> check exixting email lowercase``() =
+
+        let email = "EmaiL@Test.COM"
+        let searchedEmail = email.ToLowerInvariant()
+        let user:User = { testUser with Email = email }
+
+        let userRepository = Mock<IUserRepository>().Create() 
+
+        let sessionManager = Mock<ISessionManager>().Create()
+
+        let functions:UserFunctions = UserFunctions(userRepository, sessionManager)
+
+        // execute
+        let _ = functions.Create(this.emulateApi user)
+
+        verify <@ userRepository.Single searchedEmail @> once
+
+    [<Test>]
+    member this.``Create <should> store normalized user``() =
+
+        let email = "  EmaiL@Test.COM "
+        let savedEmail = email.Trim().ToLowerInvariant()
+        let user:User = { testUser with Email = email }
+        let savedUser = user.Normalize() // { user with Email = savedEmail }
+        
+
+        let userRepository = 
+            Mock<IUserRepository>()
+                .Setup(fun rep -> rep.Single(It.IsAny<string>())).Returns(None)
+                .Create() 
+
+        let sessionManager = Mock<ISessionManager>().Create()
+
+        let functions:UserFunctions = UserFunctions(userRepository, sessionManager)
+
+        // execute
+        let _ = functions.Create(this.emulateApi user)
+
+        verify <@ userRepository.Create savedUser @> once

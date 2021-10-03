@@ -14,5 +14,5 @@ So that ...
 ---
 
 ## Acceptance Criteria
-- [] criteria
-- [] criteria
+- [ ] criteria
+- [ ] criteria

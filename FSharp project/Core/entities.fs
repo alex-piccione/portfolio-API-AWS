@@ -1,8 +1,6 @@
-﻿module Portfolio.Api.Core.Entities
+﻿module Portfolio.Core.Entities
 
 open System
-
-type Currency = { Code:string; Name:string}
 
 type User = {
     Username:string
@@ -28,3 +26,29 @@ type Session = {
     ExpireOn:DateTime
 }
 
+type Currency = { Code:string; Name:string}
+
+type CompanyType =
+    | Bank
+    | Exchange
+    | Stacking
+
+
+type Company = {
+    Id: string
+    Name: string
+    Types: CompanyType list
+}
+
+// it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Hsndler" and "Admin".
+// Custodian, Holder, Producer, Organizer, Governor, Provider, Custodian. Keeper
+(*type FundKeeper = {
+    Company: Company
+}*)
+
+(*type FundAtDate = {
+    Date: DateTime
+    CurrencyCode: string
+    FundCompanyId: string
+    Quantity: decimal
+}*)
