@@ -8,7 +8,6 @@ open Portfolio.MongoRepository
 open Portfolio.Core
 open Portfolio.Core.Entities
 
-
 type ``User Repository`` () =
 
     let TEST_EMAIL = "test@test.com"
@@ -38,7 +37,7 @@ type ``User Repository`` () =
 
         storedUser |> should equal (Some user)
 
-    // Unit test
+    [<Test>]
     member this.``Create <when> email already exists <should> return Error`` () =
 
         let user:User = { Email = TEST_EMAIL; Username = "username";  Password = "password"; CreatedOn = DateTime.UtcNow.Date;

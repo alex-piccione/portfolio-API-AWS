@@ -1,6 +1,8 @@
 module UnitTests.Functions
 
 open System
+open Amazon.Lambda.APIGatewayEvents
+open Amazon.Lambda.Core
 open NUnit.Framework
 open FsUnit
 open Foq
@@ -8,8 +10,7 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Api.Functions
-open Amazon.Lambda.APIGatewayEvents
-open Amazon.Lambda.Core
+
 
 open SessionManager
 

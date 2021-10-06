@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Serializers\CompanyTypeSerializer.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="RepositoryBase.fs" />
     <Compile Include="UserRepository.fs" />
