@@ -8,7 +8,6 @@ open FsUnit
 open NUnit.Framework.Constraints
 
 
-
 type equalCompany(expected:Company) = 
     inherit Constraints.EqualConstraint(expected)
 

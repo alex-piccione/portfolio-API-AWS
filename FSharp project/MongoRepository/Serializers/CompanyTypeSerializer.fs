@@ -5,8 +5,6 @@ open Portfolio.Core.Entities
 
 type CompanyTypeSerializer () =
 
-    let sort = List.sortBy (fun i -> string i)
-
     interface IBsonSerializer with
 
         member this.Deserialize(context: BsonDeserializationContext, args: BsonDeserializationArgs): obj = 
@@ -25,13 +23,13 @@ type CompanyTypeSerializer () =
                 types <- value::types
 
             context.Reader.ReadEndArray()
-            box (sort types)
+            box types
 
         member this.Serialize(context: BsonSerializationContext, args: BsonSerializationArgs, value: obj): unit = 
 
             context.Writer.WriteStartArray()
             // sort to obtain the same order every time and facilitate comparison
-            value :?> CompanyType list |> sort |> List.iter (fun i -> context.Writer.WriteString (string i))
+            value :?> CompanyType list |> List.iter (fun i -> context.Writer.WriteString (string i))
             context.Writer.WriteEndArray()
 
         member this.ValueType: System.Type = typeof<CompanyType list>
