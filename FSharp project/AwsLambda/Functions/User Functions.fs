@@ -42,9 +42,6 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             let normalizedUser = user.Normalize()
             // TODO: validate
 
-            // TODO: Mocked in unit tests but fails with Method Not Implemented Exception ?!
-            let a = repository.Single(normalizedUser.Email)
-
             if repository.Single(normalizedUser.Email).IsSome then 
                 this.createErrorForConflict "An user with this same email already exists."
             else

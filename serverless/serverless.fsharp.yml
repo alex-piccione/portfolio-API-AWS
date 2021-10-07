@@ -20,6 +20,7 @@ provider:
     functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  # Assembly::Namespace prefix, concatenate .Class::Method
     userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
     currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
+    companyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CompanyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
 
 package:
   individually: true
@@ -130,4 +131,48 @@ functions:
     - http:
         method: GET
         path: currency/all
+        cors: true
+
+  # Company
+  CompanyCreate:
+    handler: ${self:provider.environment.companyFunctions}::Create
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: POST
+        path: company
+        cors: true
+
+  CompanySingle:
+    handler: ${self:provider.environment.companyFunctions}::Single
+    package:
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: company
+        cors: true
+        request:
+          template:
+            application/json: '{"id": "$input.params(''id'')"}'
+
+  CompanyUpdate:
+    handler: ${self:provider.environment.companyFunctions}::Update
+    package:
+      <<: *package
+    events:
+    - http:
+        method: PUT
+        path: company
+        cors: true
+
+  CompanyDelete:
+    handler: ${self:provider.environment.companyFunctions}::Delete
+    package:
+      <<: *package
+    events:
+    - http:
+        method: DELETE
+        path: company/{id}
         cors: true
