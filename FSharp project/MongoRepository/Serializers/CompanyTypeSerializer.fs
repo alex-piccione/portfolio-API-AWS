@@ -25,7 +25,6 @@ type CompanyTypeSerializer () =
             box types
 
         member this.Serialize(context: BsonSerializationContext, args: BsonSerializationArgs, value: obj): unit = 
-
             context.Writer.WriteStartArray()
             value :?> CompanyType list |> List.iter (fun i -> context.Writer.WriteString (string i))
             context.Writer.WriteEndArray()
