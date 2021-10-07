@@ -135,11 +135,44 @@ functions:
 
   # Company
   CompanyCreate:
-    handler: ${self:provider.environment.companyFunctions}::Create  
+    handler: ${self:provider.environment.companyFunctions}::Create
     package: 
       <<: *package
     events:
     - http:
         method: POST
         path: company
+        cors: true
+
+  CompanySingle:
+    handler: ${self:provider.environment.companyFunctions}::Single
+    package:
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: company
+        cors: true
+        request:
+          template:
+            application/json: '{"id": "$input.params(''id'')"}'
+
+  CompanyUpdate:
+    handler: ${self:provider.environment.companyFunctions}::Update
+    package:
+      <<: *package
+    events:
+    - http:
+        method: PUT
+        path: company
+        cors: true
+
+  CompanyDelete:
+    handler: ${self:provider.environment.companyFunctions}::Delete
+    package:
+      <<: *package
+    events:
+    - http:
+        method: DELETE
+        path: company/{id}
         cors: true
