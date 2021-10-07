@@ -5,7 +5,7 @@ open System.Linq.Expressions
 open MongoDB.Driver
 open MongoDB.Bson.Serialization
 
-type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
+type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>, overloadMap: BsonClassMap<'T> -> unit) =
 
     let DATABASE = "Portfolio"
 
@@ -13,7 +13,7 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:
     // setting the Timeout returns this error: MongoClientSettings is frozen
     //client.Settings.ConnectTimeout = TimeSpan.FromSeconds(30); 
     let databaseSettings = new MongoDatabaseSettings() // default settings
-    let database = client.GetDatabase(DATABASE, databaseSettings) 
+    let database = client.GetDatabase(DATABASE, databaseSettings)
 
     do 
         if not(BsonClassMap.IsClassMapRegistered(typeof<'T>)) then
@@ -21,14 +21,21 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:
             map.AutoMap()
             map.MapIdMember(idField) |> ignore
             map.SetIgnoreExtraElements true
-            BsonClassMap.RegisterClassMap(map);
+            overloadMap map
+            BsonClassMap.RegisterClassMap(map)
+
+    new(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
+        RepositoryBase(connectionString, collectionName, idField, fun x -> ())
 
     member this.IdFilter id = FilterDefinitionBuilder<'T>().Eq(idField, id);
     member this.Collection = database.GetCollection<'T>(collectionName);
 
 
-type CrudRepository<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
-    inherit RepositoryBase<'T>(connectionString, collectionName, idField)
+type CrudRepository<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>, overloadMap: BsonClassMap<'T> -> unit) =
+    inherit RepositoryBase<'T>(connectionString, collectionName, idField, overloadMap)
+
+    new(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>) =
+        CrudRepository<'T>(connectionString, collectionName, idField, fun map -> ())
 
     member this.Create(item: 'T): unit = this.Collection.InsertOne item
     member this.Delete(id: string): unit = this.Collection.DeleteOne(this.IdFilter id) |> ignore

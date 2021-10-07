@@ -46,9 +46,9 @@ type Company = {
     Company: Company
 }*)
 
-(*type FundAtDate = {
+type FundAtDate = {
     Date: DateTime
     CurrencyCode: string
     FundCompanyId: string
     Quantity: decimal
-}*)
+}

@@ -8,12 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Serializers\CompanyTypeSerializer.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="RepositoryBase.fs" />
     <Compile Include="UserRepository.fs" />
     <Compile Include="SessionRepository.fs" />
     <Compile Include="CurrencyRepository.fs" />
-    <Compile Include="FundRepository.fs" />
+    <Compile Include="CompanyRepository.fs" />
   </ItemGroup>
 
   <ItemGroup>
