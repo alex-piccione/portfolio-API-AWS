@@ -40,7 +40,7 @@ type Company = {
     Types: CompanyType list
 }
 
-// it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Hsndler" and "Admin".
+// it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Handler" and "Admin".
 // Custodian, Holder, Producer, Organizer, Governor, Provider, Custodian. Keeper
 (*type FundKeeper = {
     Company: Company

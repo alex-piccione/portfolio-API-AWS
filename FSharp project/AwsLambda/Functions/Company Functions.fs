@@ -29,12 +29,12 @@ type CompanyFunctions (repository:ICompanyRepository) =
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
         try
-            let currency = base.Deserialize request.Body
-            repository.Create(currency)
+            let item = base.Deserialize request.Body
+            repository.Create(item)
             this.createOkWithStatus 201
         with exc ->
-            context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
-            this.createError $"Failed to create Currency. Error: {exc.Message}"
+            context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
+            this.createError $"Failed to create Company. Error: {exc.Message}"
 
 
     member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
