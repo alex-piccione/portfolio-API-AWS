@@ -37,16 +37,16 @@ type ``User Repository`` () =
 
         storedUser |> should equal (Some user)
 
+    // Create a replica of this test for RepositoryBase
     [<Test>]
     member this.``Create <when> email already exists <should> return Error`` () =
 
         let user:User = { Email = TEST_EMAIL; Username = "username";  Password = "password"; CreatedOn = DateTime.UtcNow.Date;
-                      IsEmailValidated = true; PasswordHint = "password hint"; IsBlocked = false; 
-                    }
+                          IsEmailValidated = true; PasswordHint = "password hint"; IsBlocked = false; 
+                        }
         repository.Create(user)
 
-        (fun _ -> repository.Create({user with Email = "tEst@TEST.com"}) |> ignore)
-        |> should throw typeof<Exception>
+        (fun () -> repository.Create(user)) |> should throw typeof<MongoDB.Driver.MongoWriteException>
 
     [<Test>]
     member this.Delete () =

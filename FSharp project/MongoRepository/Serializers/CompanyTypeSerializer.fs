@@ -10,7 +10,6 @@ type CompanyTypeSerializer () =
         member this.Deserialize(context: BsonDeserializationContext, args: BsonDeserializationArgs): obj = 
 
             let mutable types = List.empty<CompanyType>
-            
 
             context.Reader.ReadStartArray()
             while context.Reader.ReadBsonType() <> MongoDB.Bson.BsonType.EndOfDocument do

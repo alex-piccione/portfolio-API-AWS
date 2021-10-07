@@ -17,7 +17,7 @@ type equalCompany(expected:Company) =
             co.IsSome |> should be True
             co.Value.Id |> should equal expected.Id
             co.Value.Name |> should equal expected.Name
-            set co.Value.Types |> should equal (set expected.Types)
+            co.Value.Types |> should equivalent expected.Types
             ConstraintResult(this, actual, true)
         | _ ->
             ConstraintResult(this, actual, false)
@@ -54,7 +54,6 @@ type ``Company Repository`` () =
         repository.Create(item)
         let storedItem = repository.Single(TEST_ID)
         storedItem |> should equalCompany item
-        //storedItem |> should (equalWithin (Some item))
 
     [<Test>]
     member this.``Update`` () =
@@ -68,8 +67,6 @@ type ``Company Repository`` () =
 
         let unpdatedItem = repository.Single(TEST_ID)
         unpdatedItem |> should equalCompany itemToUpdate
-
-
 
     [<Test>]
     member this.``Delete`` () =
