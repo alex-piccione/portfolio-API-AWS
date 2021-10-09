@@ -1,5 +1,6 @@
 ﻿namespace Portfolio.Api.Functions
 
+open System
 open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
@@ -28,9 +29,16 @@ type CompanyFunctions (repository:ICompanyRepository) =
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
+
+        // TODO: validate request
+        // fields not null
+        // no duplicated Name
+
         try
-            let item = base.Deserialize request.Body
+            let item = {base.Deserialize request.Body with Id=Guid.NewGuid().ToString()}
+            
             repository.Create(item)
+            context.Logger.Log $"Company created. New Id:{item.Id}, Name:{item.Name}"
             this.createOkWithStatus 201
         with exc ->
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
