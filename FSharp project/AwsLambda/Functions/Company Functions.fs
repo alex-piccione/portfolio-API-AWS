@@ -56,8 +56,15 @@ type CompanyFunctions (repository:ICompanyRepository) =
         let item = repository.Single (itemUpdate.Id)
 
         match item.IsNone with
-        | true -> failwith $"Company not found"
-        | false -> repository.Update itemUpdate
+        | true -> base.createNotFound()
+        | false -> 
+            try 
+                repository.Update itemUpdate
+                base.createOk()
+            with exc ->
+                context.Logger.Log $"Failed to update Company. {exc}"
+                this.createError $"Failed to update Company. {exc.Message}"
+
 
     member this.Delete (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Delete Company"
