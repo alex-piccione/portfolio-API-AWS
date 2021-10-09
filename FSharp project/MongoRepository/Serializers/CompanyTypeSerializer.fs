@@ -13,12 +13,7 @@ type CompanyTypeSerializer () =
 
             context.Reader.ReadStartArray()
             while context.Reader.ReadBsonType() <> MongoDB.Bson.BsonType.EndOfDocument do
-                let value = match context.Reader.ReadString() with
-                            | nameof CompanyType.Bank -> CompanyType.Bank
-                            | nameof CompanyType.Exchange -> CompanyType.Exchange
-                            | nameof CompanyType.Stacking -> CompanyType.Stacking
-                            | _ -> failwith ""
-
+                let value = CompanyType.Parse (context.Reader.ReadString())
                 types <- value::types
 
             context.Reader.ReadEndArray()

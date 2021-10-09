@@ -1,4 +1,4 @@
-module UnitTests.Functions
+namespace UnitTests.Functions
 
 open System
 open Amazon.Lambda.APIGatewayEvents
@@ -11,20 +11,8 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Api.Functions
 
-
 open SessionManager
 
-
-type MyObject(repository:IUserRepository) =
-
-    member this.Single email = 
-        try
-            if repository.Single(email).IsSome then
-                true
-            else
-                false
-        with exc ->
-            failwith $"Something went wrong. {exc}"
 
 type ``User Functions`` () =
 
@@ -46,7 +34,7 @@ type ``User Functions`` () =
 
     [<Test>]
     member this.``Create <when> Email exists <should> return Error``() =
-                
+ 
         let email = "EmaiL@Test.COM"
         let searchedEmail = email.ToLowerInvariant()
         let user:User = { testUser with Email = email }

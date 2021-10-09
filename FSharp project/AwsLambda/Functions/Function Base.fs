@@ -5,6 +5,7 @@ open System.Text
 open System.Text.Json
 open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
+open Portfolio.Core.Entities
 
 type DataOrOption<'T> =
     | Option of Option<'T>
@@ -47,9 +48,10 @@ type FunctionBase () =
 
         if String.IsNullOrEmpty requestBody then failwith $"Request body is empty"
 
-        let jsonOption = JsonSerializerOptions()
-        jsonOption.PropertyNameCaseInsensitive <- true
+        let options = JsonSerializerOptions()
+        options.PropertyNameCaseInsensitive <- true
+        options.Converters.Add(CompanyTypeJsonConverter())
 
-        try JsonSerializer.Deserialize<'T>(requestBody, jsonOption)
+        try JsonSerializer.Deserialize<'T>(requestBody, options)
         with e -> failwith $"Failed to deserialize request body to {typeof<'T>}. {e}"
 

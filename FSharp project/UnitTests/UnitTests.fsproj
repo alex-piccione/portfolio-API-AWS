@@ -9,8 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Core\entities.tests.fs" />
     <Compile Include="Core\Logic\BalanceLogic.test.fs" />
     <Compile Include="Functions\User Functions.tests.fs" />
+    <Compile Include="Functions\Company Functions.tests.fs" />
   </ItemGroup>
 
   <ItemGroup>

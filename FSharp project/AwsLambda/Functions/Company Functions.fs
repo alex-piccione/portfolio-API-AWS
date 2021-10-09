@@ -9,7 +9,6 @@ open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 
 
-
 type CompanyFunctions (repository:ICompanyRepository) =
     inherit FunctionBase()
 
