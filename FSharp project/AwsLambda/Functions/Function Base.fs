@@ -37,6 +37,9 @@ type FunctionBase () =
     member this.createCreated<'T> data =
         this.createResponse<'T> 201 (Some data)
 
+    member this.createNotFound =
+        this.createResponse<string> 404
+
     member this.createError message =
         this.createResponse<string> 500 (Some message)
 

@@ -42,7 +42,11 @@ type CompanyFunctions (repository:ICompanyRepository) =
         if request.QueryStringParameters = null then this.createError("Missing querystring")
         else
             match request.QueryStringParameters.TryGetValue("id") with
-            | (true, id) -> base.createOkWithData (repository.Single id)
+            | (true, id) -> 
+                match repository.Single id with
+                | Some item -> base.createOkWithData item
+                | _ -> base.createNotFound()
+
             | _ -> failwith @"Missing querystring parameter ""id""."
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
