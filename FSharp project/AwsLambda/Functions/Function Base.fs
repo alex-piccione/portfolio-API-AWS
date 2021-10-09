@@ -50,7 +50,7 @@ type FunctionBase () =
 
         let options = JsonSerializerOptions()
         options.PropertyNameCaseInsensitive <- true
-        options.Converters.Add(CompanyTypeJsonConverter())
+        options.Converters.Add(CompanyTypesJsonConverter())
 
         try JsonSerializer.Deserialize<'T>(requestBody, options)
         with e -> failwith $"Failed to deserialize request body to {typeof<'T>}. {e}"

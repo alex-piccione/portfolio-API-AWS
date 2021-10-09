@@ -30,7 +30,7 @@ type Session = {
 
 type Currency = { Code:string; Name:string}
 
-[<JsonConverter(typeof<CompanyTypeJsonConverter>)>]
+
 type CompanyType =
     | Bank
     | Exchange
@@ -43,37 +43,13 @@ type CompanyType =
         | "Stacking" -> CompanyType.Stacking
         | _ -> failwith $"\"{value}\" is not a valid CompanyType."
 
-and CompanyTypeJsonConverter () =
-    inherit JsonConverter<CompanyType>()
-
-    override this.Read(reader, typeToConvert, options) = 
-        CompanyType.Parse (reader.GetString())
-
-    override this.Write (writer, value, options) = 
-        writer.WriteStringValue (value.ToString())
 
 type Company = {
     Id: string
     Name: string
-    [<JsonConverter(typeof<CompanyTypesJsonConverter>)>]
     Types: CompanyType list
 }
-and CompanyTypesJsonConverter () =
-    inherit JsonConverter<CompanyType list>()
 
-    override this.Read(reader, typeToConvert, options) =
-        let mutable values = List.Empty
-        while reader.Read() && reader.TokenType <> JsonTokenType.EndArray do
-            match reader.TokenType with 
-            | JsonTokenType.String ->
-                values <- CompanyType.Parse(reader.GetString())::values
-            | _ -> ()
-        values
-
-    override this.Write(writer, value, options) =
-        writer.WriteStartArray()
-        value |> List.iter (fun item -> writer.WriteStringValue (item.ToString())) 
-        writer.WriteEndArray()
 
 // it's very difficult to find a name for the Exchanges/Banks avoiding "Manager", "Controller", "Handler" and "Admin".
 // Custodian, Holder, Producer, Organizer, Governor, Provider, Custodian. Keeper
