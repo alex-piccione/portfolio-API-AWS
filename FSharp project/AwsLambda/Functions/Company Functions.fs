@@ -91,6 +91,6 @@ type CompanyFunctions (repository:ICompanyRepository) =
         context.Logger.Log "All"
 
         try
-            repository.All()
+            base.createOkWithData (repository.All())
         with exc ->
             failwith $"Failed to call All. {exc}"
