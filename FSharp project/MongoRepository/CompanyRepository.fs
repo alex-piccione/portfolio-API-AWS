@@ -14,6 +14,7 @@ type CompanyRepository (connectionString:string) =
         member this.Delete(id: string) = base.Delete id
         member this.Single(id: string) = base.Single id
         member this.Update(item: Company) = base.Update(item.Id, item)
+        member this.All() = base.All()
 
     static member overloadMap (map:BsonClassMap<Company>) = 
         map.MapProperty("Types").SetSerializer(CompanyTypeSerializer()) |> ignore

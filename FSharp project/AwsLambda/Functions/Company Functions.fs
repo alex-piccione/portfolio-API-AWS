@@ -87,3 +87,10 @@ type CompanyFunctions (repository:ICompanyRepository) =
             context.Logger.Log $"Failed to delete Company. {exc}"
             this.createError $"Failed to delete Company. {exc.Message}"
 
+    member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log "All"
+
+        try
+            repository.All()
+        with exc ->
+            failwith $"Failed to call All. {exc}"
