@@ -46,7 +46,6 @@ type CompanyFunctions (repository:ICompanyRepository) =
                 match repository.Single id with
                 | Some item -> base.createOkWithData item
                 | _ -> base.createNotFound()
-
             | _ -> failwith @"Missing querystring parameter ""id""."
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
