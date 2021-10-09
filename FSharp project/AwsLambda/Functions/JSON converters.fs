@@ -3,7 +3,7 @@
 open System.Text.Json
 open System.Text.Json.Serialization
 open Portfolio.Core.Entities
-
+(*
 type internal CompanyTypesJsonConverter () =
     inherit JsonConverter<CompanyType list>()
 
@@ -20,3 +20,4 @@ type internal CompanyTypesJsonConverter () =
         writer.WriteStartArray()
         value |> List.iter (fun item -> writer.WriteStringValue (item.ToString())) 
         writer.WriteEndArray()
+        *)
