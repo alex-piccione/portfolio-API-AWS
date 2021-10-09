@@ -176,3 +176,13 @@ functions:
         method: DELETE
         path: company/{id}
         cors: true
+
+  CompanyAll:
+    handler: ${self:provider.environment.companyFunctions}::All
+    package:
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: company/all
+        cors: true
