@@ -1,6 +1,7 @@
 namespace UnitTests.Functions
 
 open System
+open Microsoft.FSharp.Core
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open NUnit.Framework
@@ -12,45 +13,45 @@ open Portfolio.Core.Entities
 open Portfolio.Api.Functions
 
 
-
 type ``Company Functions`` () =
 
     let TEST_ID = "test-123"
 
     let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
 
-    let mutable repository = Mock<ICompanyRepository>().Create()
+    let getRepository() = Mock<ICompanyRepository>().Create()
 
-
-
-    member this.emulateApi<'T> (user:'T) =
+    member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock<ILambdaLogger>().Create()) 
                           .Create()
         let request = APIGatewayProxyRequest()
-        request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> user
+        request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> item
         (request, context)
 
-    
 
     [<SetUp>]
     member this.Setup () =
-        repository <- Mock<ICompanyRepository>().Create()
+        ()
 
-(* TODO
+        (*
     [<Test>]
     member this.``Update`` () =
 
-        
-
         let itemToUpdate:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
+
+        let s:unit = ()
+        let repository = Mock<ICompanyRepository>()
+                             .SetupFunc(fun rep -> rep.Update(itemToUpdate))
+                             .Returns(s)
+                             .Create()
+
         let functions = CompanyFunctions(repository)
 
         // execute
-        functions.Update itemToUpdate
-
-        let updatedItem = 
-*)
+        let response = functions.Update(this.emulateApi itemToUpdate) 
+        response.StatusCode |> should equal 200
+        *)
 
     [<Test>]
     member this.``Deserialize``() =
@@ -60,7 +61,7 @@ type ``Company Functions`` () =
          ""Types"": [""Bank""]
        }"
 
-       let functions = CompanyFunctions(repository)
+       let functions = CompanyFunctions(getRepository())
 
        let item:Company = functions.Deserialize json
        item.Name |> should equal "Test"
@@ -74,7 +75,7 @@ type ``Company Functions`` () =
          ""Types"": [""Bank"", ""Exchange""]
        }"
 
-       let functions = CompanyFunctions(repository)
+       let functions = CompanyFunctions(getRepository())
 
        let item:Company = functions.Deserialize json
        item.Name |> should equal "Test"
