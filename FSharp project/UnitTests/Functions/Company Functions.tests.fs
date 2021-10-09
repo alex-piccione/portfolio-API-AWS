@@ -15,11 +15,13 @@ open Portfolio.Api.Functions
 
 type ``Company Functions`` () =
 
-    let testUser:User = 
-        { Username="test"; Email="test@test.com"; Password="password"; PasswordHint="password hint"; 
-            CreatedOn=DateTime.UtcNow; IsEmailValidated=false; IsBlocked=false }
+    let TEST_ID = "test-123"
+
+    let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
 
     let mutable repository = Mock<ICompanyRepository>().Create()
+
+
 
     member this.emulateApi<'T> (user:'T) =
         let context = Mock<ILambdaContext>()
@@ -33,7 +35,22 @@ type ``Company Functions`` () =
 
     [<SetUp>]
     member this.Setup () =
-        ()
+        repository <- Mock<ICompanyRepository>().Create()
+
+(* TODO
+    [<Test>]
+    member this.``Update`` () =
+
+        
+
+        let itemToUpdate:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
+        let functions = CompanyFunctions(repository)
+
+        // execute
+        functions.Update itemToUpdate
+
+        let updatedItem = 
+*)
 
     [<Test>]
     member this.``Deserialize``() =
