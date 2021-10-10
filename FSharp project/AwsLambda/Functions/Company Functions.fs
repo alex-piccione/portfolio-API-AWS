@@ -8,9 +8,10 @@ open Portfolio.Api.Functions
 open Portfolio.Core
 open Portfolio.MongoRepository
 open Portfolio.Core.Entities
+open Portfolio.Core.Logic
 
 
-type CompanyFunctions (repository:ICompanyRepository) =
+type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository) =
     inherit FunctionBase()
 
     new () =
@@ -24,22 +25,16 @@ type CompanyFunctions (repository:ICompanyRepository) =
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        CompanyFunctions(CompanyRepository(connectionString))
+        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString)), CompanyRepository(connectionString))
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
 
-        // TODO: validate request
-        // fields not null
-        // no duplicated Name
-
         try
-            let item = {base.Deserialize request.Body with Id=Guid.NewGuid().ToString()}
-            
-            repository.Create(item)
-            context.Logger.Log $"Company created. New Id:{item.Id}, Name:{item.Name}"
-            this.createOkWithStatus 201
+            let newItem = companyLogic.Create (base.Deserialize request.Body)
+            context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}"
+            this.createCreated newItem
         with exc ->
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Company. Error: {exc.Message}"
