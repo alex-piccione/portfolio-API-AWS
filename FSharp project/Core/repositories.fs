@@ -27,6 +27,7 @@ type ICurrencyRepository =
 type ICompanyRepository =
     inherit CRUD<Company>
     inherit All<Company>
+    abstract member Exists: name:string -> bool
 
 type ISessionRepository =
     abstract member Find: token:string -> Session option

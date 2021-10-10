@@ -77,3 +77,13 @@ type ``Company Repository`` () =
         repository.Delete(item.Id)
 
         repository.Single(TEST_ID).IsNone |> should be True 
+
+    [<Test>]
+    member this.``Exists`` () =
+        let item:Company = { Id=TEST_ID; Name="Company Test"; Types= [CompanyType.Bank] }
+        repository.Create(item)
+
+        // execute
+        let result = repository.Exists("company test")
+
+        result |> should be True 
