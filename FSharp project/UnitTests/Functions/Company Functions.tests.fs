@@ -10,6 +10,7 @@ open Foq
 open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Entities
+open Portfolio.Core.Logic
 open Portfolio.Api.Functions
 
 
@@ -19,6 +20,7 @@ type ``Company Functions`` () =
 
     let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
 
+    let getLogic() = Mock<ICompanyLogic>().Create()
     let getRepository() = Mock<ICompanyRepository>().Create()
 
     member this.emulateApi<'T> (item:'T) =
@@ -61,8 +63,9 @@ type ``Company Functions`` () =
          ""Types"": [""Bank""]
        }"
 
-       let functions = CompanyFunctions(getRepository())
+       let functions = CompanyFunctions(getLogic(), getRepository())
 
+       // execute
        let item:Company = functions.Deserialize json
        item.Name |> should equal "Test"
        item.Types |> should equivalent [CompanyType.Bank]
@@ -75,8 +78,9 @@ type ``Company Functions`` () =
          ""Types"": [""Bank"", ""Exchange""]
        }"
 
-       let functions = CompanyFunctions(getRepository())
+       let functions = CompanyFunctions(getLogic(), getRepository())
 
+       // execute
        let item:Company = functions.Deserialize json
        item.Name |> should equal "Test"
        item.Types |> should equivalent [CompanyType.Bank; CompanyType.Exchange]
