@@ -1,15 +1,11 @@
 ﻿namespace Portfolio.MongoRepository
 
-open System.Linq.Expressions
-open System
 open System.Linq
 open Portfolio.Core
 open Portfolio.Core.Entities
+open MongoDB.Driver
 open MongoDB.Bson.Serialization
 open serializers
-open MongoDB.Driver
-open MongoDB.Bson
-
 
 
 type CompanyRepository (connectionString:string) =
