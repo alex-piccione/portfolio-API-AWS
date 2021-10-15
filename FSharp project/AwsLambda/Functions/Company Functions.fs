@@ -35,7 +35,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
             let result = companyLogic.Create (base.Deserialize request.Body)
             match result with 
             | Ok newItem -> 
-                context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}"
+                context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}."
                 this.createCreated newItem
             | NotValid error -> base.createErrorForConflict error
             | Error error -> base.createError error
