@@ -31,20 +31,22 @@ type ``CompanyLogic Test`` () =
 
 
     [<Test>]
-    member this.``Create <when> name is duplicated <should> raises specific error``() =
+    member this.``Create <when> name is duplicated <should> raise specific error``() =
 
-        let repository = Mock<ICompanyRepository>().Create()
+        let name = "test"
+        let repository = Mock<ICompanyRepository>()
+                             .SetupFunc(fun rep -> rep.Exists name).Returns(true)
+                             .Create()
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
-        let company:Company = {Id=""; Name="name"; Types=[CompanyType.Bank]}
+        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
 
         // execute
         let result:Result<Company> = logic.Create(company)
-        //result |> should equal (Result<Company>.Ok company)
+
         result |> should matchResult Result_NotValid
 
         match result with
         | NotValid message ->
-            message |> should contain "name"
-            message |> should contain "duplicated"
+            message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"

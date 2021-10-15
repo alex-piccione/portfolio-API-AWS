@@ -21,8 +21,11 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
     interface ICompanyLogic with
         member this.Create(company:Company):Result<Company> =
             let newCompany = normalize company |> validate |> assignNewId
-            companyRepository.Create(newCompany)
-            Result<_>.Ok(newCompany)
+
+            match companyRepository.Exists(newCompany.Name) with 
+            | true -> Result<_>.NotValid($"A company with name \"{newCompany.Name}\" already exists.")
+            | _ -> companyRepository.Create(newCompany)
+                   Result<_>.Ok(newCompany)
             
         member this.Update (company:Company) =
             let updateCompany = normalize company
