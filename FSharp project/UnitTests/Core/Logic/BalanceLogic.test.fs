@@ -1,4 +1,4 @@
-﻿module UnitTests.FunctionsCore.Logic
+﻿namespace UnitTests.Core.Logic
 
 open System
 open NUnit.Framework
