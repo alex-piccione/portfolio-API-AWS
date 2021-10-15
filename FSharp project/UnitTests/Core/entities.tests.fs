@@ -1,4 +1,4 @@
-﻿namespace Portfolio.UnitTests
+﻿namespace UnitTests.Core.Entities
 
 open System.Text.Json
 open NUnit.Framework

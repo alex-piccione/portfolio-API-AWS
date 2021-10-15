@@ -32,9 +32,13 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
         context.Logger.Log $"Create: {request.Body}"
 
         try
-            let newItem = companyLogic.Create (base.Deserialize request.Body)
-            context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}"
-            this.createCreated newItem
+            let result = companyLogic.Create (base.Deserialize request.Body)
+            match result with 
+            | Ok newItem -> 
+                context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}"
+                this.createCreated newItem
+            | NotValid error -> base.createErrorForConflict error
+            | Error error -> base.createError error
         with exc ->
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Company. Error: {exc.Message}"
