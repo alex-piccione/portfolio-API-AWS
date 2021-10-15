@@ -6,7 +6,7 @@ open Portfolio.Core.Entities
 
 type ICompanyLogic =
     abstract member Create:Company -> Result<Company>
-    abstract member Update:Company -> unit
+    abstract member Update:Company -> Result<Company>
 
 type CompanyLogic(companyRepository:ICompanyRepository) =
     
@@ -29,4 +29,8 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
             
         member this.Update (company:Company) =
             let updateCompany = normalize company
-            companyRepository.Update updateCompany
+
+            match companyRepository.Exists updateCompany.Name with
+            | true -> Result<_>.NotValid($"A company with name \"{updateCompany.Name}\" already exists.")
+            | _ -> companyRepository.Update updateCompany
+                   Result<_>.Ok(updateCompany)

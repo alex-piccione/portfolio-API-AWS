@@ -50,3 +50,24 @@ type ``CompanyLogic Test`` () =
         | NotValid message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
+
+    [<Test>]
+    member this.``Update <when> name is duplicated <should> raise specific error``() =
+
+        let name = "test"
+        let repository = Mock<ICompanyRepository>()
+                             .SetupFunc(fun rep -> rep.Exists name).Returns(true)
+                             .Create()
+        let logic = CompanyLogic(repository) :> ICompanyLogic
+
+        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
+
+        // execute
+        let result:Result<Company> = logic.Create(company)
+
+        result |> should matchResult Result_NotValid
+
+        match result with
+        | NotValid message ->
+            message |> should contain $"A company with name \"{name}\" already exists."
+        | _ -> failwith "expected non valid result"

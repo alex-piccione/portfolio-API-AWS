@@ -58,16 +58,21 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Company"
 
-        let itemUpdate:Company = base.Deserialize request.Body
+        let itemToUpdate:Company = base.Deserialize request.Body
 
-        let item = repository.Single (itemUpdate.Id)
+        let item = repository.Single (itemToUpdate.Id)
 
         match item.IsNone with
         | true -> base.createNotFound()
         | false -> 
             try 
-                repository.Update itemUpdate
-                base.createOk()
+                let result = companyLogic.Update itemToUpdate
+                match result with 
+                | Ok updatedItem -> 
+                    context.Logger.Log $"Company created. New Id:{updatedItem.Id}, Name:{updatedItem.Name}."
+                    this.createOk()
+                | NotValid error -> base.createErrorForConflict error
+                | Error error -> base.createError error
             with exc ->
                 context.Logger.Log $"Failed to update Company. {exc}"
                 this.createError $"Failed to update Company. {exc.Message}"
