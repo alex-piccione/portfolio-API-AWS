@@ -13,9 +13,6 @@ open NUnit.Framework.Constraints
 
 type matchingResult = Result_Ok | Result_Error | Result_NotValid
 
-//type Foq.Mock<'TAbstract> when 'TAbstract : not struct with
-//    member mock.VerifyAction(expression:Expression<Action<'TAbstract>>) =
-//        mock.Verify(expression)
 
 type matchResult(expected: matchingResult) =
     inherit Constraints.EqualConstraint(expected)
