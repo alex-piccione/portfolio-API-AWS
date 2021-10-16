@@ -2,6 +2,7 @@
 
 open System
 open NUnit.Framework
+open Foq
 open Foq.Linq
 open FsUnit
 open Portfolio.Core
@@ -11,6 +12,10 @@ open NUnit.Framework.Constraints
 
 
 type matchingResult = Result_Ok | Result_Error | Result_NotValid
+
+//type Foq.Mock<'TAbstract> when 'TAbstract : not struct with
+//    member mock.VerifyAction(expression:Expression<Action<'TAbstract>>) =
+//        mock.Verify(expression)
 
 type matchResult(expected: matchingResult) =
     inherit Constraints.EqualConstraint(expected)
@@ -29,6 +34,7 @@ type matchResult(expected: matchingResult) =
 
 type ``CompanyLogic Test`` () =
 
+    let newGuid () = Guid.NewGuid().ToString();
 
     [<Test>]
     member this.``Create <when> name is duplicated <should> raise specific error``() =
@@ -52,18 +58,42 @@ type ``CompanyLogic Test`` () =
         | _ -> failwith "expected non valid result"
 
     [<Test>]
+    member this.``Update``() =
+
+        let name = "test"
+        let company:Company = {Id=newGuid(); Name=name; Types=[CompanyType.Bank]}
+
+        let repository = Mock<ICompanyRepository>()
+                                 .SetupFunc(fun rep -> rep.GetByName name).Returns(None)
+                                 //.SetupFunc(fun rep -> rep.Update company).Returns(ignore)
+                                 .Create()
+
+        let logic = CompanyLogic(repository) :> ICompanyLogic
+
+        // execute
+        let result:Result<Company> = logic.Update(company)
+
+        match result with
+        | Ok c -> c.Id |> should equal company.Id
+        | _ -> failwith "expected OK"
+
+        verify <@ repository.Update company @> once
+
+
+    [<Test>]
     member this.``Update <when> name is duplicated <should> raise specific error``() =
 
         let name = "test"
+        let duplicatedName = name.ToUpper()
+        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
+        let existingCompany = {company with Id=Guid.NewGuid().ToString(); Name=duplicatedName}
         let repository = Mock<ICompanyRepository>()
-                             .SetupFunc(fun rep -> rep.Exists name).Returns(true)
+                             .SetupFunc(fun rep -> rep.GetByName name).Returns(Some existingCompany)
                              .Create()
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
-        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
-
         // execute
-        let result:Result<Company> = logic.Create(company)
+        let result:Result<Company> = logic.Update(company)
 
         result |> should matchResult Result_NotValid
 
