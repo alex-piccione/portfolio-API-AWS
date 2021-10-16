@@ -34,19 +34,17 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        // TODO: do not log the request within sensitive data
-        context.Logger.Log $"Create: {request.Body}"
+        context.Logger.Log $"Create user start"
 
         try
             let user:User = base.Deserialize request.Body
             let normalizedUser = user.Normalize()
-            // TODO: validate
 
             if repository.Single(normalizedUser.Email).IsSome then 
                 this.createErrorForConflict "An user with this same email already exists."
             else
                 repository.Create(normalizedUser)
-                context.Logger.Log($"User {normalizedUser.Email} created")
+                context.Logger.Log($"User \"{normalizedUser.Email}\" created")
                 this.createCreated (normalizedUser.ObfuscatePassword())
         with exc ->
             context.Logger.Log $"Failed to create User. {exc}"
