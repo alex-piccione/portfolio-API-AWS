@@ -34,7 +34,25 @@ type ``CompanyLogic Test`` () =
     let newGuid () = Guid.NewGuid().ToString();
 
     [<Test>]
-    member this.``Create <when> name is duplicated <should> raise specific error``() =
+    member this.``Create <when> name is Empty <should> raise specific error``() =
+
+        let name = " "
+        let repository = Mock.Of<ICompanyRepository>()
+        let logic = CompanyLogic(repository) :> ICompanyLogic
+
+        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
+
+        // execute
+        let result:Result<Company> = logic.Create(company)
+
+        result |> should matchResult Result_NotValid
+
+        match result with
+        | NotValid message -> message |> should contain $"Name cannot be empty."
+        | _ -> failwith "expected non valid result"
+
+    [<Test>]
+    member this.``Create <when> name Already Exists <should> raise specific error``() =
 
         let name = "test"
         let repository = Mock<ICompanyRepository>()
@@ -76,9 +94,27 @@ type ``CompanyLogic Test`` () =
 
         verify <@ repository.Update company @> once
 
+    [<Test>]
+    member this.``Update <when> name is Empty <should> raise specific error``() =
+
+        let name = " "
+        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
+        let repository = Mock.Of<ICompanyRepository>()
+
+        let logic = CompanyLogic(repository) :> ICompanyLogic
+
+        // execute
+        let result:Result<Company> = logic.Update(company)
+
+        result |> should matchResult Result_NotValid
+
+        match result with
+        | NotValid message ->
+            message |> should contain $"Name cannot be empty."
+        | _ -> failwith "expected non valid result"
 
     [<Test>]
-    member this.``Update <when> name is duplicated <should> raise specific error``() =
+    member this.``Update <when> name Already Exists <should> raise specific error``() =
 
         let name = "test"
         let duplicatedName = name.ToUpper()
@@ -98,3 +134,4 @@ type ``CompanyLogic Test`` () =
         | NotValid message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
+
