@@ -87,3 +87,13 @@ type ``Company Repository`` () =
         let result = repository.Exists("company test")
 
         result |> should be True 
+
+    [<Test>]
+    member this.``GetByName`` () =
+        let item:Company = { Id=TEST_ID; Name="Company Test"; Types= [CompanyType.Bank] }
+        repository.Create(item)
+
+        // execute
+        let result = repository.GetByName("company test")
+
+        result |> should equal (Some item)

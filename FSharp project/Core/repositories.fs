@@ -28,6 +28,7 @@ type ICompanyRepository =
     inherit CRUD<Company>
     inherit All<Company>
     abstract member Exists: name:string -> bool
+    abstract member GetByName: name:string -> Company option
 
 type ISessionRepository =
     abstract member Find: token:string -> Session option

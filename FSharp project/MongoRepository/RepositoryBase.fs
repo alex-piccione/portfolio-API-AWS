@@ -44,7 +44,7 @@ type CrudRepository<'T>(connectionString:string, collectionName:string, idField:
         match f.CountDocuments() with
         | 1L -> Some(f.Single())
         | 0L -> None
-        | _ -> None
+        | _ -> failwith "More than one record found"
         //match this.Collection.Find(this.IdFilter id).SingleOrDefault() with
         //| d when (idField d) = ""
         //| _ -> None
