@@ -30,7 +30,7 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
         member this.Update (company:Company) =
             let updateCompany = normalize company
 
-            match companyRepository.Exists updateCompany.Name with
-            | true -> Result<_>.NotValid($"A company with name \"{updateCompany.Name}\" already exists.")
+            match companyRepository.GetByName updateCompany.Name with
+            | Some _ -> Result<_>.NotValid($"A company with name \"{updateCompany.Name}\" already exists.")
             | _ -> companyRepository.Update updateCompany
                    Result<_>.Ok(updateCompany)
