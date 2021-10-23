@@ -18,7 +18,7 @@ type ``Company Functions`` () =
 
     let TEST_ID = "test-123"
 
-    let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
+    //let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
 
     let getLogic() = Mock<ICompanyLogic>().Create()
     let getRepository() = Mock<ICompanyRepository>().Create()

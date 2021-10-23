@@ -21,7 +21,7 @@ type ``Balance Functions`` () =
 
     let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
 
-    let getLogic() = Mock<IBalanceLogic>().Create()
+    //let getLogic() = Mock<IBalanceLogic>().Create()
     //let getRepository() = Mock<ICompanyRepository>().Create()
 
     member this.emulateApi<'T> (item:'T) =
@@ -39,22 +39,16 @@ type ``Balance Functions`` () =
 
     [<Test>]
     member this.``Get current Balance``() =
-
-        let json = @"{
-          ""Name"": ""Test"",
-          ""Types"": [""Bank""]
-        }"
-
-        let functions = BalanceFunctions(getLogic())
+        let date = DateTime(2020, 01, 31)
+        let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>}
+        let balanceLogic = Mock<IBalanceLogic>()
+                               .SetupFunc(fun l -> l.GetBalance(It.IsAny<DateTime>())).Returns(balance)
+                               .Create()
+        let functions = BalanceFunctions(balanceLogic)
 
         let querystring = Dictionary<string, string>() :> IDictionary<string, string>
         querystring.["base-currency"] <- "EUR"
-        let request =
-            Mock<APIGatewayProxyRequest>()
-                        .SetupPropertyGet(fun r -> r.QueryStringParameters).Returns(querystring)
-                        .Create()
-
-        request.Body <- ""
+        let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- querystring
 
         let context = Mock<ILambdaContext>()
@@ -63,6 +57,29 @@ type ``Balance Functions`` () =
 
         // execute
         let response = functions.Get(request, context)
-        ()
-        //item.Name |> should equal "Test"
-        //item.Types |> should equivalent [CompanyType.Bank]
+
+        response.StatusCode |> should equal 200
+        response.Body |> should not' (be Empty)
+
+        let returnedBalance = System.Text.Json.JsonSerializer.Deserialize(response.Body)
+        returnedBalance |> should not' (be Null)
+        verify <@ balanceLogic.GetBalance(date) @> once
+
+    [<Test>]
+    member this.``Get current Balance [when] querystring parameter is missing [should] return error``() =
+        let balance:Balance = {Date=DateTime.UtcNow; FundsByCurrency=List.empty<FundForCurrency>}
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let querystring = Dictionary<string, string>() :> IDictionary<string, string>
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- querystring
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.Get(request, context)
+        response.StatusCode |> should equal 409
