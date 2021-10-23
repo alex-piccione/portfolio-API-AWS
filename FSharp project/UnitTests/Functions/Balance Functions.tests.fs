@@ -38,7 +38,7 @@ type ``Balance Functions`` () =
         ()
 
     [<Test>]
-    member this.``Get current Balance``() =
+    member this.``Get <should> return Balance at Today date``() =
         let date = DateTime(2020, 01, 31)
         let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>}
         let balanceLogic = Mock<IBalanceLogic>()
@@ -63,10 +63,11 @@ type ``Balance Functions`` () =
 
         let returnedBalance = System.Text.Json.JsonSerializer.Deserialize(response.Body)
         returnedBalance |> should not' (be Null)
-        verify <@ balanceLogic.GetBalance(date) @> once
+        let today = DateTime.UtcNow.Date
+        verify <@ balanceLogic.GetBalance(today) @> once
 
     [<Test>]
-    member this.``Get current Balance [when] querystring parameter is missing [should] return error``() =
+    member this.``Get [when] querystring parameter is missing [should] return error``() =
         let balance:Balance = {Date=DateTime.UtcNow; FundsByCurrency=List.empty<FundForCurrency>}
         let balanceLogic = Mock<IBalanceLogic>().Create()
         let functions = BalanceFunctions(balanceLogic)
