@@ -19,19 +19,21 @@ type BalanceLogicTest() =
 
     // TODO: implement in the right branch
     //[<Test>]
-    member this.``GetBalance``() =
+    member this.``GetBalance with a simple case``() =
 
         let date = DateTime(2010, 08, 15)
 
         let currencies:Currency list = [{Code="AAA"; Name="Aaa"}; {Code="BBB"; Name="Bbb"}]
         let currencyRepository = Mock<ICurrencyRepository>().Setup(fun rep -> rep.All()).Returns(currencies).Create()
         let fundRepository = Mock<IFundRepository>().Create()
-        let logic = BalanceLogic(fundRepository, currencyRepository) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository(*, currencyRepository*)) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
 
         balance.Date |> should equal date
+
+        balance.FundsByCurrency |> should not' (be Empty)
 
         ()
 

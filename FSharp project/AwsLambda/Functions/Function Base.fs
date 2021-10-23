@@ -46,6 +46,9 @@ type FunctionBase () =
     member this.createErrorForConflict message =
         this.createResponse<string> 409 (Some message)
 
+    member this.createErrorForMissingQuerystring missingParameter =
+        this.createErrorForConflict $"\"{missingParameter}\" parameter is missing in the querystring."
+
 
     member this.Deserialize<'T>(requestBody:string) =
 
@@ -58,3 +61,7 @@ type FunctionBase () =
         try JsonSerializer.Deserialize<'T>(requestBody, options)
         with e -> failwith $"Failed to deserialize request body to {typeof<'T>}. {e}"
 
+    member this.GetValueFromQuerystring (request:APIGatewayProxyRequest) (property:string)  =
+        match request.QueryStringParameters.TryGetValue property with
+        | true, value -> Some(value)
+        | _ -> None

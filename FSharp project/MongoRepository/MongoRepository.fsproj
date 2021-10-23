@@ -15,6 +15,7 @@
     <Compile Include="SessionRepository.fs" />
     <Compile Include="CurrencyRepository.fs" />
     <Compile Include="CompanyRepository.fs" />
+    <Compile Include="FundRepository.fs" />
   </ItemGroup>
 
   <ItemGroup>

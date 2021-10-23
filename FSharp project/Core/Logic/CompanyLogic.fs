@@ -12,7 +12,7 @@ type CompanyValidation = Valid of Company | NotValid of string
 
 type CompanyLogic(companyRepository:ICompanyRepository) =
     
-    let assignNewId company = {company with Id=Guid.NewGuid().ToString()}
+    let assignNewId company:Company = {company with Id=Guid.NewGuid().ToString()}
 
     let normalize company:Company = {company with Name=company.Name.Trim()}
 

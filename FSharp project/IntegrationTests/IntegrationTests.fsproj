@@ -14,6 +14,7 @@
     <Compile Include="UserRepository.tests.fs" />
     <Compile Include="CurrencyRepository.tests.fs" />
     <Compile Include="CompanyRepository.tests.fs" />
+    <Compile Include="FundRepository.tests.fs" />
   </ItemGroup>
 
   <ItemGroup>
