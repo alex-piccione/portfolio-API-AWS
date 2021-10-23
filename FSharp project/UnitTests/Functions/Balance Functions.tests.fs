@@ -1,9 +1,10 @@
 namespace UnitTests.Functions
 
 open System
+open System.Collections.Generic
 open Microsoft.FSharp.Core
-open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
+open Amazon.Lambda.APIGatewayEvents
 open NUnit.Framework
 open FsUnit
 open Foq
@@ -12,7 +13,6 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 open Portfolio.Api.Functions
-open System.Collections.Generic
 
 
 type ``Balance Functions`` () =
@@ -40,22 +40,29 @@ type ``Balance Functions`` () =
     [<Test>]
     member this.``Get current Balance``() =
 
-       let json = @"{
-         ""Name"": ""Test"",
-         ""Types"": [""Bank""]
-       }"
+        let json = @"{
+          ""Name"": ""Test"",
+          ""Types"": [""Bank""]
+        }"
 
-       let functions = BalanceFunctions(getLogic())
+        let functions = BalanceFunctions(getLogic())
 
-       let querystring = Dictionary<string, string>() 
-       querystring.["base-currency"] <- "EUR"
-       let request:APIGatewayProxyRequest = Mock<APIGatewayProxyRequest>()
-                                                .SetupPropertyGet(fun r -> r.QueryStringParameters).Returns(querystring)
-                                                .Create()
-       let context = Mock.Of<ILambdaContext>()
+        let querystring = Dictionary<string, string>() :> IDictionary<string, string>
+        querystring.["base-currency"] <- "EUR"
+        let request =
+            Mock<APIGatewayProxyRequest>()
+                        .SetupPropertyGet(fun r -> r.QueryStringParameters).Returns(querystring)
+                        .Create()
 
-       // execute
-       let response = functions.Get(request, context)
-       ()
-       //item.Name |> should equal "Test"
-       //item.Types |> should equivalent [CompanyType.Bank]
+        request.Body <- ""
+        request.QueryStringParameters <- querystring
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.Get(request, context)
+        ()
+        //item.Name |> should equal "Test"
+        //item.Types |> should equivalent [CompanyType.Bank]
