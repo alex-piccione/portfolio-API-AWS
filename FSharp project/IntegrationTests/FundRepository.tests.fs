@@ -12,13 +12,12 @@ open Portfolio.Core.Entities
 
 type ``Fund Repository`` () =
 
-    let repository = FundRepository(configuration.connectionString) :> IFundRepository
+    let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
 
-    //let delete id = repository.Delete id#
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
-    let collection = client.GetDatabase("Portfolio").GetCollection("Fund")
+    let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
 
     let newGuid() = Guid.NewGuid().ToString()
 
@@ -37,10 +36,6 @@ type ``Fund Repository`` () =
     [<SetUp>]
     member this.Setup () =
         removeAllRecords()
- 
-    [<TearDown>]
-    member this.TearDown () =
-        ()
  
     [<Test>]
     member this.``GetFundsToDate <should> return a fund saved in previous date`` () =

@@ -5,8 +5,10 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open MongoDB.Driver
 
-type FundRepository (connectionString:string) =
-    inherit CrudRepository<FundAtDate>(connectionString, "Fund", (fun x -> x.Id))
+type FundRepository (connectionString:string, collectionName:string) =
+    inherit CrudRepository<FundAtDate>(connectionString, collectionName, (fun x -> x.Id))
+
+    new(connectionString:string) = FundRepository(connectionString, "Fund")
 
     (*interface IFundRepository with
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
