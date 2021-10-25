@@ -186,3 +186,17 @@ functions:
         method: GET
         path: company/all
         cors: true
+
+  # Balance
+  BalanceGet:
+    handler: ${self:provider.environment.balanceFunctions}::Get
+    package: 
+      <<: *package
+    events:
+    - http:
+        method: GET
+        path: balance
+        cors: true
+        request:
+          template:
+            application/json: '{"base-currency": "$input.params(''base-currency'')"}'

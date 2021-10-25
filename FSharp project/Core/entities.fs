@@ -78,8 +78,21 @@ type Company = {
 }*)
 
 type FundAtDate = {
+    Id: string
     Date: DateTime
     CurrencyCode: string
     FundCompanyId: string
     Quantity: decimal
+}
+
+type FundForCurrency = {
+    CurrencyCode: string
+    Quantity: decimal
+    CompaniesIds: string list
+}
+
+type Balance = {
+    Date: DateTime
+    //BaseCurrencyCode: string
+    FundsByCurrency: FundForCurrency list
 }
