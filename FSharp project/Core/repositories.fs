@@ -38,5 +38,6 @@ type ISessionRepository =
 
 type IFundRepository = 
     //inherit CRUD<Fund>
-    abstract member Save: fund:FundAtDate -> unit
-    abstract member GetFundsAtDate: date:DateTime -> FundAtDate list
+    //abstract member Save: fund:FundAtDate -> unit
+    //abstract member GetFundsAtDate: date:DateTime -> FundAtDate list
+    abstract member GetFundsToDate: date:DateTime -> FundAtDate list
