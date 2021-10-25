@@ -9,20 +9,12 @@ open NUnit.Framework
 open FsUnit
 open Foq
 open Foq.Linq
-open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 open Portfolio.Api.Functions
 
 
 type ``Balance Functions`` () =
-
-    let TEST_ID = "test-123"
-
-    let testCompany:Company = { Id=TEST_ID; Name="Company A"; Types=[CompanyType.Bank] }
-
-    //let getLogic() = Mock<IBalanceLogic>().Create()
-    //let getRepository() = Mock<ICompanyRepository>().Create()
 
     member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
@@ -68,7 +60,6 @@ type ``Balance Functions`` () =
 
     [<Test>]
     member this.``Get [when] querystring parameter is missing [should] return error``() =
-        let balance:Balance = {Date=DateTime.UtcNow; FundsByCurrency=List.empty<FundForCurrency>}
         let balanceLogic = Mock<IBalanceLogic>().Create()
         let functions = BalanceFunctions(balanceLogic)
 
