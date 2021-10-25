@@ -21,6 +21,7 @@ provider:
     userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
     currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
     companyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CompanyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
+    balanceFunctions: "Portfolio.Api::Portfolio.Api.Functions.BalanceFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
 
 package:
   individually: true
