@@ -28,12 +28,10 @@ type BalanceLogicTest() =
 
         let expectedFundForCurrency:FundForCurrency = {CurrencyCode="AAA"; Quantity=3m; CompaniesIds=["Company A"; "Company B"]}
 
-        //let currencies:Currency list = [{Code="AAA"; Name="Aaa"}; {Code="BBB"; Name="Bbb"}]
-        //let currencyRepository = Mock<ICurrencyRepository>().Setup(fun rep -> rep.All()).Returns(currencies).Create()
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository(*, currencyRepository*)) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -58,12 +56,10 @@ type BalanceLogicTest() =
         let expectedFundForCurrency_AAA:FundForCurrency = { CurrencyCode="AAA"; Quantity=3m; CompaniesIds=["Company A"; "Company B"]}
         let expectedFundForCurrency_BBB:FundForCurrency = { CurrencyCode="BBB"; Quantity=4m; CompaniesIds=["Company A"]}
 
-        //let currencies:Currency list = [{Code="AAA"; Name="Aaa"}; {Code="BBB"; Name="Bbb"}]
-        //let currencyRepository = Mock<ICurrencyRepository>().Setup(fun rep -> rep.All()).Returns(currencies).Create()
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository(*, currencyRepository*)) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
