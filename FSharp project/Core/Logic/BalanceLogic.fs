@@ -27,7 +27,7 @@ type BalanceLogic(fundRepository:IFundRepository(*, currencyRepository:ICurrency
                     //if not found then failwith $"Currency \"{currencyCode}\" does not exists."
 
                     let totalQuantity = funds.Sum(fun fund -> fund.Quantity)
-                    let companies = funds |> List.map (fun fund -> fund.FundCompanyId)
+                    let companies = funds |> List.filter (fun fund -> fund.Quantity > 0m) |> List.map (fun fund -> fund.FundCompanyId)
 
                     {
                         CurrencyCode = currencyCode
@@ -43,6 +43,7 @@ type BalanceLogic(fundRepository:IFundRepository(*, currencyRepository:ICurrency
                         FundCompanies=companies
                     }:FundAggregate*)
                 )
+                |> List.filter (fun f -> f.Quantity > 0m)
 
             let balance:Balance = {Date=day; FundsByCurrency = aggregates }
             balance
