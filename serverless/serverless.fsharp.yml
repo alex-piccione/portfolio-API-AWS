@@ -133,6 +133,7 @@ functions:
         method: GET
         path: currency/all
         cors: true
+        authorizer: aws_iam
 
   # Company
   CompanyCreate:
