@@ -187,7 +187,7 @@ functions:
         method: GET
         path: company/all
         cors: true
-        private: true
+        authorizer: aws_iam
 
   # Balance
   BalanceGet:
