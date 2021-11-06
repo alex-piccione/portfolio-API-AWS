@@ -47,7 +47,7 @@ let ``All without AWS signature`` () =
 let ``Create & Delete`` () =
     
     let create () =
-        let data:Company = {Id=""; Name="TEST"; Types=[CompanyType.Bank]}
+        let data:Company = {Id=""; Name="TEST-3"; Types=[CompanyType.Bank]}
         let response = 
             $"https://{secrets.url}/company"
                 .AllowAnyHttpStatus()
@@ -62,13 +62,15 @@ let ``Create & Delete`` () =
         else
             content |> should not' (be NullOrEmptyString)
             let data = JsonSerializer.Deserialize<Company>(content)
+            data.Id |> should not' (be NullOrEmptyString)
             data.Id
 
     let delete id =
         let response = 
             $"https://{secrets.url}/company/{id}"
-                .WithHeader("Host", secrets.host)
                 .AllowAnyHttpStatus()
+                //.WithHeader("Host", secrets.host)
+                .Sign("DELETE", None, "execute-api", "eu-central-1")
                 .DeleteAsync().Result
 
         let content = response.GetStringAsync().Result
@@ -78,7 +80,6 @@ let ``Create & Delete`` () =
             Assert.Fail($"Delete failed. {content}")
         else
             content |> should not' (be NullOrEmptyString)
-
 
 
     let id = create()

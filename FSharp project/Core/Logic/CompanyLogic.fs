@@ -24,11 +24,13 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
         member this.Create(company:Company):Result<Company> =
             match normalize company |> validate with
             | NotValid msg -> Result<_>.NotValid msg
-            | Valid newCompany ->
-                match companyRepository.Exists(newCompany.Name) with 
-                | true -> Result<_>.NotValid($"A company with name \"{newCompany.Name}\" already exists.")
-                | _ -> companyRepository.Create(assignNewId newCompany)
-                       Result<_>.Ok(newCompany)
+            | Valid validCompany ->
+                match companyRepository.Exists(validCompany.Name) with 
+                | true -> Result<_>.NotValid($"A company with name \"{validCompany.Name}\" already exists.")
+                | _ -> 
+                    let newCompany = assignNewId validCompany
+                    companyRepository.Create(newCompany)
+                    Result<_>.Ok(newCompany)
             
         member this.Update (company:Company) =
 

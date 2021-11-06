@@ -34,6 +34,26 @@ type ``CompanyLogic Test`` () =
     let newGuid () = Guid.NewGuid().ToString();
 
     [<Test>]
+    member this.``Create``() =
+
+        let repository = Mock.Of<ICompanyRepository>()
+        let logic = CompanyLogic(repository) :> ICompanyLogic
+
+        let company:Company = {Id=""; Name="a name"; Types=[CompanyType.Bank]}
+
+        // execute
+        let result:Result<Company> = logic.Create(company)
+
+        result |> should matchResult Result_Ok
+
+        match result with
+        | Ok comp -> 
+            comp.Id |> should not' (be NullOrEmptyString)
+            comp.Name |> should equal company.Name
+            comp.Types |> should equivalent company.Types
+        | _ -> failwith "expected OK result"
+
+    [<Test>]
     member this.``Create <when> name is Empty <should> raise specific error``() =
 
         let name = " "

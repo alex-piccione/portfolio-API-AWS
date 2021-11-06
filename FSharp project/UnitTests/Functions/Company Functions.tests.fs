@@ -16,6 +16,7 @@ open Portfolio.Api.Functions
 
 type ``Company Functions`` () =
 
+    let testCompany:Company = { Id="test"; Name="UnitTest"; Types=[CompanyType.Bank]}
     let getLogic() = Mock<ICompanyLogic>().Create()
     let getRepository() = Mock<ICompanyRepository>().Create()
 
@@ -50,6 +51,28 @@ type ``Company Functions`` () =
         let response = functions.Update(this.emulateApi itemToUpdate) 
         response.StatusCode |> should equal 200
         *)
+
+ 
+    (*[<Test>]
+    member this.``Create`` () =
+
+        let itemToUpdate:Company = {testCompany with Id="aaa"}
+
+        let s:unit = ()
+        let repository = Mock<ICompanyRepository>()
+                             .SetupFunc(fun rep -> rep.Create(itemToUpdate))
+                             .Returns(s)
+                             .Create()
+
+
+
+        let functions = CompanyFunctions(getLogic(), repository)
+
+        // execute
+        let response = functions.Create(this.emulateApi() itemToUpdate) 
+        response.StatusCode |> should equal 200
+        *)
+
 
     [<Test>]
     member this.``Deserialize``() =
