@@ -1,25 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>Portfolio.UnitTests</AssemblyName>
-    <RootNamespace>UnitTests</RootNamespace>
+
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Core\entities.tests.fs" />
-    <Compile Include="Core\Logic\CompanyLogic.tests.fs" />
-    <Compile Include="Core\Logic\BalanceLogic.test.fs" />
-    <Compile Include="Functions\User Functions.tests.fs" />
-    <Compile Include="Functions\Company Functions.tests.fs" />
-    <Compile Include="Functions\Balance Functions.tests.fs" />
+    <Compile Include="secrets.fs" />
+    <Compile Include="AWSRequestSigner.fs" />
+    <Compile Include="AwsRequestSigner.Flurl.fs" />
+    <Compile Include="Company.test.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Foq" Version="1.8.0" />
+    <PackageReference Include="Flurl.Http" Version="3.2.0" />
     <PackageReference Include="FsUnit" Version="4.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
@@ -27,11 +25,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AwsLambda\AWS Lambda.fsproj" />
-    <ProjectReference Include="..\Core\Core.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
