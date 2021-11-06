@@ -24,6 +24,14 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
         CurrencyFunctions(CurrencyRepository(connectionString))
 
+    member private this.single id =
+        try 
+            match repository.Single id with
+            | Some item -> this.createOkWithData item
+            | _ -> base.createNotFound()
+        with exc ->
+            failwith $"Failed to get Single. {exc}"
+
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -52,5 +60,5 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
         if request.QueryStringParameters = null then this.createError("Missing querystring")
         else
             match request.QueryStringParameters.TryGetValue("code") with
-            | (true, id) -> base.createOkWithData (repository.Single id)
+            | (true, id) -> this.single id
             | _ -> failwith @"Missing querystring parameter ""code""."

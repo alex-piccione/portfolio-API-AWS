@@ -29,7 +29,6 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
 
 
 
-
     member private this.single id =
         try 
             match repository.Single id with
