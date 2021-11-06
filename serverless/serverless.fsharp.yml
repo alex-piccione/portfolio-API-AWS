@@ -187,6 +187,7 @@ functions:
         method: GET
         path: company/all
         cors: true
+        private: true
 
   # Balance
   BalanceGet:
