@@ -144,6 +144,7 @@ functions:
         method: POST
         path: company
         cors: true
+        #authorizer: aws_iam
 
   CompanyRead:
     handler: ${self:provider.environment.companyFunctions}::Read
@@ -154,6 +155,7 @@ functions:
         method: GET
         path: company
         cors: true
+        #authorizer: aws_iam
 
   CompanyUpdate:
     handler: ${self:provider.environment.companyFunctions}::Update
@@ -164,6 +166,7 @@ functions:
         method: PUT
         path: company
         cors: true
+        #authorizer: aws_iam
 
   CompanyDelete:
     handler: ${self:provider.environment.companyFunctions}::Delete
@@ -174,17 +177,7 @@ functions:
         method: DELETE
         path: company/{id}
         cors: true
-
-  CompanyAll:
-    handler: ${self:provider.environment.companyFunctions}::All
-    package:
-      <<: *package
-    events:
-    - http:
-        method: GET
-        path: company/all
-        cors: true
-        authorizer: aws_iam
+        #authorizer: aws_iam
 
   # Balance
   BalanceGet:
