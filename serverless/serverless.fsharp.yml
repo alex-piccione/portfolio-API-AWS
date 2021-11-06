@@ -145,8 +145,8 @@ functions:
         path: company
         cors: true
 
-  CompanySingle:
-    handler: ${self:provider.environment.companyFunctions}::Single
+  CompanyRead:
+    handler: ${self:provider.environment.companyFunctions}::Read
     package:
       <<: *package
     events:
@@ -154,9 +154,6 @@ functions:
         method: GET
         path: company
         cors: true
-        request:
-          template:
-            application/json: '{"id": "$input.params(''id'')"}'
 
   CompanyUpdate:
     handler: ${self:provider.environment.companyFunctions}::Update
@@ -199,6 +196,6 @@ functions:
         method: GET
         path: balance
         cors: true
-        request:
-          template:
-            application/json: '{"base-currency": "$input.params(''base-currency'')"}'
+        #request:
+        #  template:
+        #    application/json: '{"base-currency": "$input.params(''base-currency'')"}'

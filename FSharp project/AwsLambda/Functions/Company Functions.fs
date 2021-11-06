@@ -27,6 +27,19 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
 
         CompanyFunctions(CompanyLogic(CompanyRepository(connectionString)), CompanyRepository(connectionString))
 
+    member private this.single id =
+        try 
+            match repository.Single id with
+            | Some item -> this.createOkWithData item
+            | _ -> base.createNotFound()
+        with exc ->
+            failwith $"Failed to get Single. {exc}"
+
+    member private this.all () =
+        try
+            base.createOkWithData (repository.All())
+        with exc ->
+            failwith $"Failed to call All. {exc}"
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -43,17 +56,14 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Company. Error: {exc.Message}"
 
-    member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
+    member this.Read (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"request.QueryStringParameters: {request.QueryStringParameters}"
 
-        if request.QueryStringParameters = null then this.createError("Missing querystring")
-        else
-            match request.QueryStringParameters.TryGetValue("id") with
-            | (true, id) -> 
-                match repository.Single id with
-                | Some item -> base.createOkWithData item
-                | _ -> base.createNotFound()
-            | _ -> failwith @"Missing querystring parameter ""id""."
+        //if request.QueryStringParameters = null 
+        match request.QueryStringParameters.TryGetValue("id") with
+            | (true, id) -> this.single id
+            | _ -> this.all ()
+                
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Company"
@@ -90,11 +100,3 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
         with exc ->
             context.Logger.Log $"Failed to delete Company. {exc}"
             this.createError $"Failed to delete Company. {exc.Message}"
-
-    member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log "All"
-
-        try
-            base.createOkWithData (repository.All())
-        with exc ->
-            failwith $"Failed to call All. {exc}"

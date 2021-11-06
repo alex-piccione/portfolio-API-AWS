@@ -42,6 +42,23 @@ let ``All without AWS signature`` () =
     else
         content |> should not' (be NullOrEmptyString)
 
+[<Test>]
+let ``Single`` () =
+
+
+    let response = 
+        $"https://{secrets.url}/company/all"
+            .AllowAnyHttpStatus()
+            .Sign("GET", None, "execute-api", "eu-central-1")
+            .GetAsync().Result
+
+    let content = response.GetStringAsync().Result
+
+    if response.StatusCode <> 200
+    then
+        Assert.Fail(content)
+    else
+        content |> should not' (be NullOrEmptyString)
 
 [<Test>]
 let ``Create & Delete`` () =
