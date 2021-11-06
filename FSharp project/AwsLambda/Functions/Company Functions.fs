@@ -27,6 +27,9 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
 
         CompanyFunctions(CompanyLogic(CompanyRepository(connectionString)), CompanyRepository(connectionString))
 
+
+
+
     member private this.single id =
         try 
             match repository.Single id with
@@ -40,6 +43,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
             base.createOkWithData (repository.All())
         with exc ->
             failwith $"Failed to call All. {exc}"
+
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -56,14 +60,16 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Company. Error: {exc.Message}"
 
+
     member this.Read (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"request.QueryStringParameters: {request.QueryStringParameters}"
 
-        //if request.QueryStringParameters = null 
-        match request.QueryStringParameters.TryGetValue("id") with
-            | (true, id) -> this.single id
-            | _ -> this.all ()
-                
+        match request.QueryStringParameters with
+        | null -> this.all()
+        | _ -> match request.QueryStringParameters.TryGetValue("id") with
+               | (true, id) -> this.single id
+               | _ -> this.createErrorForConflict $"\"id\" parameters is the only one accepted."
+
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Company"
