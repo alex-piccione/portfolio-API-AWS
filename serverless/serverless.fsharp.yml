@@ -26,13 +26,6 @@ provider:
 package:
   individually: true
 
-resources:
-  Resources:
-    ApiGatewayMethodV1UsersUseridVarTestPost: 
-      Type: "AWS::ApiGateway::Method"
-      Properties:
-        AuthorizationType: "AWS_IAM"
-
 functions:
   # User
   UserCreate:

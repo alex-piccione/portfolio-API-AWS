@@ -21,3 +21,20 @@ let ``Company All`` () =
         Assert.Fail(content)
     else
         content |> should not' (be NullOrEmptyString)
+
+
+[<Test>]
+let ``Company All (no auth)`` () =
+    let response = 
+        $"https://{secrets.url}/company/all"
+            .AllowAnyHttpStatus()
+            //.WithHeader("Host", secrets.host)
+            .GetAsync().Result
+
+    let content = response.GetStringAsync().Result
+
+    if response.StatusCode <> 200
+    then
+        Assert.Fail(content)
+    else
+        content |> should not' (be NullOrEmptyString)

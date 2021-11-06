@@ -18,5 +18,6 @@ let loadSecrets path env =
     | value ->  value
 
 let url =       loadSecrets "AWS:url" "URL"
+let host =      loadSecrets "AWS:host" "HOST"
 let accessKey = loadSecrets "AWS:access key" "KEY"
 let secretKey = loadSecrets "AWS:secret key" "SECRET"
