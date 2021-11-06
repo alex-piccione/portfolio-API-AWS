@@ -1,13 +1,16 @@
 module SmokeTests.Company
 
+open System
 open NUnit.Framework
 open FsUnit
 open Flurl.Http
 open AWSRequestSignerFlurl
+open System.Text.Json
+open Portfolio.Core.Entities
 
 
 [<Test>]
-let ``Company All`` () =
+let ``All`` () =
     let response = 
         $"https://{secrets.url}/company/all"
             .AllowAnyHttpStatus()
@@ -24,7 +27,7 @@ let ``Company All`` () =
 
 
 [<Test>]
-let ``Company All (no auth)`` () =
+let ``All without AWS signature`` () =
     let response = 
         $"https://{secrets.url}/company/all"
             .AllowAnyHttpStatus()
@@ -38,3 +41,45 @@ let ``Company All (no auth)`` () =
         Assert.Fail(content)
     else
         content |> should not' (be NullOrEmptyString)
+
+
+[<Test>]
+let ``Create & Delete`` () =
+    
+    let create () =
+        let data:Company = {Id=""; Name="TEST"; Types=[CompanyType.Bank]}
+        let response = 
+            $"https://{secrets.url}/company"
+                .AllowAnyHttpStatus()
+                .PostJsonAsync(data).Result
+
+        let content = response.GetStringAsync().Result
+
+        if response.StatusCode <> 201
+        then
+            Assert.Fail($"Create failed. {content}")
+            ""
+        else
+            content |> should not' (be NullOrEmptyString)
+            let data = JsonSerializer.Deserialize<Company>(content)
+            data.Id
+
+    let delete id =
+        let response = 
+            $"https://{secrets.url}/company/{id}"
+                .WithHeader("Host", secrets.host)
+                .AllowAnyHttpStatus()
+                .DeleteAsync().Result
+
+        let content = response.GetStringAsync().Result
+
+        if response.StatusCode <> 200
+        then
+            Assert.Fail($"Delete failed. {content}")
+        else
+            content |> should not' (be NullOrEmptyString)
+
+
+
+    let id = create()
+    delete id
