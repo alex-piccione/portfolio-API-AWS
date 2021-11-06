@@ -189,7 +189,7 @@ functions:
         method: GET
         path: company/all
         cors: true
-        authorization_type: "AWS_IAM"
+        authorizationType: "AWS_IAM"
 
   # Balance
   BalanceGet:
