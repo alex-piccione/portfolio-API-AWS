@@ -107,33 +107,16 @@ functions:
         path: currency
         cors: true
 
-  CurrencySingle:
-    handler: ${self:provider.environment.currencyFunctions}::Single
-    package:
+  CurrencyRead:
+    handler: ${self:provider.environment.currencyFunctions}::Read
+    package: 
       <<: *package
     events:
     - http:
         method: GET
         path: currency
         cors: true
-        request:
-          template:
-            application/json: '{"code": "$input.params(''code'')"}'
-
-            # Update
-
-            # Delete
-
-  CurrencyAll:
-    handler: ${self:provider.environment.currencyFunctions}::All
-    package: 
-      <<: *package
-    events:
-    - http:
-        method: GET
-        path: currency/all
-        cors: true
-        authorizer: aws_iam
+        #authorizer: aws_iam
 
   # Company
   CompanyCreate:

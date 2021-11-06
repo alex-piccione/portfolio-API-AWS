@@ -32,6 +32,13 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
         with exc ->
             failwith $"Failed to get Single. {exc}"
 
+    member private this.all () =
+        try
+            let list = repository.All()
+            base.createOkWithData(list)
+        with exc ->
+            this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
+
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -43,22 +50,13 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
 
-    
-    member this.All (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log("All")
-        try
-            let list = repository.All()
-            base.createOkWithData(list)
-        with exc ->
-            context.Logger.Log $"Failed to retrieve Currencies. {exc}"
-            this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
 
-    member this.Single (request:APIGatewayProxyRequest, context:ILambdaContext) =
-
+    member this.Read (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log($"request.QueryStringParameters: {request.QueryStringParameters}")
 
-        if request.QueryStringParameters = null then this.createError("Missing querystring")
-        else
+        if request.QueryStringParameters = null 
+        then this.all()
+        else 
             match request.QueryStringParameters.TryGetValue("code") with
             | (true, id) -> this.single id
             | _ -> failwith @"Missing querystring parameter ""code""."

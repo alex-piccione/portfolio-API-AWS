@@ -12,7 +12,7 @@ open Portfolio.Core.Entities
 [<Test>]
 let ``All`` () =
     let response = 
-        $"https://{secrets.url}/company/all"
+        $"https://{secrets.url}/company"
             .AllowAnyHttpStatus()
             .Sign("GET", None, "execute-api", "eu-central-1")
             .GetAsync().Result
