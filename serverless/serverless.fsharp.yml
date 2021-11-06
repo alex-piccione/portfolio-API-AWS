@@ -47,6 +47,8 @@ functions:
         method: GET
         path: user/{email}
         cors: true
+
+        authorization_type: "AWS_IAM"
   
   UserUpdate:
     handler: ${self:provider.environment.userFunctions}::Update 
@@ -187,6 +189,7 @@ functions:
         method: GET
         path: company/all
         cors: true
+        authorization_type: "AWS_IAM"
 
   # Balance
   BalanceGet:
