@@ -37,3 +37,19 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         else
             let balance = balanceLogic.GetBalance(DateTime.UtcNow.Date)
             base.createOkWithData balance
+
+
+    member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log $"Update Balance. {request.Body}"
+
+        let date:string option = this.GetValueFromQuerystring request "base-currency"
+
+        try
+            let fundUpdate = base.Deserialize request.Body
+            repository.Create(fundUpdate)
+            this.createOkWithStatus 201
+        with exc ->
+            context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
+            this.createError $"Failed to create Currency. Error: {exc.Message}"
+
+        ()
