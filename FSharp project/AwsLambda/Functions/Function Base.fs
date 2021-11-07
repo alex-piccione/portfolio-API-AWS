@@ -61,7 +61,9 @@ type FunctionBase () =
         try JsonSerializer.Deserialize<'T>(requestBody, options)
         with e -> failwith $"Failed to deserialize request body to {typeof<'T>}. {e}"
 
-    member this.GetValueFromQuerystring (request:APIGatewayProxyRequest) (property:string)  =
-        match request.QueryStringParameters.TryGetValue property with
-        | true, value -> Some(value)
-        | _ -> None
+    member this.GetValueFromQuerystring (request:APIGatewayProxyRequest) (property:string) =
+        match request.QueryStringParameters with
+        | null -> None
+        | _ -> match request.QueryStringParameters.TryGetValue property with
+               | true, value -> Some(value)
+               | _ -> None
