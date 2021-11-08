@@ -38,7 +38,7 @@ type ``Fund Repository`` () =
         removeAllRecords()
  
     [<Test>]
-    member this.``GetFundsToDate <should> return a fund saved in previous date`` () =
+    member this.``GetFundsToDate [should] return a fund saved in previous date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(-10.);
         let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m } 
@@ -57,7 +57,7 @@ type ``Fund Repository`` () =
 
 
     [<Test>]
-    member this.``GetFundsToDate <should> NOT return a fund saved in successive date`` () =
+    member this.``GetFundsToDate [should] NOT return a fund saved in successive date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(+10.);
         let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m } 
@@ -69,7 +69,7 @@ type ``Fund Repository`` () =
         data |> should be Empty
 
     [<Test>]
-    member this.``GetFundsToDate <should> return only expected records`` () =
+    member this.``GetFundsToDate [should] return only expected records`` () =
         let toDate = DateTime(2000, 01, 31)
         let oldDate = toDate.AddDays(-20.);
         let beforeDate = toDate.AddDays(-10.);
@@ -90,3 +90,25 @@ type ``Fund Repository`` () =
         data.Length |> should equal 2
         data |> should contain item_1
         data |> should contain item_2
+
+
+    [<Test>]
+    member this.``FindFundAtDate [should] return the record`` () =
+
+        let fundAtDate:FundAtDate = { Id="123"; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        addRecord fundAtDate
+
+        // execute
+        repository.FindFundAtDate fundAtDate
+        |> should equal (Some fundAtDate)
+
+
+    [<Test>]
+    member this.``FindFundAtDate [when] does nto exists [should] return None`` () =
+
+        let fundAtDate:FundAtDate = { Id=""; Date=DateTime.Now; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        // execute
+        repository.FindFundAtDate fundAtDate
+        |> should equal None

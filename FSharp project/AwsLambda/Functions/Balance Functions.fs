@@ -7,6 +7,7 @@ open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Api.Functions
 open Portfolio.MongoRepository
 open Portfolio.Core.Logic
+open Portfolio.Core.Entities
 
 
 type BalanceFunctions (balanceLogic:IBalanceLogic) =
@@ -45,11 +46,10 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         let date:string option = this.GetValueFromQuerystring request "base-currency"
 
         try
-            let fundUpdate = base.Deserialize request.Body
-            repository.Create(fundUpdate)
-            this.createOkWithStatus 201
+            let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body
+            match balanceLogic.Update(updateRequest) with
+            | Created -> this.createOkWithStatus 201
+            | Updated -> this.createOkWithStatus 200
         with exc ->
-            context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
+            context.Logger.Log $"Failed to update Balance fund. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
-
-        ()
