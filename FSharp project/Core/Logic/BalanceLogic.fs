@@ -53,5 +53,3 @@ type BalanceLogic(fundRepository:IFundRepository) =
             | None -> 
                 fundRepository.CreateFundAtDate record
                 BalanceUpdateResult.Created
-
-            

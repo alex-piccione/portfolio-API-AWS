@@ -49,5 +49,5 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
             | Created -> this.createOkWithStatus 201
             | Updated -> this.createOkWithStatus 200
         with exc ->
-            context.Logger.Log $"Failed to update Balance fund. Data: {request.Body}. Error: {exc}"
-            this.createError $"Failed to create Currency. Error: {exc.Message}"
+            context.Logger.Log $"Failed to update Balance. Data: {request.Body}. Error: {exc}"
+            this.createError $"Failed to update Balance. Error: {exc.Message}"
