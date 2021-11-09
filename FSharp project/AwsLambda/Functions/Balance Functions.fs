@@ -43,8 +43,6 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Balance. {request.Body}"
 
-        let date:string option = this.GetValueFromQuerystring request "base-currency"
-
         try
             let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body
             match balanceLogic.Update(updateRequest) with
