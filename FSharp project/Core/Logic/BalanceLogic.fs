@@ -48,7 +48,7 @@ type BalanceLogic(fundRepository:IFundRepository) =
 
             match fundRepository.FindFundAtDate(record) with
             | Some existing -> 
-                fundRepository.UpdateFundAtDate record 
+                fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                 BalanceUpdateResult.Updated
             | None -> 
                 fundRepository.CreateFundAtDate record

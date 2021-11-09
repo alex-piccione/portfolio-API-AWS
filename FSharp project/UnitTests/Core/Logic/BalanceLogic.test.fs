@@ -3,14 +3,23 @@
 open System
 open NUnit.Framework
 open FsUnit
+open Foq
 open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
+//
 
 
 type BalanceLogicTest() =
 
+    let fundAtDate: FundAtDate = {
+        Id = Guid.NewGuid().ToString()
+        Date = DateTime.Today
+        CurrencyCode = "AAA"
+        FundCompanyId = "Company"
+        Quantity = 1m
+    }
 
     [<SetUp>]
     member this.SetUp() =
@@ -113,3 +122,49 @@ type BalanceLogicTest() =
         balance.FundsByCurrency.IsEmpty |> should be False
         balance.FundsByCurrency.Length |> should equal 1.
         balance.FundsByCurrency.Head |> should equal expectedFundForCurrency
+
+    // TODO: member this.``Update [when] date contains time part [should] match re.cord within same day`` () =
+
+    [<Test>]
+    member this.``Update [when] record exists [should] update`` () =
+
+        let fundRepository = Mock<IFundRepository>()
+                                .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
+                                .Returns(Some(fundAtDate))
+                                .Create()
+        let logic = BalanceLogic(fundRepository) :> IBalanceLogic
+
+        let request:BalanceUpdateRequest = {
+            Date = fundAtDate.Date
+            CurrencyCode = fundAtDate.CurrencyCode
+            CompanyId = fundAtDate.FundCompanyId
+            Quantity = 2m
+        }
+
+        let expectedRecord:FundAtDate = { fundAtDate with Id = fundAtDate.Id; Quantity = request.Quantity }
+
+        // execute
+        logic.Update request |> should equal Updated
+        verify <@ fundRepository.UpdateFundAtDate expectedRecord @> once
+
+    [<Test>]
+    member this.``Update [when] record does not exist [should] create`` () =
+
+        let fundRepository = Mock<IFundRepository>()
+                                .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
+                                .Returns(None)
+                                .Create()
+        let logic = BalanceLogic(fundRepository) :> IBalanceLogic
+
+        let request:BalanceUpdateRequest = {
+            Date = fundAtDate.Date.AddDays(1.) // a different date
+            CurrencyCode = fundAtDate.CurrencyCode
+            CompanyId = fundAtDate.FundCompanyId
+            Quantity = 2m
+        }
+
+        let expectedRecord:FundAtDate = { fundAtDate with Id = ""; Date = request.Date; Quantity = request.Quantity }
+
+        // execute
+        logic.Update request |> should equal Created
+        verify <@ fundRepository.CreateFundAtDate expectedRecord @> once

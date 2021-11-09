@@ -2,13 +2,13 @@
 
 open System
 open NUnit.Framework
+open NUnit.Framework.Constraints
 open Foq
 open Foq.Linq
 open FsUnit
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-open NUnit.Framework.Constraints
 
 
 type matchingResult = Result_Ok | Result_Error | Result_NotValid
