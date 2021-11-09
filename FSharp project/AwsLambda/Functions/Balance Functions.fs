@@ -30,7 +30,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Balance. {request.Body}"
 
-        // TODO: creae a Validate function that accept many checks as a list and pass over all of them exiting at the fist one and returning a DU OK or the Fail
+        // TODO: create a Validate function that accept many checks as a list and pass over all of them exiting at the fist one and returning a DU OK or the Fail
         // https://github.com/alex-piccione/portfolio-API-AWS/issues/38
         let baseCurrencyCode:string option = this.GetValueFromQuerystring request "base-currency"
         if baseCurrencyCode.IsNone then base.createErrorForMissingQuerystring "base-currency"
