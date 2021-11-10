@@ -30,7 +30,6 @@ type RepositoryBase<'T>(connectionString:string, collectionName:string, idField:
     member this.IdFilter id = FilterDefinitionBuilder<'T>().Eq(idField, id);
     member this.Collection = database.GetCollection<'T>(collectionName);
     member this.Filter () = FilterDefinitionBuilder<'T>()
-    // member this.FilterEq () = FilterDefinitionBuilder<'T>().Eq()
 
 
 type CrudRepository<'T>(connectionString:string, collectionName:string, idField:Expression<Func<'T, string>>, overloadMap: BsonClassMap<'T> -> unit) =
