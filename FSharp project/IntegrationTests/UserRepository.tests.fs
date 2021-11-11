@@ -39,7 +39,7 @@ type ``User Repository`` () =
 
     // Create a replica of this test for RepositoryBase
     [<Test>]
-    member this.``Create <when> email already exists [should] return Error`` () =
+    member this.``Create [when] email already exists [should] return Error`` () =
 
         let user:User = { Email = TEST_EMAIL; Username = "username";  Password = "password"; CreatedOn = DateTime.UtcNow.Date;
                           IsEmailValidated = true; PasswordHint = "password hint"; IsBlocked = false; 
