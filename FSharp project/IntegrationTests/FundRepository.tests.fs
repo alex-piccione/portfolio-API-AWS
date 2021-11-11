@@ -122,6 +122,7 @@ type ``Fund Repository`` () =
         repository.FindFundAtDate fundAtDate
         |> should equal (Some fundAtDate)
 
+
     [<Test>]
     member this.``FindFundAtDate [when] differ by date [should] not return the record`` () =
 

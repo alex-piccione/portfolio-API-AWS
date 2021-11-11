@@ -8,8 +8,6 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-//
-
 
 type BalanceLogicTest() =
 
@@ -147,6 +145,7 @@ type BalanceLogicTest() =
 
         // execute
         logic.Update update |> should equal Updated
+
         verify <@ fundRepository.UpdateFundAtDate expectedRecord @> once
 
     [<Test>]
