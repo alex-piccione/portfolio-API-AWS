@@ -183,6 +183,6 @@ functions:
       <<: *package
     events:
     - http:
-      method: PUT
-      path: balance/update
-      cors: true
+        method: PUT
+        path: balance/update
+        cors: true
