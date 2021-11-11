@@ -124,7 +124,7 @@ type ``Fund Repository`` () =
 
 
     [<Test>]
-    member this.``FindFundAtDate [when] does nto exists [should] return None`` () =
+    member this.``FindFundAtDate [when] record does not exist [should] return None`` () =
 
         let fundAtDate:FundAtDate = { Id=""; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
 

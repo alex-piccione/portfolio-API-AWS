@@ -93,7 +93,6 @@ type FundForCurrency = {
 
 type Balance = {
     Date: DateTime
-    //BaseCurrencyCode: string
     FundsByCurrency: FundForCurrency list
 }
 
