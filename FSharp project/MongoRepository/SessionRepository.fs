@@ -21,11 +21,7 @@ type SessionRepository (connectionString:string) =
         member this.Create(session: Session): unit = this.Collection.InsertOne session
 
         member this.FindByEmail(email: string): Session option =
-            //let expr:Expression<Func<Session, string>> = fun x -> x.
-            //let a:Expression<Func<'T, string>> = (fun x -> x.Email)
-            //let f = createFilter( (fun x -> x.Email) , email)
-            let filter = this.CreateFilter( (fun x -> x.Email) , email)
-            this.Collection.FindOneOrNone(filter)
+            this.Collection.FindOneOrNone((fun x -> x.Email = email))
 
         member this.DeleteExpiredSessions (thresholdDate:DateTime): unit = 
             let filter = FilterDefinitionBuilder<Session>().Lt((fun x -> x.ExpireOn), thresholdDate)

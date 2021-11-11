@@ -37,7 +37,7 @@ type ISessionRepository =
     abstract member DeleteExpiredSessions: thresholdDate:DateTime -> unit
 
 type IFundRepository = 
-    //inherit CRUD<Fund>
-    //abstract member Save: fund:FundAtDate -> unit
-    //abstract member GetFundsAtDate: date:DateTime -> FundAtDate list
     abstract member GetFundsToDate: date:DateTime -> FundAtDate list
+    abstract member FindFundAtDate: record:FundAtDate -> FundAtDate option
+    abstract member UpdateFundAtDate: record:FundAtDate -> unit
+    abstract member CreateFundAtDate: record:FundAtDate -> unit

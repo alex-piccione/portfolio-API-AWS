@@ -176,3 +176,13 @@ functions:
         #request:
         #  template:
         #    application/json: '{"base-currency": "$input.params(''base-currency'')"}'
+
+  BalanceUpdateFund:
+    handler: ${self:provider.environment.balanceFunctions}::Update
+    package:
+      <<: *package
+    events:
+    - http:
+      method: PUT
+      path: balance/update
+      cors: true

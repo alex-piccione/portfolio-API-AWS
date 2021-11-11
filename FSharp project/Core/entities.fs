@@ -93,6 +93,16 @@ type FundForCurrency = {
 
 type Balance = {
     Date: DateTime
-    //BaseCurrencyCode: string
     FundsByCurrency: FundForCurrency list
 }
+
+type BalanceUpdateRequest = {
+    Date: DateTime
+    CurrencyCode: string
+    Quantity: decimal
+    CompanyId: string
+}
+
+type BalanceUpdateResult = 
+| Created
+| Updated

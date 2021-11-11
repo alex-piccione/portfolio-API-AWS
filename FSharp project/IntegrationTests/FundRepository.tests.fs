@@ -8,11 +8,30 @@ open MongoDB.Driver
 open Portfolio.Core
 open Portfolio.MongoRepository
 open Portfolio.Core.Entities
+open NUnit.Framework.Constraints
+open helper
 
+
+type equalFundAtDate(expected:FundAtDate) = 
+    inherit Constraints.EqualConstraint(expected)
+
+    override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
+        match box actual with 
+        | :? option<FundAtDate> as fund ->
+            fund.IsSome |> should be True
+            fund.Value.Id |> should equal expected.Id
+            fund.Value.Date |> should equalDate expected.Date
+            fund.Value.CurrencyCode |> should equal expected.CurrencyCode
+            fund.Value.FundCompanyId |> should equal expected.FundCompanyId
+            fund.Value.Quantity |> should equal expected.Quantity
+            ConstraintResult(this, actual, true)
+        | _ ->
+            ConstraintResult(this, actual, false)
 
 type ``Fund Repository`` () =
 
     let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
+    let TEST_ID = "TEST 1"
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
 
@@ -38,7 +57,7 @@ type ``Fund Repository`` () =
         removeAllRecords()
  
     [<Test>]
-    member this.``GetFundsToDate <should> return a fund saved in previous date`` () =
+    member this.``GetFundsToDate [should] return a fund saved in previous date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(-10.);
         let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m } 
@@ -57,7 +76,7 @@ type ``Fund Repository`` () =
 
 
     [<Test>]
-    member this.``GetFundsToDate <should> NOT return a fund saved in successive date`` () =
+    member this.``GetFundsToDate [should] NOT return a fund saved in successive date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(+10.);
         let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m } 
@@ -69,7 +88,7 @@ type ``Fund Repository`` () =
         data |> should be Empty
 
     [<Test>]
-    member this.``GetFundsToDate <should> return only expected records`` () =
+    member this.``GetFundsToDate [should] return only expected records`` () =
         let toDate = DateTime(2000, 01, 31)
         let oldDate = toDate.AddDays(-20.);
         let beforeDate = toDate.AddDays(-10.);
@@ -90,3 +109,59 @@ type ``Fund Repository`` () =
         data.Length |> should equal 2
         data |> should contain item_1
         data |> should contain item_2
+
+
+    [<Test>]
+    member this.``FindFundAtDate [should] return the record`` () =
+
+        let fundAtDate:FundAtDate = { Id="123"; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        addRecord fundAtDate
+
+        // execute
+        repository.FindFundAtDate fundAtDate
+        |> should equal (Some fundAtDate)
+
+
+    [<Test>]
+    member this.``FindFundAtDate [when] record does not exist [should] return None`` () =
+
+        let fundAtDate:FundAtDate = { Id=""; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        // execute
+        repository.FindFundAtDate fundAtDate
+        |> should equal None
+
+
+    [<Test>]
+    member this.``CreateFundAtDate`` () =
+
+        let fundAtDate:FundAtDate = { Id=TEST_ID; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        // execute
+        repository.CreateFundAtDate fundAtDate
+
+        let savedRecord = repository.FindFundAtDate(fundAtDate)
+        savedRecord |> should equalFundAtDate fundAtDate
+
+
+    [<Test>]
+    member this.``UpdateFundAtDate`` () =
+
+        let fundAtDate:FundAtDate = { 
+            Id=TEST_ID; Date=DateTime.Today; 
+            CurrencyCode=TEST_CURRENCY; 
+            FundCompanyId="Company"; Quantity=1m }
+        repository.CreateFundAtDate fundAtDate
+
+        let updateAtDate:FundAtDate = { 
+            Id=TEST_ID; Date=DateTime.Today.AddDays(2.); 
+            CurrencyCode=TEST_CURRENCY_2; 
+            FundCompanyId="Company 2"; 
+            Quantity=2m }
+
+        // execute
+        repository.UpdateFundAtDate updateAtDate
+
+        let savedRecord = repository.FindFundAtDate(updateAtDate)
+        savedRecord |> should equalFundAtDate updateAtDate
