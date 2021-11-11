@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="helper.fs" />
     <Compile Include="configuration.fs" />
     <Compile Include="UserRepository.tests.fs" />
     <Compile Include="CurrencyRepository.tests.fs" />
