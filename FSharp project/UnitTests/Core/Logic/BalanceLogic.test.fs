@@ -8,8 +8,6 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-//
-
 
 type BalanceLogicTest() =
 
@@ -132,17 +130,22 @@ type BalanceLogicTest() =
                                 .Create()
         let logic = BalanceLogic(fundRepository) :> IBalanceLogic
 
-        let request:BalanceUpdateRequest = {
+        let update:BalanceUpdateRequest = {
             Date = fundAtDate.Date
             CurrencyCode = fundAtDate.CurrencyCode
             CompanyId = fundAtDate.FundCompanyId
             Quantity = 2m
         }
 
-        let expectedRecord:FundAtDate = { fundAtDate with Id = fundAtDate.Id; Quantity = request.Quantity }
+        let expectedRecord:FundAtDate = { 
+            fundAtDate with 
+                Id = fundAtDate.Id; 
+                Quantity = update.Quantity 
+        }
 
         // execute
-        logic.Update request |> should equal Updated
+        logic.Update update |> should equal Updated
+
         verify <@ fundRepository.UpdateFundAtDate expectedRecord @> once
 
     [<Test>]

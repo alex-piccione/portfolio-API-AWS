@@ -124,6 +124,20 @@ type ``Fund Repository`` () =
 
 
     [<Test>]
+    member this.``FindFundAtDate [when] differ by date [should] not return the record`` () =
+
+        let fundAtDate:FundAtDate = { Id="123"; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}
+
+        addRecord fundAtDate
+
+        let newRecord = { fundAtDate with Date = fundAtDate.Date.AddDays(10.); Quantity = 2m}
+
+        // execute
+        repository.FindFundAtDate newRecord
+        |> should equal None
+
+
+    [<Test>]
     member this.``FindFundAtDate [when] record does not exist [should] return None`` () =
 
         let fundAtDate:FundAtDate = { Id=""; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m}

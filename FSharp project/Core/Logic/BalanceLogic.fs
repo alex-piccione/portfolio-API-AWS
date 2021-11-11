@@ -51,5 +51,5 @@ type BalanceLogic(fundRepository:IFundRepository) =
                 fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                 BalanceUpdateResult.Updated
             | None -> 
-                fundRepository.CreateFundAtDate record
+                fundRepository.CreateFundAtDate { record with Id = Guid.NewGuid().ToString() }
                 BalanceUpdateResult.Created
