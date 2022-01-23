@@ -52,7 +52,7 @@ type BalanceLogic(fundRepository:IFundRepository) =
                 let updateRecord:FundAtDate = {
                     Id = existing.Id;
                     Date = existing.Date
-                    CurrencyCode = existing.CurrencyCode;
+                    CurrencyCode = "UUU" // existing.CurrencyCode;
                     FundCompanyId= request.CompanyId
                     Quantity= request.Quantity
                 }
@@ -63,7 +63,7 @@ type BalanceLogic(fundRepository:IFundRepository) =
                 let newRecord = {
                     Id=Guid.NewGuid().ToString()
                     Date=request.Date.Date
-                    CurrencyCode= request.CurrencyCode
+                    CurrencyCode= "CCC" // request.CurrencyCode
                     FundCompanyId= request.CompanyId
                     Quantity= request.Quantity
                 }
