@@ -171,7 +171,7 @@ type BalanceLogicTest() =
         verify <@ fundRepository.CreateFundAtDate expectedRecord @> once
 
     [<Test>]
-    member this.``Update [when] date contains time part [should] match record within same day`` () =
+    member this.``Update [when] date contains time part [should] match record within the same day`` () =
 
         let fundRepository = Mock<IFundRepository>()
                                 .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
