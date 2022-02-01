@@ -8,7 +8,7 @@ open Portfolio.Core
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
-    abstract member Update: request:BalanceUpdateRequest -> BalanceUpdateResult
+    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
 
 
 type BalanceLogic(fundRepository:IFundRepository) = 
@@ -36,7 +36,7 @@ type BalanceLogic(fundRepository:IFundRepository) =
             let balance:Balance = {Date=day; FundsByCurrency = aggregates }
             balance
 
-        member this.Update(request: BalanceUpdateRequest): BalanceUpdateResult = 
+        member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
             
             let record:FundAtDate = { 
                 Id=""
@@ -51,5 +51,5 @@ type BalanceLogic(fundRepository:IFundRepository) =
                 fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                 BalanceUpdateResult.Updated
             | None -> 
-                fundRepository.CreateFundAtDate { record with Id = Guid.NewGuid().ToString() }
+                fundRepository.CreateFundAtDate { record with Id = IdGenerator.NewId() }
                 BalanceUpdateResult.Created
