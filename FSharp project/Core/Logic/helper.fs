@@ -5,3 +5,5 @@ type Result<'T> =
     | NotValid of string
     | Error of string
 
+type IdGenerator () = 
+    static member NewId () = System.Guid.NewGuid().ToString()

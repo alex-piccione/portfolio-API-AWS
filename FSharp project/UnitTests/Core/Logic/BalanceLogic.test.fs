@@ -122,10 +122,10 @@ type BalanceLogicTest() =
         balance.FundsByCurrency.Head |> should equal expectedFundForCurrency
 
     [<Test>]
-    member this.``Update [when] record exists [should] update`` () =
+    member this.``CreateOrUpdate [when] record exists [should] update`` () =
 
         let fundRepository = Mock<IFundRepository>()
-                                .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
+                                .Setup(fun r -> r.FindFundAtDate(It.IsAny()))
                                 .Returns(Some(fundAtDate))
                                 .Create()
         let logic = BalanceLogic(fundRepository) :> IBalanceLogic
@@ -144,17 +144,18 @@ type BalanceLogicTest() =
         }
 
         // execute
-        logic.Update update |> should equal Updated
+        logic.CreateOrUpdate update |> should equal Updated
 
         verify <@ fundRepository.UpdateFundAtDate expectedRecord @> once
 
-    [<Test>]
-    member this.``Update [when] record does not exist [should] create`` () =
 
+    [<Test>]
+    member this.``CreateOrUpdate [when] record does not exist [should] create a new one`` () =
         let fundRepository = Mock<IFundRepository>()
-                                .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
-                                .Returns(None)
-                                .Create()
+                                    .Setup(fun r -> r.FindFundAtDate(It.IsAny()))
+                                    .Returns(None)
+                                    .Create()
+
         let logic = BalanceLogic(fundRepository) :> IBalanceLogic
 
         let request:BalanceUpdateRequest = {
@@ -164,14 +165,20 @@ type BalanceLogicTest() =
             Quantity = 2m
         }
 
-        let expectedRecord:FundAtDate = { fundAtDate with Id = ""; Date = request.Date; Quantity = request.Quantity }
-
         // execute
-        logic.Update request |> should equal Created
-        verify <@ fundRepository.CreateFundAtDate expectedRecord @> once
+        logic.CreateOrUpdate request |> should equal Created
+         
+        let expectedRecordCheck = fun (r:FundAtDate) -> 
+            r.Id <> "" && r.Id <> Guid.Empty.ToString() &&
+            r.CurrencyCode = request.CurrencyCode &&
+            r.Date = request.Date &&
+            r.Quantity = request.Quantity &&
+            r.FundCompanyId = request.CompanyId
+
+        verify <@ fundRepository.CreateFundAtDate (It.is(expectedRecordCheck)) @> once
 
     [<Test>]
-    member this.``Update [when] date contains time part [should] match record within same day`` () =
+    member this.``CreateOrUpdate [when] date contains time part [should] match record within the same day`` () =
 
         let fundRepository = Mock<IFundRepository>()
                                 .Setup( (fun r -> r.FindFundAtDate(It.IsAny())) )
@@ -190,5 +197,5 @@ type BalanceLogicTest() =
         let expectedRecord:FundAtDate = { fundAtDate with Id = fundAtDate.Id; Date = expectedDate; Quantity = request.Quantity }
 
         // execute
-        logic.Update request |> should equal Updated
+        logic.CreateOrUpdate request |> should equal Updated
         verify <@ fundRepository.UpdateFundAtDate expectedRecord @> once

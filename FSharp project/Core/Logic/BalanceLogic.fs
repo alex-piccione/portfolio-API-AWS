@@ -8,7 +8,7 @@ open Portfolio.Core
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
-    abstract member Update: request:BalanceUpdateRequest -> BalanceUpdateResult
+    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
 
 
 type BalanceLogic(fundRepository:IFundRepository) = 
@@ -36,7 +36,7 @@ type BalanceLogic(fundRepository:IFundRepository) =
             let balance:Balance = {Date=day; FundsByCurrency = aggregates }
             balance
 
-        member this.Update(request: BalanceUpdateRequest): BalanceUpdateResult = 
+        member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
             
             let record:FundAtDate = { 
                 Id=""
@@ -48,24 +48,8 @@ type BalanceLogic(fundRepository:IFundRepository) =
 
             match fundRepository.FindFundAtDate(record) with
             | Some existing ->
-                //fundRepository.UpdateFundAtDate { record with Id = existing.Id }
-                let updateRecord:FundAtDate = {
-                    Id = existing.Id;
-                    Date = existing.Date
-                    CurrencyCode = "UUU" // existing.CurrencyCode;
-                    FundCompanyId= request.CompanyId
-                    Quantity= request.Quantity
-                }
-                fundRepository.UpdateFundAtDate updateRecord
+                fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                 BalanceUpdateResult.Updated
             | None -> 
-                //fundRepository.CreateFundAtDate { record with Id = Guid.NewGuid().ToString() }
-                let newRecord = {
-                    Id=Guid.NewGuid().ToString()
-                    Date=request.Date.Date
-                    CurrencyCode= "CCC" // request.CurrencyCode
-                    FundCompanyId= request.CompanyId
-                    Quantity= request.Quantity
-                }
-                fundRepository.CreateFundAtDate newRecord
+                fundRepository.CreateFundAtDate { record with Id = IdGenerator.NewId() }
                 BalanceUpdateResult.Created
