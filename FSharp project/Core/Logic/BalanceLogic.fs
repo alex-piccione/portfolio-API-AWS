@@ -39,11 +39,12 @@ type BalanceLogic(fundRepository:IFundRepository) =
         member this.Update(request: BalanceUpdateRequest): BalanceUpdateResult = 
             
             let record:FundAtDate = { 
-                Id=""
-                Date=request.Date.Date
-                CurrencyCode= request.CurrencyCode
-                FundCompanyId= request.CompanyId
-                Quantity= request.Quantity
+                Id = ""
+                Date = request.Date.Date
+                CurrencyCode = request.CurrencyCode
+                FundCompanyId = request.CompanyId
+                Quantity = request.Quantity
+                LastChangeDate = DateTime.UtcNow
             }
 
             match fundRepository.FindFundAtDate(record) with
@@ -55,17 +56,19 @@ type BalanceLogic(fundRepository:IFundRepository) =
                     CurrencyCode = "UUU" // existing.CurrencyCode;
                     FundCompanyId= request.CompanyId
                     Quantity= request.Quantity
+                    LastChangeDate = DateTime.UtcNow
                 }
                 fundRepository.UpdateFundAtDate updateRecord
                 BalanceUpdateResult.Updated
             | None -> 
                 //fundRepository.CreateFundAtDate { record with Id = Guid.NewGuid().ToString() }
                 let newRecord = {
-                    Id=Guid.NewGuid().ToString()
-                    Date=request.Date.Date
-                    CurrencyCode= "CCC" // request.CurrencyCode
-                    FundCompanyId= request.CompanyId
-                    Quantity= request.Quantity
+                    Id = Guid.NewGuid().ToString()
+                    Date = request.Date.Date
+                    CurrencyCode = "CCC" // request.CurrencyCode
+                    FundCompanyId = request.CompanyId
+                    Quantity = request.Quantity
+                    LastChangeDate = DateTime.UtcNow
                 }
                 fundRepository.CreateFundAtDate newRecord
                 BalanceUpdateResult.Created

@@ -17,6 +17,7 @@ type BalanceLogicTest() =
         CurrencyCode = "AAA"
         FundCompanyId = "Company"
         Quantity = 1m
+        LastChangeDate = DateTime.UtcNow
     }
 
     [<SetUp>]
@@ -29,8 +30,8 @@ type BalanceLogicTest() =
         let date = DateTime(2010, 08, 15)
         let older_date = DateTime(2010, 08, 15)
         let funds:FundAtDate list = [
-            {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m}
-            {Id="2"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=2m}
+            {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m; LastChangeDate = DateTime.UtcNow}
+            {Id="2"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=2m; LastChangeDate = DateTime.UtcNow}
         ]
 
         let expectedFundForCurrency:FundForCurrency = {CurrencyCode="AAA"; Quantity=3m; CompaniesIds=["Company A"; "Company B"]}
@@ -55,9 +56,9 @@ type BalanceLogicTest() =
         let old_date = date.AddDays(-10.)
         let older_date = date.AddDays(-100.)
         let funds:FundAtDate list = [
-            {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m}
-            {Id="2"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=2m}
-            {Id="4"; Date=date; CurrencyCode="BBB"; FundCompanyId="Company A"; Quantity=4m}
+            {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m; LastChangeDate = DateTime.UtcNow}
+            {Id="2"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=2m; LastChangeDate = DateTime.UtcNow}
+            {Id="4"; Date=date; CurrencyCode="BBB"; FundCompanyId="Company A"; Quantity=4m; LastChangeDate = DateTime.UtcNow}
         ]
 
         let expectedFundForCurrency_AAA:FundForCurrency = { CurrencyCode="AAA"; Quantity=3m; CompaniesIds=["Company A"; "Company B"]}
@@ -82,7 +83,7 @@ type BalanceLogicTest() =
 
         let date = DateTime(2010, 08, 15)
         let funds:FundAtDate list = [
-            {Id="2"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=0m}
+            {Id="2"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=0m; LastChangeDate = DateTime.UtcNow}
         ]
 
         let fundRepository = Mock<IFundRepository>()
@@ -102,8 +103,8 @@ type BalanceLogicTest() =
         let date = DateTime(2010, 08, 15)
         let older_date = DateTime(2010, 08, 15)
         let funds:FundAtDate list = [
-            {Id="1"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=1m}
-            {Id="2"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=0m}
+            {Id="1"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=1m; LastChangeDate = DateTime.UtcNow}
+            {Id="2"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=0m; LastChangeDate = DateTime.UtcNow}
         ]
 
         let expectedFundForCurrency:FundForCurrency = {CurrencyCode="AAA"; Quantity=1m; CompaniesIds=["Company B"]}
