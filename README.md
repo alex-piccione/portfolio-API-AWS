@@ -3,9 +3,6 @@ AWS API for Portfolio project
 
 
 
-
-
-
 ## AWS
 AWS Python lambda documentation: https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
@@ -25,9 +22,19 @@ Required permissions:
 Create API Gateway "REST API" on eu-central-1 regios called "Portfolio".  
 
 
-
 ## GitHub Actions
 docs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+## Serverless
+docs: ???
+
+GitHub action I'm using seems to be abandoned'  
+``deploy`` command stopped to work within the --config parameter.  
+I use it to load the configuration grom another file, how to fo it withou the parameter?  
+The error says the configuration must stay in the service root folder (working directory), so moving the file will be enough?  
+Documentation is not easy to find. For example searching "deploy" in the servh box does not go where you want.  
+To find it I had to search on google: https://www.serverless.com/framework/docs/providers/aws/cli-reference/deploy/  
+
 
 ## Configuration
 The __configuration.json__ file inside "AWS Lambda" project contains info that cannot be stored in the code repository.  

@@ -45,8 +45,21 @@ jobs:
         dotnet publish "FSharp project/AwsLambda/AWS Lambda.fsproj" -c RELEASE -o "FSharp project/publish"
         cd "FSharp project/publish"
         zip -r fsharp-functions.zip ./*
+
+    - name: Serverless preparation
+      run: | 
+        echo move configuration file to the root folder, --config does not accept files in other positions
+        mv ./serverless/serverless.fsharp.yml ./serverless.fsharp.yml
+
     - name: Serverless
-      uses: serverless/github-action@master
+      # bug: https://github.com/alex-piccione/portfolio-API-AWS/issues/51
+      # Service Configuration is expected to be placed in a root of a service (working directory)
+      #uses: serverless/github-action@master
+      #with:
+      #  # --deploy is deprecated but I don't know any other way to use multiple serverless.yml files
+      #  args: deploy --config ./serverless/serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
+
+      uses: serverless/github-action@v1.53.0
       with:
-        # --deploy is deprecated but I don't know any other way to use multiple serverless.yml files
-        args: deploy --config ./serverless/serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
+        #--config is deprecated but I don't know any other way to use multiple serverless.yml files
+        args: deploy --config serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
