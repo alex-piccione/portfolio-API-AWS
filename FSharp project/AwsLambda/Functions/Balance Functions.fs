@@ -24,7 +24,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        BalanceFunctions(BalanceLogic(FundRepository(connectionString)))
+        BalanceFunctions(BalanceLogic(FundRepository(connectionString), Chronos()))
 
 
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
