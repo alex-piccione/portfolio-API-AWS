@@ -3,3 +3,4 @@
 **/obj
 **/__pycache__
 *.user
+/secret.yml

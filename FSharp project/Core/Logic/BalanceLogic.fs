@@ -8,7 +8,7 @@ open Portfolio.Core
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
-    abstract member Update: request:BalanceUpdateRequest -> BalanceUpdateResult
+    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
 
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos) = 
@@ -36,7 +36,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos) =
             let balance:Balance = {Date=day; FundsByCurrency = aggregates }
             balance
 
-        member this.Update(request: BalanceUpdateRequest): BalanceUpdateResult = 
+        member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
             
             let record:FundAtDate = { 
                 Id = "" // doesn't matter
@@ -49,26 +49,16 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos) =
 
             match fundRepository.FindFundAtDate(record) with
             | Some existing ->
-                //fundRepository.UpdateFundAtDate { record with Id = existing.Id }
-                let updateRecord:FundAtDate = {
-                    Id = existing.Id;
-                    Date = existing.Date
+                fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                     CurrencyCode = existing.CurrencyCode;
-                    FundCompanyId= request.CompanyId
-                    Quantity= request.Quantity
                     LastChangeDate = chronos.Now
-                }
-                fundRepository.UpdateFundAtDate updateRecord
                 BalanceUpdateResult.Updated
             | None -> 
-                //fundRepository.CreateFundAtDate { record with Id = Guid.NewGuid().ToString() }
-                let newRecord = {
+                fundRepository.CreateFundAtDate { record with Id = IdGenerator.NewId() }
                     Id = Guid.NewGuid().ToString()
                     Date = request.Date.Date
                     CurrencyCode = request.CurrencyCode
                     FundCompanyId = request.CompanyId
                     Quantity = request.Quantity
                     LastChangeDate = chronos.Now
-                }
-                fundRepository.CreateFundAtDate newRecord
                 BalanceUpdateResult.Created

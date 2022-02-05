@@ -48,7 +48,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
             context.Logger.Log $"updateRequest. {updateRequest}"
             context.Logger.Log $"updateRequest. Quantity: {updateRequest.Quantity}"
             context.Logger.Log $"updateRequest. CurrencyCode: {updateRequest.CurrencyCode}"
-            match balanceLogic.Update(updateRequest) with
+            match balanceLogic.CreateOrUpdate(updateRequest) with
             | Created -> this.createOkWithStatus 201
             | Updated -> this.createOkWithStatus 200
         with exc ->

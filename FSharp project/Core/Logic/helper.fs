@@ -5,7 +5,8 @@ type Result<'T> =
     | NotValid of string
     | Error of string
 
-
+type IdGenerator () = 
+    static member NewId () = System.Guid.NewGuid().ToString()
 
 type IChronos =
     abstract member Now: System.DateTime
