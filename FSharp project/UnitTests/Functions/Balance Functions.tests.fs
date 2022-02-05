@@ -32,7 +32,8 @@ type ``Balance Functions`` () =
     [<Test>]
     member this.``Get <should> return Balance at Today date``() =
         let date = DateTime(2020, 01, 31)
-        let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>}
+        let lastUpdateDate = date.AddMonths(-1)
+        let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>; LastUpdateDate=lastUpdateDate}
         let balanceLogic = Mock<IBalanceLogic>()
                                .SetupFunc(fun l -> l.GetBalance(It.IsAny<DateTime>())).Returns(balance)
                                .Create()
