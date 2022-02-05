@@ -83,6 +83,7 @@ type FundAtDate = {
     CurrencyCode: string
     FundCompanyId: string
     Quantity: decimal
+    LastChangeDate: DateTime
 }
 
 type FundForCurrency = {

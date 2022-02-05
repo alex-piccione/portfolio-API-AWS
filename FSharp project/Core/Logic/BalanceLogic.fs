@@ -11,7 +11,7 @@ type IBalanceLogic =
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
 
 
-type BalanceLogic(fundRepository:IFundRepository) = 
+type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
     interface IBalanceLogic with
         member this.GetBalance(day: DateTime): Balance = 
@@ -37,13 +37,14 @@ type BalanceLogic(fundRepository:IFundRepository) =
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
-            
+
             let record:FundAtDate = { 
-                Id=""
-                Date=request.Date.Date
-                CurrencyCode= request.CurrencyCode
-                FundCompanyId= request.CompanyId
-                Quantity= request.Quantity
+                Id = "" // to be set
+                Date = request.Date.Date
+                CurrencyCode = request.CurrencyCode
+                FundCompanyId = request.CompanyId
+                Quantity = request.Quantity
+                LastChangeDate = chronos.Now
             }
 
             match fundRepository.FindFundAtDate(record) with
@@ -51,5 +52,5 @@ type BalanceLogic(fundRepository:IFundRepository) =
                 fundRepository.UpdateFundAtDate { record with Id = existing.Id }
                 BalanceUpdateResult.Updated
             | None -> 
-                fundRepository.CreateFundAtDate { record with Id = IdGenerator.NewId() }
+                fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
                 BalanceUpdateResult.Created
