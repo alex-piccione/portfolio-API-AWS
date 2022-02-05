@@ -19,21 +19,26 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
             let fundsByCurrency = funds |> List.groupBy (fun fund -> fund.CurrencyCode)
 
+            let mutable balanceLastUpdate = DateTime.MinValue
+
             let aggregates = 
                 fundsByCurrency |> List.map (fun (currencyCode, funds) -> 
 
                     let totalQuantity = funds.Sum(fun fund -> fund.Quantity)
                     let companies = funds |> List.filter (fun fund -> fund.Quantity > 0m) |> List.map (fun fund -> fund.FundCompanyId)
+                    let lastUpdateDate = funds.Max(fun fund -> fund.LastChangeDate)
+                    balanceLastUpdate <- max balanceLastUpdate lastUpdateDate 
 
                     {
                         CurrencyCode = currencyCode
                         Quantity = totalQuantity
                         CompaniesIds = companies
+                        LastUpdateDate = lastUpdateDate
                     }:FundForCurrency
                 )
                 |> List.filter (fun f -> f.Quantity > 0m)
 
-            let balance:Balance = {Date=day; FundsByCurrency = aggregates }
+            let balance:Balance = {Date=day; FundsByCurrency = aggregates; LastUpdateDate = balanceLastUpdate }
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 

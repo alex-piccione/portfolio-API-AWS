@@ -90,11 +90,13 @@ type FundForCurrency = {
     CurrencyCode: string
     Quantity: decimal
     CompaniesIds: string list
+    LastUpdateDate: DateTime
 }
 
 type Balance = {
     Date: DateTime
     FundsByCurrency: FundForCurrency list
+    LastUpdateDate: DateTime
 }
 
 type BalanceUpdateRequest = {
