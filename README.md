@@ -16,7 +16,6 @@ Required permissions:
 - AWSLambdaBasicExecutionRole
 
 
-
 ### API GAteway
 
 Create API Gateway "REST API" on eu-central-1 regios called "Portfolio".  
