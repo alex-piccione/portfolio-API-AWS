@@ -56,7 +56,6 @@ jobs:
       # Service Configuration is expected to be placed in a root of a service (working directory)
       #uses: serverless/github-action@master
       #with:
-      #  # --deploy is deprecated but I don't know any other way to use multiple serverless.yml files
       #  args: deploy --config ./serverless/serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
 
       uses: serverless/github-action@v1.53.0
