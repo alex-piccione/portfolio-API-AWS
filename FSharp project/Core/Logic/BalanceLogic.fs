@@ -37,7 +37,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
-            
+
             let record:FundAtDate = { 
                 Id = "" // to be set
                 Date = request.Date.Date

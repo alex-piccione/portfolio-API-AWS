@@ -1,5 +1,7 @@
 ﻿namespace Portfolio.Core.Logic
 
+open System
+
 type Result<'T> =
     | Ok of 'T
     | NotValid of string
@@ -10,11 +12,11 @@ type IIdGenerator =
 
 type IdGenerator () = 
     interface IIdGenerator with
-        member this.New () = System.Guid.NewGuid().ToString()
+        member this.New () = Guid.NewGuid().ToString()
 
 type IChronos =
-    abstract member Now: System.DateTime
+    abstract member Now: DateTime
 
 type Chronos () =
     interface IChronos with 
-        member this.Now = System.DateTime.UtcNow
+        member this.Now = DateTime.UtcNow
