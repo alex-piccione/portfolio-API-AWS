@@ -13,6 +13,7 @@ type BalanceLogicTest() =
 
     let Now = DateTime.UtcNow
     let chronos = Mock<IChronos>().SetupPropertyGet(fun c -> c.Now).Returns(Now).Create()
+    let idGenerator = Mock<IIdGenerator>().Create()
 
     let fundAtDate: FundAtDate = {
         Id = Guid.NewGuid().ToString()
@@ -28,10 +29,10 @@ type BalanceLogicTest() =
         ()
 
     [<Test>]
-    member this.``GetBalance with a simple case``() =
+    member this.``GetBalance with a simple scenario``() =
 
         let date = DateTime(2010, 08, 15)
-        let older_date = DateTime(2010, 08, 15)
+        let older_date = DateTime(2010, 07, 15)
         let funds:FundAtDate list = [
             {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m; LastChangeDate = Now}
             {Id="2"; Date=older_date; CurrencyCode="AAA"; FundCompanyId="Company B"; Quantity=2m; LastChangeDate = Now}
@@ -42,7 +43,7 @@ type BalanceLogicTest() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -53,10 +54,10 @@ type BalanceLogicTest() =
         balance.FundsByCurrency.Head |> should equal expectedFundForCurrency
 
     [<Test>]
-    member this.``GetBalance with a complex case``() =
+    member this.``GetBalance with a complex scenario``() =
 
         let date = DateTime(2010, 08, 15)
-        let old_date = date.AddDays(-10.)
+        //let old_date = date.AddDays(-10.)
         let older_date = date.AddDays(-100.)
         let funds:FundAtDate list = [
             {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company A"; Quantity=1m; LastChangeDate = Now}
@@ -70,7 +71,7 @@ type BalanceLogicTest() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -92,7 +93,7 @@ type BalanceLogicTest() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -115,7 +116,7 @@ type BalanceLogicTest() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -127,12 +128,11 @@ type BalanceLogicTest() =
 
     [<Test>]
     member this.``CreateOrUpdate [when] record exists [should] update`` () =
-
         let fundRepository = Mock<IFundRepository>()
-                                .Setup(fun r -> r.FindFundAtDate(any()))
-                                .Returns(Some(fundAtDate))
-                                .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+                                 .Setup(fun r -> r.FindFundAtDate (any()))
+                                 .Returns(Some(fundAtDate))
+                                 .Create()
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         let update:BalanceUpdateRequest = {
             Date = fundAtDate.Date
@@ -167,10 +167,12 @@ type BalanceLogicTest() =
     [<Test>]
     member this.``CreateOrUpdate [when] record does not exist [should] create a new one`` () =
         let fundRepository = Mock<IFundRepository>()
-                                .Setup( fun r -> r.FindFundAtDate(any()) )
-                                    .Returns(None)
-                                    .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+                                 .Setup(fun r -> r.FindFundAtDate (any()))
+                                 .Returns(None)
+                                 .Create()
+        let idGenerator = Mock<IIdGenerator>().Setup(fun g -> g.New()).Returns("new id").Create()
+
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         let request:BalanceUpdateRequest = {
             Date = fundAtDate.Date.AddDays(1.) // a different date
@@ -179,8 +181,7 @@ type BalanceLogicTest() =
             Quantity = 2m
         }
 
-        let expectedRecord = fun r -> r.Id |> should not' (be Empty)
-                                      r.Id |> should not' (equal fundAtDate.Id)
+        let expectedRecord = fun r -> r.Id |> should equal "new id"
                                       r.Date |> should equal request.Date
                                       r.CurrencyCode |> should equal request.CurrencyCode
                                       r.FundCompanyId |> should equal request.CompanyId 
@@ -193,12 +194,11 @@ type BalanceLogicTest() =
 
     [<Test>]
     member this.``CreateOrUpdate [when] date contains time part [should] match record within the same day`` () =
-
         let fundRepository = Mock<IFundRepository>()
                                 .Setup( fun r -> r.FindFundAtDate (any()) )
                                 .Returns(Some(fundAtDate))
                                 .Create()
-        let logic = BalanceLogic(fundRepository, chronos) :> IBalanceLogic
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         let request:BalanceUpdateRequest = {
             Date = DateTime.UtcNow

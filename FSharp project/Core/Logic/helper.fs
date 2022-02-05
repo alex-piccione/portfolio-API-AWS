@@ -5,8 +5,12 @@ type Result<'T> =
     | NotValid of string
     | Error of string
 
+type IIdGenerator =
+    abstract member New: unit -> string
+
 type IdGenerator () = 
-    static member NewId () = System.Guid.NewGuid().ToString()
+    interface IIdGenerator with
+        member this.New () = System.Guid.NewGuid().ToString()
 
 type IChronos =
     abstract member Now: System.DateTime
