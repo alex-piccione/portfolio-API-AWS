@@ -1,7 +1,7 @@
 # Portfolio API on AWS
 AWS API for Portfolio project
 
-![Deploy F# API](https://github.com/alex-piccione/portfolio-API-AWS/actions/workflows/deploy%20fsharp.yml/badge.svg)]
+![Deploy F# API](https://github.com/alex-piccione/portfolio-API-AWS/actions/workflows/deploy%20fsharp.yml/badge.svg)
 
 
 ## AWS
