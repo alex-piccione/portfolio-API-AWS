@@ -76,7 +76,6 @@ type ``Fund Repository`` () =
         fund.FundCompanyId |> should equal (item.FundCompanyId)
         fund.Quantity |> should equal (item.Quantity)
 
-
     [<Test>]
     member this.``GetFundsToDate [should] NOT return a fund saved in successive date`` () =
         let toDate = DateTime(2000, 01, 31)
