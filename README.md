@@ -66,3 +66,15 @@ client.connect(err => {
   client.close();
 });
 ```
+
+
+### New property
+When a new property is added to the type stored in the database it makes the deserialization fails.  
+This bug is not revealed by the tests because they creates new records that results to be ok within the change.  
+When the code is deployed and used over the old records it raise the error.  
+Set a default value in the MongoDB Collection mapping solves the issue.  
+The ``static member overloadMap`` function can be used:
+```fsharp
+static member overloadMap (map:BsonClassMap<FundAtDate>) = 
+    map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01))
+```

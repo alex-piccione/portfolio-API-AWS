@@ -7,6 +7,7 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open Extensions
 open MongoDB.Driver
+open MongoDB.Bson.Serialization
 
 
 type FundRepository (connectionString:string, collectionName:string) =
@@ -16,6 +17,9 @@ type FundRepository (connectionString:string, collectionName:string) =
 
     member this.CreateFilter<'T> (field:Expression<Func<'T, string>>, value:string):FilterDefinition<'T> =
         FilterDefinitionBuilder<'T>().Eq(field, value)
+
+    static member overloadMap (map:BsonClassMap<FundAtDate>) = 
+        map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01))
 
     interface IFundRepository with
 
