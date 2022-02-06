@@ -11,7 +11,7 @@ open MongoDB.Bson.Serialization
 
 
 type FundRepository (connectionString:string, collectionName:string) =
-    inherit CrudRepository<FundAtDate>(connectionString, collectionName, (fun x -> x.Id))
+    inherit CrudRepository<FundAtDate>(connectionString, collectionName, (fun x -> x.Id), FundRepository.overloadMap)
 
     new(connectionString:string) = FundRepository(connectionString, "Fund")
 
@@ -19,7 +19,7 @@ type FundRepository (connectionString:string, collectionName:string) =
         FilterDefinitionBuilder<'T>().Eq(field, value)
 
     static member overloadMap (map:BsonClassMap<FundAtDate>) = 
-        map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01))
+        map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01)) |> ignore
 
     interface IFundRepository with
 
