@@ -62,3 +62,4 @@ jobs:
       with:
         #--config is deprecated but I don't know any other way to use multiple serverless.yml files
         args: deploy --config serverless.fsharp.yml --stage ${{env.AWS_STAGE}} --region ${{env.AWS_REGION}}
+
