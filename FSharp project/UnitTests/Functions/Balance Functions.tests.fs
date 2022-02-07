@@ -94,5 +94,27 @@ type ``Balance Functions`` () =
                           .Create()
 
         // execute
-        let response = functions.Get(request, context)
+        let response = functions.Update(request, context)
         response.StatusCode |> should equal 409
+        response.Body |> should contain "Date"
+
+    [<Test>]
+    member this.``Update [when] Company is missing [should] return error``() =
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.Body <- $@"{{
+            ""date"": ""2022-02-07T21:08:11.358Z"",
+            ""currencyCode"": ""EUR"",
+            ""Quantity"": 0
+        }}"
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.Update(request, context)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "CompanyId"
