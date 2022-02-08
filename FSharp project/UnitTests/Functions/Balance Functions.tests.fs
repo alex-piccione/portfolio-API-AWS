@@ -78,21 +78,19 @@ type ``Balance Functions`` () =
         response.StatusCode |> should equal 409
 
     [<Test>]
-    member this.``Update [when] Date is missing [should] return error``() =
-        let balanceLogic = Mock<IBalanceLogic>().Create()
+    member this.``Update [when] Logic returns request validation error [should] return error``() =
+        let error = BalanceUpdateResult.InvalidRequest("invalid request")
+        let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()
         let functions = BalanceFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
-        request.Body <- $@"{{
-            ""currencyCode"": ""EUR"",
-            ""companyId"": ""aaa"",
-            ""Quantity"": 0
-        }}"
+        request.Body <- $@"{{ }}"
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
                           .Create()
 
         // execute
-        let response = functions.Get(request, context)
+        let response = functions.Update(request, context)
         response.StatusCode |> should equal 409
+        response.Body |> should contain "invalid request"
