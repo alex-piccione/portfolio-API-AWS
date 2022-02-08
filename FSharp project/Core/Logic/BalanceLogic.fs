@@ -43,12 +43,12 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
 
-            let error = match request with 
-                        | r when String.IsNullOrWhiteSpace r.CompanyId -> Some(mustBeDefined "CompanyId")
-                        | _ -> None
+            let invalidRequest error = BalanceUpdateResult.InvalidRequest error
 
-            match error with
-            | Some message -> BalanceUpdateResult.InvalidRequest message
+            match request with 
+            | r when r.Date = Unchecked.defaultof<DateTime> -> invalidRequest (mustBeDefined "Date")
+            | r when String.IsNullOrWhiteSpace r.CompanyId -> invalidRequest (mustBeDefined "CompanyId")
+            | r when r.Quantity <= 0m -> invalidRequest (mustBeGreaterThanZero "Quantity")
             | _ ->
                 let record:FundAtDate = { 
                     Id = "" // to be set

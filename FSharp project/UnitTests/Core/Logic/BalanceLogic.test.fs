@@ -258,7 +258,7 @@ type BalanceLogicTest() =
     [<Test>]
     member this.``Update [when] Quantity is not positive [should] return error``() =
         let request:BalanceUpdateRequest = {
-            Date = DateTime.MinValue
+            Date = DateTime.UtcNow
             CurrencyCode = "AAA"
             Quantity = 0m
             CompanyId = "company"
