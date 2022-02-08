@@ -24,6 +24,8 @@ type BalanceLogicTest() =
         LastChangeDate = Now.AddMonths(-1)
     }
 
+    let mockRepository = Mock<IFundRepository>().Create()
+
     [<SetUp>]
     member this.SetUp() =
         ()
@@ -239,3 +241,43 @@ type BalanceLogicTest() =
         // execute
         logic.CreateOrUpdate request |> should equal Updated
         verify <@ fundRepository.UpdateFundAtDate (is expectedRecord) @> once
+
+    [<Test>]
+    member this.``Update [when] Date is missing [should] return error``() =
+        let request:BalanceUpdateRequest = {
+            Date = DateTime.MinValue
+            CurrencyCode = ""
+            Quantity = 1m
+            CompanyId = "company"
+        }
+
+        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
+        | InvalidRequest error -> error |> should equal (error_messages.mustBeDefined "Date")
+        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
+
+    [<Test>]
+    member this.``Update [when] Quantity is not positive [should] return error``() =
+        let request:BalanceUpdateRequest = {
+            Date = DateTime.MinValue
+            CurrencyCode = "AAA"
+            Quantity = 0m
+            CompanyId = "company"
+        }
+
+        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
+        | InvalidRequest error -> error |> should equal (error_messages.mustBeGreaterThanZero "Quantity")
+        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
+
+
+    [<Test>]
+    member this.``Update [when] Company is missing [should] return error``() =
+        let request:BalanceUpdateRequest = {
+            Date = DateTime.UtcNow
+            CurrencyCode = ""
+            Quantity = 1m
+            CompanyId = ""
+        }
+
+        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
+        | InvalidRequest error -> error |> should equal (error_messages.mustBeDefined "CompanyId")
+        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"

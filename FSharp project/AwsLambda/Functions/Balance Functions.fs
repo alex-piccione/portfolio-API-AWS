@@ -45,12 +45,10 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
 
         try
             let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body
-            context.Logger.Log $"updateRequest. {updateRequest}"
-            context.Logger.Log $"updateRequest. Quantity: {updateRequest.Quantity}"
-            context.Logger.Log $"updateRequest. CurrencyCode: {updateRequest.CurrencyCode}"
             match balanceLogic.CreateOrUpdate(updateRequest) with
             | Created -> this.createOkWithStatus 201
             | Updated -> this.createOkWithStatus 200
+            | InvalidRequest error -> this.createErrorForConflict error
         with exc ->
             context.Logger.Log $"Failed to update Balance. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to update Balance. Error: {exc.Message}"

@@ -78,16 +78,13 @@ type ``Balance Functions`` () =
         response.StatusCode |> should equal 409
 
     [<Test>]
-    member this.``Update [when] Date is missing [should] return error``() =
-        let balanceLogic = Mock<IBalanceLogic>().Create()
+    member this.``Update [when] Logic returns request validation error [should] return error``() =
+        let error = BalanceUpdateResult.InvalidRequest("invalid request")
+        let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()
         let functions = BalanceFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
-        request.Body <- $@"{{
-            ""currencyCode"": ""EUR"",
-            ""companyId"": ""aaa"",
-            ""Quantity"": 0
-        }}"
+        request.Body <- $@"{{ }}"
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
@@ -96,25 +93,4 @@ type ``Balance Functions`` () =
         // execute
         let response = functions.Update(request, context)
         response.StatusCode |> should equal 409
-        response.Body |> should contain "Date"
-
-    [<Test>]
-    member this.``Update [when] Company is missing [should] return error``() =
-        let balanceLogic = Mock<IBalanceLogic>().Create()
-        let functions = BalanceFunctions(balanceLogic)
-
-        let request = Mock<APIGatewayProxyRequest>().Create()
-        request.Body <- $@"{{
-            ""date"": ""2022-02-07T21:08:11.358Z"",
-            ""currencyCode"": ""EUR"",
-            ""Quantity"": 0
-        }}"
-
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
-
-        // execute
-        let response = functions.Update(request, context)
-        response.StatusCode |> should equal 409
-        response.Body |> should contain "CompanyId"
+        response.Body |> should contain "invalid request"

@@ -109,3 +109,4 @@ type BalanceUpdateRequest = {
 type BalanceUpdateResult = 
 | Created
 | Updated
+| InvalidRequest of string

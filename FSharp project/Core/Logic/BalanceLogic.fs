@@ -4,12 +4,12 @@ open System
 open System.Linq
 open Portfolio.Core.Entities
 open Portfolio.Core
+open error_messages
 
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
-
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
@@ -43,19 +43,26 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
 
-            let record:FundAtDate = { 
-                Id = "" // to be set
-                Date = request.Date.Date
-                CurrencyCode = request.CurrencyCode
-                FundCompanyId = request.CompanyId
-                Quantity = request.Quantity
-                LastChangeDate = chronos.Now
-            }
+            let error = match request with 
+                        | r when String.IsNullOrWhiteSpace r.CompanyId -> Some(mustBeDefined "CompanyId")
+                        | _ -> None
 
-            match fundRepository.FindFundAtDate(record) with
-            | Some existing ->
-                fundRepository.UpdateFundAtDate { record with Id = existing.Id }
-                BalanceUpdateResult.Updated
-            | None -> 
-                fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
-                BalanceUpdateResult.Created
+            match error with
+            | Some message -> BalanceUpdateResult.InvalidRequest message
+            | _ ->
+                let record:FundAtDate = { 
+                    Id = "" // to be set
+                    Date = request.Date.Date
+                    CurrencyCode = request.CurrencyCode
+                    FundCompanyId = request.CompanyId
+                    Quantity = request.Quantity
+                    LastChangeDate = chronos.Now
+                }
+
+                match fundRepository.FindFundAtDate(record) with
+                | Some existing ->
+                    fundRepository.UpdateFundAtDate { record with Id = existing.Id }
+                    BalanceUpdateResult.Updated
+                | None -> 
+                    fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
+                    BalanceUpdateResult.Created
