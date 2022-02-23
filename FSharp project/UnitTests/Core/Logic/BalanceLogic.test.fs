@@ -253,26 +253,28 @@ type BalanceLogicTest() =
                 Quantity = 2m
         }
 
-        let expectedRecord = fun r -> 
-                                 r.Id |> should equal fundAtDate.Id
-                                 r.Date |> should equal request.Date.Date
-                                 r.Quantity |> should equal request.Quantity
-                                 r.LastChangeDate |> should equal Now
-                                 true
+        let expectedRecord = 
+            fun r -> 
+                r.Id |> should equal fundAtDate.Id
+                r.Date |> should equal request.Date.Date
+                r.Quantity |> should equal request.Quantity
+                r.LastChangeDate |> should equal Now
+                true
+
         // execute
         logic.CreateOrUpdate request |> should equal Updated
         verify <@ fundRepository.UpdateFundAtDate (is expectedRecord) @> once
 
     [<Test>]
     member this.``CreateOrUpdate [when] Date is missing [should] return error``() =
-        let request = { request with Date = DateTime.MinValue }
+        let request = {request with Date = DateTime.MinValue}
         let expectedError = error_messages.mustBeDefined "Date"
         testRequestValidation request expectedError
 
     [<Test>]
     member this.``CreateOrUpdate [when] Date is in the future [should] return error``() =
         testRequestValidation 
-            { request with Date = DateTime.UtcNow.AddDays(1) }
+            {request with Date = DateTime.UtcNow.AddDays(1)}
             (error_messages.mustBeInThePast "Date")
 
     [<Test>]
@@ -284,11 +286,11 @@ type BalanceLogicTest() =
     [<Test>]
     member this.``CreateOrUpdate [when] Quantity is not positive [should] return error``() =
         testRequestValidation
-            { request with Quantity = 0m }
+            {request with Quantity = 0m}
             (error_messages.mustBeGreaterThanZero "Quantity")
 
     [<Test>]
     member this.``CreateOrUpdate [when] Company is missing [should] return error``() =
         testRequestValidation
-            { request with CompanyId = "" }
+            {request with CompanyId = ""}
             (error_messages.mustBeDefined "CompanyId")

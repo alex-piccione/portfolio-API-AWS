@@ -45,7 +45,6 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
             let invalidRequest error = BalanceUpdateResult.InvalidRequest error
 
-            // TODO: validate CurrencyCode
             match request with 
             | r when r.Date = Unchecked.defaultof<DateTime> -> invalidRequest (mustBeDefined "Date")
             | r when r.Date > chronos.Now -> invalidRequest (mustBeInThePast "Date")
