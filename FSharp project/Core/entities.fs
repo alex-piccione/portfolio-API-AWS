@@ -106,7 +106,7 @@ type BalanceUpdateRequest = {
     CompanyId: string
 }
 
-type BalanceUpdateResult = 
-| Created
-| Updated
-| InvalidRequest of string
+type BalanceUpdateResult =
+    | Created
+    | Updated
+    | InvalidRequest of string
