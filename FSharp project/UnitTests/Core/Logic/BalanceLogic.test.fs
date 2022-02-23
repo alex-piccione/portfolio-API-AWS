@@ -17,14 +17,34 @@ type BalanceLogicTest() =
 
     let fundAtDate: FundAtDate = {
         Id = Guid.NewGuid().ToString()
-        Date = DateTime.Today
+        Date = Now.AddMonths(-1)
         CurrencyCode = "AAA"
         FundCompanyId = "Company"
         Quantity = 1m
-        LastChangeDate = Now.AddMonths(-1)
+        LastChangeDate = Now.AddDays(-1)
+    }
+
+    let request:BalanceUpdateRequest = {
+        Date = Now.AddDays(-1)
+        CurrencyCode = "EUR"
+        Quantity = 1m
+        CompanyId = "company"
     }
 
     let mockRepository = Mock<IFundRepository>().Create()
+
+    let testRequestValidation request expectedError = 
+        let error method = Exception($"call to \"{method}\" not expected")
+        let mockRepository = 
+            Mock<IFundRepository>()
+                .Setup(fun r -> r.FindFundAtDate (any()) ).Raises(error "FindFundAtDate") 
+                .Setup(fun r -> r.CreateFundAtDate (any()) ).Raises(error "CreateFundAtDate") 
+                .Setup(fun r -> r.UpdateFundAtDate (any()) ).Raises(error "UpdateFundAtDate") 
+                .Create()
+
+        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
+        | InvalidRequest error -> error |> should equal expectedError
+        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
 
     [<SetUp>]
     member this.SetUp() =
@@ -179,7 +199,7 @@ type BalanceLogicTest() =
         let isExpectedRecord = 
             fun r -> 
                 r.Id |> should equal (expectedRecord.Id)
-                r.Date |> should equal (expectedRecord.Date)
+                r.Date |> should equal (expectedRecord.Date.Date)
                 r.CurrencyCode |> should equal (expectedRecord.CurrencyCode)
                 r.FundCompanyId |> should equal (expectedRecord.FundCompanyId)
                 r.Quantity |> should equal (expectedRecord.Quantity)
@@ -200,14 +220,14 @@ type BalanceLogicTest() =
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         let request:BalanceUpdateRequest = {
-            Date = fundAtDate.Date.AddDays(1.) // a different date
+            Date = fundAtDate.Date.AddDays(-1) // a different date
             CurrencyCode = fundAtDate.CurrencyCode
             CompanyId = fundAtDate.FundCompanyId
             Quantity = 2m
         }
 
         let expectedRecord = fun r -> r.Id |> should equal "new id"
-                                      r.Date |> should equal request.Date
+                                      r.Date |> should equal request.Date.Date
                                       r.CurrencyCode |> should equal request.CurrencyCode
                                       r.FundCompanyId |> should equal request.CompanyId 
                                       r.Quantity |> should equal request.Quantity 
@@ -218,7 +238,7 @@ type BalanceLogicTest() =
         verify <@ fundRepository.CreateFundAtDate (is expectedRecord) @> once
 
     [<Test>]
-    member this.``CreateOrUpdate [when] date contains time part [should] match record within the same day`` () =
+    member this.``CreateOrUpdate [when] same day but different time [should] update record within the same day`` () =
         let fundRepository = Mock<IFundRepository>()
                                 .Setup( fun r -> r.FindFundAtDate (any()) )
                                 .Returns(Some(fundAtDate))
@@ -226,10 +246,11 @@ type BalanceLogicTest() =
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
         let request:BalanceUpdateRequest = {
-            Date = DateTime.UtcNow
-            CurrencyCode = fundAtDate.CurrencyCode
-            CompanyId = fundAtDate.FundCompanyId
-            Quantity = 2m
+            request with
+                Date = fundAtDate.Date.AddHours(5) // same day
+                CurrencyCode = fundAtDate.CurrencyCode
+                CompanyId = fundAtDate.FundCompanyId
+                Quantity = 2m
         }
 
         let expectedRecord = fun r -> 
@@ -243,41 +264,31 @@ type BalanceLogicTest() =
         verify <@ fundRepository.UpdateFundAtDate (is expectedRecord) @> once
 
     [<Test>]
-    member this.``Update [when] Date is missing [should] return error``() =
-        let request:BalanceUpdateRequest = {
-            Date = DateTime.MinValue
-            CurrencyCode = ""
-            Quantity = 1m
-            CompanyId = "company"
-        }
-
-        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
-        | InvalidRequest error -> error |> should equal (error_messages.mustBeDefined "Date")
-        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
+    member this.``CreateOrUpdate [when] Date is missing [should] return error``() =
+        let request = { request with Date = DateTime.MinValue }
+        let expectedError = error_messages.mustBeDefined "Date"
+        testRequestValidation request expectedError
 
     [<Test>]
-    member this.``Update [when] Quantity is not positive [should] return error``() =
-        let request:BalanceUpdateRequest = {
-            Date = DateTime.UtcNow
-            CurrencyCode = "AAA"
-            Quantity = 0m
-            CompanyId = "company"
-        }
-
-        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
-        | InvalidRequest error -> error |> should equal (error_messages.mustBeGreaterThanZero "Quantity")
-        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
-
+    member this.``CreateOrUpdate [when] Date is in the future [should] return error``() =
+        testRequestValidation 
+            { request with Date = DateTime.UtcNow.AddDays(1) }
+            (error_messages.mustBeInThePast "Date")
 
     [<Test>]
-    member this.``Update [when] Company is missing [should] return error``() =
-        let request:BalanceUpdateRequest = {
-            Date = DateTime.UtcNow
-            CurrencyCode = ""
-            Quantity = 1m
-            CompanyId = ""
-        }
+    member this.``CreateOrUpdate [when] CurrencyCode is missing [should] return error``() =
+        testRequestValidation
+            {request with CurrencyCode = ""}
+            (error_messages.mustBeDefined "CurrencyCode")
 
-        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
-        | InvalidRequest error -> error |> should equal (error_messages.mustBeDefined "CompanyId")
-        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
+    [<Test>]
+    member this.``CreateOrUpdate [when] Quantity is not positive [should] return error``() =
+        testRequestValidation
+            { request with Quantity = 0m }
+            (error_messages.mustBeGreaterThanZero "Quantity")
+
+    [<Test>]
+    member this.``CreateOrUpdate [when] Company is missing [should] return error``() =
+        testRequestValidation
+            { request with CompanyId = "" }
+            (error_messages.mustBeDefined "CompanyId")
