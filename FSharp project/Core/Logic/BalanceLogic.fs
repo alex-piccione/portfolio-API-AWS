@@ -47,6 +47,8 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
             match request with 
             | r when r.Date = Unchecked.defaultof<DateTime> -> invalidRequest (mustBeDefined "Date")
+            | r when r.Date > chronos.Now -> invalidRequest (mustBeInThePast "Date")
+            | r when String.IsNullOrWhiteSpace r.CurrencyCode -> invalidRequest (mustBeDefined "CurrencyCode")
             | r when String.IsNullOrWhiteSpace r.CompanyId -> invalidRequest (mustBeDefined "CompanyId")
             | r when r.Quantity <= 0m -> invalidRequest (mustBeGreaterThanZero "Quantity")
             | _ ->
