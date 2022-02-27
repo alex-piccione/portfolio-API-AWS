@@ -2,36 +2,26 @@
 
 open System
 open NUnit.Framework
-open NUnit.Framework.Constraints
 open Foq
 open Foq.Linq
 open FsUnit
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-
-
-type matchingResult = Result_Ok | Result_Error | Result_NotValid
-
-
-type matchResult(expected: matchingResult) =
-    inherit Constraints.EqualConstraint(expected)
-
-    override this.ApplyTo actual =
-        let pass = 
-            match box actual with
-            | :? Result<Company> as result -> 
-                match result with
-                | Ok c -> expected = Result_Ok
-                | Error s -> expected = Result_Error
-                | NotValid s -> expected = Result_NotValid
-            | _ -> failwith "passed type must be Result<Company>"
-        
-        ConstraintResult(this, actual, pass)
+open match_helper
+open NUnit.Framework.Constraints
 
 type ``CompanyLogic Test`` () =
 
     let newGuid () = Guid.NewGuid().ToString();
+    let shouldReturnOk = fun x -> x should matchResult<Company> Result_Ok 
+    let shouldReturnError = fun x -> x should matchResult<Company> Result_Error
+
+    //let returnError x = x -> matchResult<Company> Result_Error // ('a -> EqualConstraint) -> obj = matchResult<Company> Result_Error
+
+    // should is 
+    // f: ('a -> #Constraint) -> x:'a -> y:obj -> unit
+    //EqualConstraint
 
     [<Test>]
     member this.``Create``() =
@@ -42,12 +32,12 @@ type ``CompanyLogic Test`` () =
         let company:Company = {Id=""; Name="a name"; Types=[CompanyType.Bank]}
 
         // execute
-        let result:Result<Company> = logic.Create(company)
+        let result = logic.Create(company)
 
-        result |> should matchResult Result_Ok
+        result |> should matchResult<Company> Result_Ok
 
         match result with
-        | Ok comp -> 
+        | Result.Ok comp -> 
             comp.Id |> should not' (be NullOrEmptyString)
             comp.Name |> should equal company.Name
             comp.Types |> should equivalent company.Types
@@ -63,12 +53,13 @@ type ``CompanyLogic Test`` () =
         let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
 
         // execute
-        let result:Result<Company> = logic.Create(company)
+        let result = logic.Create(company)
 
-        result |> should matchResult Result_NotValid
+        result |> should matchResult<Company> Result_Error
+        //result |> should returnError
 
         match result with
-        | NotValid message -> message |> should contain $"Name cannot be empty."
+        | Error message -> message |> should contain $"Name cannot be empty."
         | _ -> failwith "expected non valid result"
 
     [<Test>]
@@ -83,12 +74,12 @@ type ``CompanyLogic Test`` () =
         let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
 
         // execute
-        let result:Result<Company> = logic.Create(company)
+        let result = logic.Create(company)
 
-        result |> should matchResult Result_NotValid
+        result |> should matchResult<Company> Result_Error
 
         match result with
-        | NotValid message ->
+        | Error message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
 
@@ -106,10 +97,10 @@ type ``CompanyLogic Test`` () =
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result:Result<Company> = logic.Update(company)
+        let result = logic.Update(company)
 
         match result with
-        | Ok c -> c.Id |> should equal company.Id
+        | Result.Ok c -> c.Id |> should equal company.Id
         | _ -> failwith "expected OK"
 
         verify <@ repository.Update company @> once
@@ -124,12 +115,12 @@ type ``CompanyLogic Test`` () =
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result:Result<Company> = logic.Update(company)
+        let result = logic.Update(company)
 
-        result |> should matchResult Result_NotValid
+        result |> should matchResult<Company> Result_Error
 
         match result with
-        | NotValid message ->
+        | Error message ->
             message |> should contain $"Name cannot be empty."
         | _ -> failwith "expected non valid result"
 
@@ -146,12 +137,24 @@ type ``CompanyLogic Test`` () =
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result:Result<Company> = logic.Update(company)
+        let result = logic.Update(company)
 
-        result |> should matchResult Result_NotValid
+        result |> should matchResult<Company> Result_Error
 
         match result with
-        | NotValid message ->
+        | Error message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
 
+
+    [<Test>]
+    member this.``Single``() =
+        failwith "not implemented"
+
+    [<Test>]
+    member this.``List``() =
+        failwith "not implemented"
+
+    [<Test>]
+    member this.``Delete``() =
+        failwith "not implemented"

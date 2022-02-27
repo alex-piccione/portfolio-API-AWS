@@ -79,7 +79,7 @@ type ``Balance Functions`` () =
 
     [<Test>]
     member this.``Update [when] Logic returns request validation error [should] return error``() =
-        let error = BalanceUpdateResult.InvalidRequest("invalid request")
+        let error = Error "invalid request"
         let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()
         let functions = BalanceFunctions(balanceLogic)
 

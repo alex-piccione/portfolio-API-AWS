@@ -8,6 +8,7 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
+open match_helper
 
 type BalanceLogicTest() =
 
@@ -43,8 +44,8 @@ type BalanceLogicTest() =
                 .Create()
 
         match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
-        | InvalidRequest error -> error |> should equal expectedError
-        | x -> x |> failwith $"unexpected result: {x} instead of {InvalidRequest}"
+        | Error error -> error |> should equal expectedError
+        | x -> x |> failwith $"unexpected result: {x} instead of {Error}"
 
     [<SetUp>]
     member this.SetUp() =
@@ -194,7 +195,7 @@ type BalanceLogicTest() =
         }
 
         // execute
-        logic.CreateOrUpdate update |> should equal Updated
+        logic.CreateOrUpdate update |> should equal (Ok Updated :> Result<BalanceUpdateResult, string>)
 
         let isExpectedRecord = 
             fun r -> 
@@ -234,7 +235,8 @@ type BalanceLogicTest() =
                                       r.LastChangeDate |> should equal Now
                                       true
         // execute
-        logic.CreateOrUpdate request |> should equal Created
+        logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
+
         verify <@ fundRepository.CreateFundAtDate (is expectedRecord) @> once
 
     [<Test>]
@@ -262,7 +264,7 @@ type BalanceLogicTest() =
                 true
 
         // execute
-        logic.CreateOrUpdate request |> should equal Updated
+        logic.CreateOrUpdate request |> should equal (Ok Updated :> Result<BalanceUpdateResult, string>)
         verify <@ fundRepository.UpdateFundAtDate (is expectedRecord) @> once
 
     [<Test>]

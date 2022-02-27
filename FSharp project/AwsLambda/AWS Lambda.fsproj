@@ -22,6 +22,7 @@
     <Compile Include="Functions\Currency Functions.fs" />
     <Compile Include="Functions\Company Functions.fs" />
     <Compile Include="Functions\Balance Functions.fs" />
+    <Compile Include="Functions\DU spike.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -60,14 +60,12 @@ type CompanyTypesJsonConverter () =
         value |> List.iter (fun item -> writer.WriteStringValue (item.ToString())) 
         writer.WriteEndArray()
 
-
 type Company = {
     Id: string
     Name: string
     [<JsonConverter(typeof<CompanyTypesJsonConverter>)>]
     Types: CompanyType list
 }
-
 
 
 
@@ -105,8 +103,3 @@ type BalanceUpdateRequest = {
     Quantity: decimal
     CompanyId: string
 }
-
-type BalanceUpdateResult = 
-| Created
-| Updated
-| InvalidRequest of string

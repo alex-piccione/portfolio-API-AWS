@@ -5,8 +5,11 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 
 type ICompanyLogic =
-    abstract member Create:Company -> Result<Company>
-    abstract member Update:Company -> Result<Company>
+    abstract member Create:Company -> Result<Company, string> // CreateResult
+    abstract member Update:Company -> Result<Company, string> // UpdateResult
+    abstract member Single:string -> Company option
+    abstract member List:unit -> Company list
+    abstract member Delete:string -> Result<string,string>  // DeleteResult
 
 type CompanyValidation = Valid of Company | NotValid of string
 
@@ -21,26 +24,37 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
         else CompanyValidation.Valid company
 
     interface ICompanyLogic with
-        member this.Create(company:Company):Result<Company> =
+        member this.Create(company:Company) = //:CreateResult<Company> =
             match normalize company |> validate with
-            | NotValid msg -> Result<_>.NotValid msg
+            | NotValid msg -> Error msg
             | Valid validCompany ->
                 match companyRepository.Exists(validCompany.Name) with 
-                | true -> Result<_>.NotValid($"A company with name \"{validCompany.Name}\" already exists.")
+                | true -> Error $"A company with name \"{validCompany.Name}\" already exists."
                 | _ -> 
                     let newCompany = assignNewId validCompany
                     companyRepository.Create(newCompany)
-                    Result<_>.Ok(newCompany)
+                    Ok newCompany
             
         member this.Update (company:Company) =
-
             let checkNameExists company = 
                 match companyRepository.GetByName company.Name with
                 | Some c when c.Id <> company.Id -> NotValid $"A company with name \"{company.Name}\" already exists."
                 | _ -> Valid company
          
             match normalize company |> validate with
-            | Valid c -> match checkNameExists c with
-                         | Valid c -> companyRepository.Update c; Result<_>.Ok c
-                         | NotValid msg -> Result<_>.NotValid msg
-            | NotValid msg -> Result<_>.NotValid msg
+            | NotValid msg -> Error msg
+            | Valid validCompany -> 
+                match checkNameExists validCompany with
+                | Valid c -> companyRepository.Update c; Ok c
+                | NotValid msg -> Error msg
+
+        member this.Single id =
+            Some({ Id=""; Name=""; Types=[Bank] })
+
+        member this.List () =
+            [{ Id=""; Name=""; Types=[Bank] }]
+
+        member this.Delete id =
+            companyRepository.Delete id;
+            Ok id
+            //DeleteResult.Deleted

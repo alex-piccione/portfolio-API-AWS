@@ -2,10 +2,33 @@
 
 open System
 
-type Result<'T> =
-    | Ok of 'T
-    | NotValid of string
-    | Error of string
+//type BalanceUpdateResult = 
+//| Created
+//| Updated
+//| InvalidRequest of string
+
+//type DeleteResult =
+//| Deleted
+//| DeleteInvalidRequest of string
+
+//type CreateResult<'T> =
+//| Created of 'T
+//| CreateInvalidRequest of string
+
+//type UpdateResult<'T> =
+//| Updated of 'T
+//| UpdateInvalidRequest of string
+
+//type LogicResult<'a> =
+//| Success
+
+//type LogicExecutionResult<'T> =
+//| Success of 'T
+//| InvalidRequest of string
+
+type ValidateResult =
+| Valid 
+| NotValid of string
 
 type IIdGenerator =
     abstract member New: unit -> string

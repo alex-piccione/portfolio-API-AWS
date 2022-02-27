@@ -8,7 +8,6 @@ open NUnit.Framework
 open FsUnit
 open Foq
 open Foq.Linq
-open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 open Portfolio.Api.Functions
@@ -18,8 +17,7 @@ type ``Company Functions`` () =
 
     let testCompany:Company = { Id="test"; Name="UnitTest"; Types=[CompanyType.Bank]}
     let getLogic() = Mock<ICompanyLogic>().Create()
-    let getRepository() = Mock<ICompanyRepository>().Create()
-
+ 
     member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock<ILambdaLogger>().Create()) 
@@ -36,7 +34,6 @@ type ``Company Functions`` () =
     (*
     [<Test>]
     member this.``Update`` () =
-
         let itemToUpdate:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
 
         let s:unit = ()
@@ -55,7 +52,6 @@ type ``Company Functions`` () =
  
     (*[<Test>]
     member this.``Create`` () =
-
         let itemToUpdate:Company = {testCompany with Id="aaa"}
 
         let s:unit = ()
@@ -63,8 +59,6 @@ type ``Company Functions`` () =
                              .SetupFunc(fun rep -> rep.Create(itemToUpdate))
                              .Returns(s)
                              .Create()
-
-
 
         let functions = CompanyFunctions(getLogic(), repository)
 
@@ -82,7 +76,7 @@ type ``Company Functions`` () =
          ""Types"": [""Bank""]
        }"
 
-       let functions = CompanyFunctions(getLogic(), getRepository())
+       let functions = CompanyFunctions(getLogic())
 
        // execute
        let item:Company = functions.Deserialize json
@@ -97,7 +91,7 @@ type ``Company Functions`` () =
          ""Types"": [""Bank"", ""Exchange""]
        }"
 
-       let functions = CompanyFunctions(getLogic(), getRepository())
+       let functions = CompanyFunctions(getLogic())
 
        // execute
        let item:Company = functions.Deserialize json
