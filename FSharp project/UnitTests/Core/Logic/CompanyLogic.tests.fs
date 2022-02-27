@@ -23,11 +23,13 @@ type ``CompanyLogic Test`` () =
     // f: ('a -> #Constraint) -> x:'a -> y:obj -> unit
     //EqualConstraint
 
+    let aCompany:Company = { Id="TEST"; Name="Company"; Types=[Bank; Exchange]}
+
     [<Test>]
     member this.``Create``() =
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository) :> ICompanyLogic
-        let company:Company = {Id=""; Name="a name"; Types=[CompanyType.Bank]}
+        let company:Company = {Id=""; Name="a name"; Types=[Bank]}
 
         // execute
         match logic.Create company with
@@ -43,7 +45,7 @@ type ``CompanyLogic Test`` () =
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
-        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
+        let company:Company = {Id=""; Name=name; Types=[Bank]}
 
         // execute
         match logic.Create company with
@@ -59,7 +61,7 @@ type ``CompanyLogic Test`` () =
                              .Create()
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
-        let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
+        let company:Company = {Id=""; Name=name; Types=[Bank]}
 
         // execute
         match logic.Create company with
@@ -70,7 +72,7 @@ type ``CompanyLogic Test`` () =
     [<Test>]
     member this.``Update``() =
         let name = "test"
-        let company:Company = {Id=newGuid(); Name=name; Types=[CompanyType.Bank]}
+        let company:Company = {Id=newGuid(); Name=name; Types=[Bank]}
 
         let repository = Mock<ICompanyRepository>()
                                  .SetupFunc(fun rep -> rep.GetByName name).Returns(None)
@@ -89,7 +91,7 @@ type ``CompanyLogic Test`` () =
     [<Test>]
     member this.``Update <when> name is Empty <should> raise specific error``() =
         let name = " "
-        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
+        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
@@ -103,7 +105,7 @@ type ``CompanyLogic Test`` () =
     member this.``Update <when> name Already Exists <should> raise specific error``() =
         let name = "test"
         let duplicatedName = name.ToUpper()
-        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
+        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
         let existingCompany = {company with Id=Guid.NewGuid().ToString(); Name=duplicatedName}
         let repository = Mock<ICompanyRepository>()
                              .SetupFunc(fun rep -> rep.GetByName name).Returns(Some existingCompany)
@@ -116,10 +118,28 @@ type ``CompanyLogic Test`` () =
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
 
+    [<Test>]
+    member this.``Single [when] company exists`` () =
+        let company = aCompany
+
+        let repository = Mock<ICompanyRepository>()
+                             .SetupFunc(fun rep -> rep.Single company.Id).Returns(Some company)
+                             .Create()
+
+        match (CompanyLogic(repository) :> ICompanyLogic).Single company.Id with
+        | Some c -> c |> should equal aCompany
+        | _ -> failwith "Company not etrived"
 
     [<Test>]
-    member this.Single () =
-        failwith "not implemented"
+    member this.``Single [when] company NOT exists`` () =
+        let company = aCompany
+        let repository = Mock<ICompanyRepository>()
+                                .SetupFunc(fun rep -> rep.Single (company.Id)).Returns(None)
+                                .Create()
+
+        match (CompanyLogic(repository) :> ICompanyLogic).Single company.Id with
+        | None -> ()
+        | Some _ -> failwith "Company should not be returned"
 
     [<Test>]
     member this.List () =

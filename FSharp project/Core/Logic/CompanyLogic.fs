@@ -48,11 +48,9 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
                 | Valid c -> companyRepository.Update c; Ok c
                 | NotValid msg -> Error msg
 
-        member this.Single id =
-            Some({ Id=""; Name=""; Types=[Bank] })
+        member this.Single id = companyRepository.Single id
 
-        member this.List () =
-            [{ Id=""; Name=""; Types=[Bank] }]
+        member this.List () = List.ofSeq (companyRepository.All ())
 
         member this.Delete id =
             companyRepository.Delete id;
