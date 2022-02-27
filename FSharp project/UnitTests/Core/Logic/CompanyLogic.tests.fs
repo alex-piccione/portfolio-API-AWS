@@ -25,19 +25,13 @@ type ``CompanyLogic Test`` () =
 
     [<Test>]
     member this.``Create``() =
-
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository) :> ICompanyLogic
-
         let company:Company = {Id=""; Name="a name"; Types=[CompanyType.Bank]}
 
         // execute
-        let result = logic.Create(company)
-
-        result |> should matchResult<Company> Result_Ok
-
-        match result with
-        | Result.Ok comp -> 
+        match logic.Create company with
+        | Ok comp -> 
             comp.Id |> should not' (be NullOrEmptyString)
             comp.Name |> should equal company.Name
             comp.Types |> should equivalent company.Types
@@ -45,7 +39,6 @@ type ``CompanyLogic Test`` () =
 
     [<Test>]
     member this.``Create <when> name is Empty <should> raise specific error``() =
-
         let name = " "
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository) :> ICompanyLogic
@@ -53,12 +46,7 @@ type ``CompanyLogic Test`` () =
         let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
 
         // execute
-        let result = logic.Create(company)
-
-        result |> should matchResult<Company> Result_Error
-        //result |> should returnError
-
-        match result with
+        match logic.Create company with
         | Error message -> message |> should contain $"Name cannot be empty."
         | _ -> failwith "expected non valid result"
 
@@ -74,18 +62,13 @@ type ``CompanyLogic Test`` () =
         let company:Company = {Id=""; Name=name; Types=[CompanyType.Bank]}
 
         // execute
-        let result = logic.Create(company)
-
-        result |> should matchResult<Company> Result_Error
-
-        match result with
+        match logic.Create company with
         | Error message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
 
     [<Test>]
     member this.``Update``() =
-
         let name = "test"
         let company:Company = {Id=newGuid(); Name=name; Types=[CompanyType.Bank]}
 
@@ -97,36 +80,27 @@ type ``CompanyLogic Test`` () =
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result = logic.Update(company)
-
-        match result with
-        | Result.Ok c -> c.Id |> should equal company.Id
+        match logic.Update company with
+        | Ok c -> c.Id |> should equal company.Id
         | _ -> failwith "expected OK"
 
         verify <@ repository.Update company @> once
 
     [<Test>]
     member this.``Update <when> name is Empty <should> raise specific error``() =
-
         let name = " "
         let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
         let repository = Mock.Of<ICompanyRepository>()
-
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result = logic.Update(company)
-
-        result |> should matchResult<Company> Result_Error
-
-        match result with
+        match logic.Update company with
         | Error message ->
             message |> should contain $"Name cannot be empty."
-        | _ -> failwith "expected non valid result"
+        | _ -> failwith "expected Error"
 
     [<Test>]
     member this.``Update <when> name Already Exists <should> raise specific error``() =
-
         let name = "test"
         let duplicatedName = name.ToUpper()
         let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[CompanyType.Bank]}
@@ -137,24 +111,20 @@ type ``CompanyLogic Test`` () =
         let logic = CompanyLogic(repository) :> ICompanyLogic
 
         // execute
-        let result = logic.Update(company)
-
-        result |> should matchResult<Company> Result_Error
-
-        match result with
+        match logic.Update company with
         | Error message ->
             message |> should contain $"A company with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
 
 
     [<Test>]
-    member this.``Single``() =
+    member this.Single () =
         failwith "not implemented"
 
     [<Test>]
-    member this.``List``() =
+    member this.List () =
         failwith "not implemented"
 
     [<Test>]
-    member this.``Delete``() =
+    member this.Delete () =
         failwith "not implemented"
