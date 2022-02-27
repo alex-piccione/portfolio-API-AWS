@@ -143,7 +143,13 @@ type ``CompanyLogic Test`` () =
 
     [<Test>]
     member this.List () =
-        failwith "not implemented"
+        let companies = [aCompany]
+        let repository = Mock<ICompanyRepository>()
+                                .SetupFunc(fun rep -> rep.All ()).Returns(companies)
+                                .Create()
+
+        (CompanyLogic(repository) :> ICompanyLogic).List ()
+        |> should equal companies
 
     [<Test>]
     member this.Delete () =
