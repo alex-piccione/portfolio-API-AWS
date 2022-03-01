@@ -10,9 +10,7 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Entities
 open Portfolio.Api.Functions
-
 open SessionManager
-
 
 type ``User Functions`` () =
 
@@ -84,7 +82,7 @@ type ``User Functions`` () =
 
         let userRepository = 
             Mock<IUserRepository>()
-                .Setup(fun rep -> rep.Single(It.IsAny<string>())).Returns(None)
+                .Setup(fun rep -> rep.Single(any())).Returns(None)
                 .Create() 
 
         let sessionManager = Mock<ISessionManager>().Create()

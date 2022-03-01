@@ -153,4 +153,10 @@ type ``CompanyLogic Test`` () =
 
     [<Test>]
     member this.Delete () =
-        failwith "not implemented"
+        let repository = Mock<ICompanyRepository>()
+                            .Create()
+        match (CompanyLogic(repository) :> ICompanyLogic).Delete "a" with 
+        | Ok _ -> ()
+        | _ -> failwith "Expect result to be Ok"
+
+        verify <@ repository.Delete "a" @> once

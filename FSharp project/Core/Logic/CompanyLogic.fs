@@ -9,7 +9,7 @@ type ICompanyLogic =
     abstract member Update:Company -> Result<Company, string> // UpdateResult
     abstract member Single:string -> Company option
     abstract member List:unit -> Company list
-    abstract member Delete:string -> Result<string,string>  // DeleteResult
+    abstract member Delete:string -> Result<unit,string>  // DeleteResult
 
 type CompanyValidation = Valid of Company | NotValid of string
 
@@ -54,5 +54,5 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
 
         member this.Delete id =
             companyRepository.Delete id;
-            Ok id
+            Ok ()
             //DeleteResult.Deleted
