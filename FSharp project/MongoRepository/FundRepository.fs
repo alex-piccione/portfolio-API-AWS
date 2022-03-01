@@ -22,6 +22,9 @@ type FundRepository (connectionString:string, collectionName:string) =
         map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01)) |> ignore
 
     interface IFundRepository with
+        member this.GetFundsOfCompany(companyId: string): FundAtDate list = 
+            let filter = base.Filter().Eq( (fun f -> f.FundCompanyId), companyId)
+            List.ofSeq (this.Collection.FindSync(filter).ToEnumerable())
 
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
 

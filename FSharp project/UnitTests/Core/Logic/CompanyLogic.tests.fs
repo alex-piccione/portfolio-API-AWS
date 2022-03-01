@@ -25,10 +25,15 @@ type ``CompanyLogic Test`` () =
 
     let aCompany:Company = { Id="TEST"; Name="Company"; Types=[Bank; Exchange]}
 
+
+    let fundRepository = Mock.Of<IFundRepository>()
+
+
     [<Test>]
     member this.``Create``() =
         let repository = Mock.Of<ICompanyRepository>()
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let fundRepository = Mock.Of<IFundRepository>()
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
         let company:Company = {Id=""; Name="a name"; Types=[Bank]}
 
         // execute
@@ -43,7 +48,7 @@ type ``CompanyLogic Test`` () =
     member this.``Create <when> name is Empty <should> raise specific error``() =
         let name = " "
         let repository = Mock.Of<ICompanyRepository>()
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
         let company:Company = {Id=""; Name=name; Types=[Bank]}
 
@@ -59,7 +64,7 @@ type ``CompanyLogic Test`` () =
         let repository = Mock<ICompanyRepository>()
                              .SetupFunc(fun rep -> rep.Exists name).Returns(true)
                              .Create()
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
         let company:Company = {Id=""; Name=name; Types=[Bank]}
 
@@ -79,7 +84,7 @@ type ``CompanyLogic Test`` () =
                                  //.SetupFunc(fun rep -> rep.Update company).Returns(ignore)
                                  .Create()
 
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
         // execute
         match logic.Update company with
@@ -93,7 +98,7 @@ type ``CompanyLogic Test`` () =
         let name = " "
         let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
         let repository = Mock.Of<ICompanyRepository>()
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
         // execute
         match logic.Update company with
@@ -110,7 +115,7 @@ type ``CompanyLogic Test`` () =
         let repository = Mock<ICompanyRepository>()
                              .SetupFunc(fun rep -> rep.GetByName name).Returns(Some existingCompany)
                              .Create()
-        let logic = CompanyLogic(repository) :> ICompanyLogic
+        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
         // execute
         match logic.Update company with
@@ -126,7 +131,7 @@ type ``CompanyLogic Test`` () =
                              .SetupFunc(fun rep -> rep.Single company.Id).Returns(Some company)
                              .Create()
 
-        match (CompanyLogic(repository) :> ICompanyLogic).Single company.Id with
+        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Single company.Id with
         | Some c -> c |> should equal aCompany
         | _ -> failwith "Company not etrived"
 
@@ -137,7 +142,7 @@ type ``CompanyLogic Test`` () =
                                 .SetupFunc(fun rep -> rep.Single (company.Id)).Returns(None)
                                 .Create()
 
-        match (CompanyLogic(repository) :> ICompanyLogic).Single company.Id with
+        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Single company.Id with
         | None -> ()
         | Some _ -> failwith "Company should not be returned"
 
@@ -148,15 +153,31 @@ type ``CompanyLogic Test`` () =
                                 .SetupFunc(fun rep -> rep.All ()).Returns(companies)
                                 .Create()
 
-        (CompanyLogic(repository) :> ICompanyLogic).List ()
+        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).List ()
         |> should equal companies
 
     [<Test>]
     member this.Delete () =
-        let repository = Mock<ICompanyRepository>()
-                            .Create()
-        match (CompanyLogic(repository) :> ICompanyLogic).Delete "a" with 
+        let repository = Mock<ICompanyRepository>().Create()
+        let fundRepository = Mock<IFundRepository>()
+                                  .Setup(fun rep -> rep.GetFundsOfCompany (any())).Returns(List.Empty)
+                                  .Create()
+        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Delete "a" with 
         | Ok _ -> ()
         | _ -> failwith "Expect result to be Ok"
-
         verify <@ repository.Delete "a" @> once
+
+    [<Test>]
+    member this.``Delete [when] used in Funds [shoould] fail`` () =
+        let companyId = "Company A"
+        let repository = Mock<ICompanyRepository>().Create()
+        let funds = [ {FundAtDate.Id="1"; Date=DateTime.Today; CurrencyCode="AAA"; 
+            FundCompanyId=companyId; Quantity=1m; LastChangeDate=DateTime.UtcNow } ]
+        let fundRepository = Mock<IFundRepository>()
+                                  .Setup(fun rep -> rep.GetFundsOfCompany companyId).Returns(funds)
+                                  .Create()
+        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Delete companyId with 
+        | Error msg -> msg |> should contain companyId
+        | _ -> failwith "Expect result to be Error"
+
+        verify <@ repository.Delete companyId @> never

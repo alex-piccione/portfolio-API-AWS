@@ -24,7 +24,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString)))
+        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString), FundRepository(connectionString)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"

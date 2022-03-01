@@ -13,7 +13,7 @@ type ICompanyLogic =
 
 type CompanyValidation = Valid of Company | NotValid of string
 
-type CompanyLogic(companyRepository:ICompanyRepository) =
+type CompanyLogic(companyRepository:ICompanyRepository, fundRepository:IFundRepository) =
     
     let assignNewId company:Company = {company with Id=Guid.NewGuid().ToString()}
 
@@ -53,6 +53,8 @@ type CompanyLogic(companyRepository:ICompanyRepository) =
         member this.List () = List.ofSeq (companyRepository.All ())
 
         member this.Delete id =
-            companyRepository.Delete id;
-            Ok ()
-            //DeleteResult.Deleted
+            match (fundRepository.GetFundsOfCompany id).IsEmpty with
+            | true -> 
+                companyRepository.Delete id
+                Ok ()
+            | _ -> Error $"Company \"{id}\" is used in funds."
