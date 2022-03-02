@@ -7,7 +7,7 @@ AWS API for Portfolio project
 ## AWS
 AWS Python lambda documentation: https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html
 
-IAM user: portfolio.lambda (Portfolio.API group)
+IAM user: portfolio.lambda (Portfolio.API group)  
 Required permissions:
 - AmazonS3FullAccess
 - AWSCloudFormationFullAccess
