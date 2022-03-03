@@ -17,7 +17,6 @@
     <Compile Include="CompanyRepository.tests.fs" />
     <Compile Include="FundRepository.tests.fs" />
     <Compile Include="FundRepository.regressiontests.fs" />
-    <Compile Include="CompanyLogic.test.fs" />
   </ItemGroup>
 
   <ItemGroup>

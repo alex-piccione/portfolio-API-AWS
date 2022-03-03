@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Compile Include="Core\entities.tests.fs" />
-    <None Include="Core\Logic\match spike.fsx" />
     <Compile Include="Core\Logic\match helper.fs" />
     <Compile Include="Core\Logic\CompanyLogic.tests.fs" />
     <Compile Include="Core\Logic\BalanceLogic.test.fs" />
