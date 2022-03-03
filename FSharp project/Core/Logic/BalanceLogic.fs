@@ -9,9 +9,6 @@ open error_messages
 type BalanceUpdateResult = 
 | Created
 | Updated
-//| InvalidRequest of string
-
-// for validation example look at: https://www.compositional-it.com/news-blog/validation-with-f-5-and-fstoolkit/
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance

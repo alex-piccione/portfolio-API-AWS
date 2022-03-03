@@ -235,8 +235,12 @@ type BalanceLogicTest() =
                                       r.LastChangeDate |> should equal Now
                                       true
         // execute
-        logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
-
+        //logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
+        logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
+        //match logic.CreateOrUpdate request with
+        //| Ok x -> x |> should equal Created
+        //| _ -> failwith "Expected Ok"
+                
         verify <@ fundRepository.CreateFundAtDate (is expectedRecord) @> once
 
     [<Test>]

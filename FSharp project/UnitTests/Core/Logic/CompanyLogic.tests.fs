@@ -8,26 +8,12 @@ open FsUnit
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-open match_helper
-open NUnit.Framework.Constraints
 
 type ``CompanyLogic Test`` () =
 
     let newGuid () = Guid.NewGuid().ToString();
-    let shouldReturnOk = fun x -> x should matchResult<Company> Result_Ok 
-    let shouldReturnError = fun x -> x should matchResult<Company> Result_Error
-
-    //let returnError x = x -> matchResult<Company> Result_Error // ('a -> EqualConstraint) -> obj = matchResult<Company> Result_Error
-
-    // should is 
-    // f: ('a -> #Constraint) -> x:'a -> y:obj -> unit
-    //EqualConstraint
-
     let aCompany:Company = { Id="TEST"; Name="Company"; Types=[Bank; Exchange]}
-
-
     let fundRepository = Mock.Of<IFundRepository>()
-
 
     [<Test>]
     member this.``Create``() =
@@ -168,7 +154,7 @@ type ``CompanyLogic Test`` () =
         verify <@ repository.Delete "a" @> once
 
     [<Test>]
-    member this.``Delete [when] used in Funds [shoould] fail`` () =
+    member this.``Delete [when] used in Funds [should] fail`` () =
         let companyId = "Company A"
         let repository = Mock<ICompanyRepository>().Create()
         let funds = [ {FundAtDate.Id="1"; Date=DateTime.Today; CurrencyCode="AAA"; 
