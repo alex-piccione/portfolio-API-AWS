@@ -16,7 +16,7 @@ open Portfolio.Api.Functions
 type ``Company Functions`` () =
 
     let testCompany:Company = { Id="test"; Name="UnitTest"; Types=[CompanyType.Bank]}
-    let getLogic() = Mock<ICompanyLogic>().Create()
+    let getLogic () = Mock<ICompanyLogic>().Create()
  
     member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
@@ -31,41 +31,38 @@ type ``Company Functions`` () =
     member this.Setup () =
         ()
 
-    (*
     [<Test>]
     member this.``Update`` () =
-        let itemToUpdate:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
+        let item:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
 
         let s:unit = ()
-        let repository = Mock<ICompanyRepository>()
-                             .SetupFunc(fun rep -> rep.Update(itemToUpdate))
-                             .Returns(s)
-                             .Create()
+        let logic = Mock<ICompanyLogic>()
+                        .SetupFunc(fun rep -> rep.Single item.Id).Returns(Some item)
+                        .SetupFunc(fun rep -> rep.Update item).Returns(Ok item)
+                        .Create()
 
-        let functions = CompanyFunctions(repository)
+        let functions = CompanyFunctions(logic)
 
         // execute
-        let response = functions.Update(this.emulateApi itemToUpdate) 
+        let response = functions.Update(this.emulateApi item) 
         response.StatusCode |> should equal 200
-        *)
 
  
-    (*[<Test>]
+    [<Test>]
     member this.``Create`` () =
-        let itemToUpdate:Company = {testCompany with Id="aaa"}
+        let item:Company = {testCompany with Id="aaa"}
 
         let s:unit = ()
-        let repository = Mock<ICompanyRepository>()
-                             .SetupFunc(fun rep -> rep.Create(itemToUpdate))
-                             .Returns(s)
-                             .Create()
+        let logic = Mock<ICompanyLogic>()
+                        .SetupFunc(fun rep -> rep.Create item)
+                        .Returns(Ok item)
+                        .Create()
 
-        let functions = CompanyFunctions(getLogic(), repository)
+        let functions = CompanyFunctions(logic)
 
         // execute
-        let response = functions.Create(this.emulateApi() itemToUpdate) 
-        response.StatusCode |> should equal 200
-        *)
+        let response = functions.Create(this.emulateApi item) 
+        response.StatusCode |> should equal 201
 
 
     [<Test>]
