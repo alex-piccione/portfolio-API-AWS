@@ -5,13 +5,12 @@ open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Core
 open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 
 
-type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository) =
+type CompanyFunctions (companyLogic:ICompanyLogic) =
     inherit FunctionBase()
 
     new () =
@@ -25,24 +24,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
         let connectionString = configuration.[variable]
         if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
 
-        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString)), CompanyRepository(connectionString))
-
-
-
-    member private this.single id =
-        try 
-            match repository.Single id with
-            | Some item -> this.createOkWithData item
-            | _ -> base.createNotFound()
-        with exc ->
-            failwith $"Failed to get Single. {exc}"
-
-    member private this.all () =
-        try
-            base.createOkWithData (repository.All())
-        with exc ->
-            failwith $"Failed to call All. {exc}"
-
+        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString), FundRepository(connectionString)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -53,8 +35,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
             | Ok newItem -> 
                 context.Logger.Log $"Company created. New Id:{newItem.Id}, Name:{newItem.Name}."
                 this.createCreated newItem
-            | NotValid error -> base.createErrorForConflict error
-            | Error error -> base.createError error
+            | Error error -> base.createErrorForConflict error
         with exc ->
             context.Logger.Log $"Failed to create Company. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Company. Error: {exc.Message}"
@@ -64,9 +45,12 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
         context.Logger.Log $"request.QueryStringParameters: {request.QueryStringParameters}"
 
         match request.QueryStringParameters with
-        | null -> this.all()
+        | null -> this.createOkWithData (companyLogic.List())
         | _ -> match request.QueryStringParameters.TryGetValue("id") with
-               | (true, id) -> this.single id
+               | (true, id) ->
+                    match companyLogic.Single id with 
+                    | Some item -> this.createOkWithData item
+                    | _ -> this.createNotFound()                                
                | _ -> this.createErrorForConflict $"\"id\" parameters is the only one accepted."
 
 
@@ -75,7 +59,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
 
         let itemToUpdate:Company = base.Deserialize request.Body
 
-        let item = repository.Single (itemToUpdate.Id)
+        let item = companyLogic.Single itemToUpdate.Id
 
         match item.IsNone with
         | true -> base.createNotFound()
@@ -86,8 +70,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
                 | Ok updatedItem -> 
                     context.Logger.Log $"Company created. New Id:{updatedItem.Id}, Name:{updatedItem.Name}."
                     this.createOk()
-                | NotValid error -> base.createErrorForConflict error
-                | Error error -> base.createError error
+                | Error error -> base.createErrorForConflict error
             with exc ->
                 context.Logger.Log $"Failed to update Company. {exc}"
                 this.createError $"Failed to update Company. {exc.Message}"
@@ -100,8 +83,9 @@ type CompanyFunctions (companyLogic:ICompanyLogic, repository:ICompanyRepository
         if not found then failwith @"Path should contain ""id""."
 
         try
-            repository.Delete id
-            this.createOk()
+            match companyLogic.Delete id with
+            | Ok _ -> this.createOk()
+            | Error error -> this.createErrorForConflict error
         with exc ->
             context.Logger.Log $"Failed to delete Company. {exc}"
             this.createError $"Failed to delete Company. {exc.Message}"

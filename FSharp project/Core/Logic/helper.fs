@@ -2,10 +2,9 @@
 
 open System
 
-type Result<'T> =
-    | Ok of 'T
-    | NotValid of string
-    | Error of string
+type ValidateResult =
+| Valid 
+| NotValid of string
 
 type IIdGenerator =
     abstract member New: unit -> string

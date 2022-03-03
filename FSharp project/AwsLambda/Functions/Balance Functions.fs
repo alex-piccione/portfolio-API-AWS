@@ -46,9 +46,9 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         try
             let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body
             match balanceLogic.CreateOrUpdate(updateRequest) with
-            | Created -> this.createOkWithStatus 201
-            | Updated -> this.createOkWithStatus 200
-            | InvalidRequest error -> this.createErrorForConflict error
+            | Ok Created -> this.createOkWithStatus 201
+            | Ok Updated -> this.createOkWithStatus 200
+            | Error error -> this.createErrorForConflict error
         with exc ->
             context.Logger.Log $"Failed to update Balance. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to update Balance. Error: {exc.Message}"
