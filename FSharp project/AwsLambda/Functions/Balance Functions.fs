@@ -1,7 +1,6 @@
 ﻿namespace Portfolio.Api.Functions
 
 open System
-open Microsoft.Extensions.Configuration
 open Amazon.Lambda.Core
 open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Api.Functions
@@ -14,17 +13,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     inherit FunctionBase()
 
     new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        BalanceFunctions(BalanceLogic(FundRepository(connectionString), Chronos(), IdGenerator()))
+        BalanceFunctions(BalanceLogic(FundRepository(base.ConnectionString), Chronos(), IdGenerator()))
 
 
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =

@@ -4,7 +4,6 @@ open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
 open Portfolio.Core
-open Microsoft.Extensions.Configuration
 open Portfolio.MongoRepository
 
 
@@ -12,17 +11,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
     inherit FunctionBase()
 
     new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        CurrencyFunctions(CurrencyRepository(connectionString))
+        CurrencyFunctions(CurrencyRepository(base.ConnectionString))
 
     member private this.single id =
         try 

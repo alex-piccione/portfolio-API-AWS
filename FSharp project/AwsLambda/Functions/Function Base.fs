@@ -11,9 +11,21 @@ type DataOrOption<'T> =
     | Option of Option<'T>
     | Data of 'T
 
-type FunctionBase () =
-
+type FunctionBase (connectionString:string) =
     //let jsonOptions = Options.ISO8601CamelCase;
+
+    new () =
+        let configFile = "configuration.json"
+        let variable = "MongoDB_connection_string"
+
+        let configuration = ConfigurationBuilder()
+                                .AddJsonFile(configFile)
+                                .Build()
+        let connectionString = configuration.[variable]
+        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
+        FunctionBase(connectionString)
+
+    member this.ConnectionString with get() = connectionString
 
     member this.createResponse<'T> statusCode (data:'T option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()

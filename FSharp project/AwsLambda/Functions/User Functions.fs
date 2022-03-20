@@ -6,7 +6,6 @@ open Amazon.Lambda.Core
 open Portfolio.Api.Functions
 open Portfolio.Core
 open Portfolio.Core.Entities
-open Microsoft.Extensions.Configuration
 open Portfolio.MongoRepository
 open UserLogin
 open SessionManager
@@ -16,21 +15,8 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
     inherit FunctionBase()
 
     new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        let sessionRepository = SessionRepository(connectionString)
-
-        let sessionManager = SessionManager(sessionRepository)
-
-        UserFunctions(UserRepository(connectionString), sessionManager)
+        let sessionManager = SessionManager(SessionRepository(base.ConnectionString))
+        UserFunctions(UserRepository(base.ConnectionString), sessionManager)
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =

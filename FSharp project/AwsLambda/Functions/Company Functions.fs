@@ -1,7 +1,6 @@
 ﻿namespace Portfolio.Api.Functions
 
 open System
-open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
@@ -9,22 +8,11 @@ open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 
-
 type CompanyFunctions (companyLogic:ICompanyLogic) =
     inherit FunctionBase()
 
     new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        CompanyFunctions(CompanyLogic(CompanyRepository(connectionString), FundRepository(connectionString)))
+        CompanyFunctions(CompanyLogic(CompanyRepository(base.ConnectionString), FundRepository(base.ConnectionString)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
@@ -56,7 +44,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Company"
-
+        
         let itemToUpdate:Company = base.Deserialize request.Body
 
         let item = companyLogic.Single itemToUpdate.Id
