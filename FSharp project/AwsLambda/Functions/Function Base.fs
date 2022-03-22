@@ -12,25 +12,6 @@ type DataOrOption<'T> =
     | Data of 'T
 
 type FunctionBase () =
-    //let jsonOptions = Options.ISO8601CamelCase;
-
-    //static let connectionString = Lazy<string>.Create(fun () -> helper.getConnectionString())
-    //static let GetConnectionString() = connectionString.Value
-
-    (*
-    static member getConnectionString () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-        connectionString
-        *)
-
-    //member internal this.ConnectionString with get() = GetConnectionString()
 
     member this.createResponse<'T> statusCode (data:'T option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
