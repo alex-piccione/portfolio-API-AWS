@@ -11,7 +11,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
     inherit FunctionBase()
 
     new () =
-        CurrencyFunctions(CurrencyRepository(base.ConnectionString))
+        CurrencyFunctions(CurrencyRepository(helper.ConnectionString))
 
     member private this.single id =
         try 

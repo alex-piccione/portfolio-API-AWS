@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Core", "Core\Core.fsproj", "{4D614874-EF60-46BA-B0A0-D7748707BA18}"
 EndProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{48DAC8A6
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "UnitTests", "UnitTests\UnitTests.fsproj", "{AE8AF7D4-E66C-4ADB-9EC7-20F304C7052A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SmokeTests", "SmokeTests\SmokeTests.fsproj", "{DA82827F-9C9D-4E08-B77E-E702B44930BE}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SmokeTests", "SmokeTests\SmokeTests.fsproj", "{DA82827F-9C9D-4E08-B77E-E702B44930BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -13,7 +13,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     inherit FunctionBase()
 
     new () =
-        BalanceFunctions(BalanceLogic(FundRepository(base.ConnectionString), Chronos(), IdGenerator()))
+        BalanceFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
 
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =

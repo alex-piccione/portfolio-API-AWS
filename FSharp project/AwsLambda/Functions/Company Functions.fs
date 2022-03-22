@@ -12,7 +12,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
     inherit FunctionBase()
 
     new () =
-        CompanyFunctions(CompanyLogic(CompanyRepository(base.ConnectionString), FundRepository(base.ConnectionString)))
+        CompanyFunctions(CompanyLogic(CompanyRepository(helper.ConnectionString), FundRepository(helper.ConnectionString)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
