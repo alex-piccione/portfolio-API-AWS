@@ -1,7 +1,9 @@
 ﻿namespace Portfolio.MongoRepository
 
+open System.Linq
 open Portfolio.Core
 open Portfolio.Core.Entities
+open MongoDB.Driver
 
 type CurrencyRepository (connectionString:string) =
     inherit CrudRepository<Currency>(connectionString, "Currency", (fun x -> x.Code))
@@ -12,3 +14,13 @@ type CurrencyRepository (connectionString:string) =
         member this.Single(id: string) = base.Single id
         member this.Update(item: Currency) = base.Update(item.Code, item)
         member this.All() = base.All()
+
+        member this.ExistsWithCode(code: string): bool = 
+            let codeToSearch = code.ToLowerInvariant()
+            let filter = Builders<Currency>.Filter.Where(fun x -> x.Code.ToLowerInvariant() = codeToSearch)
+            base.Collection.FindAsync(filter).Result.ToEnumerable().Any()
+
+        member this.ExistsWithName(name: string): bool = 
+            let nameToSearch = name.ToLowerInvariant()
+            let filter = Builders<Currency>.Filter.Where(fun x -> x.Name.ToLowerInvariant() = nameToSearch)
+            base.Collection.FindAsync(filter).Result.ToEnumerable().Any()

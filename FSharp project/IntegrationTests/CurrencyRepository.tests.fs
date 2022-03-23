@@ -30,3 +30,17 @@ type ``Currency Repository`` () =
         repository.Create(currency)
         let storedCurrency = repository.Single(TEST_CODE)
         storedCurrency |> should equal (Some currency)
+
+    [<Test>]
+    member this.``ExistsWithCode`` () =
+        let currency:Currency = { Code=TEST_CODE; Name="Currency Test" }
+        repository.Create(currency)
+        repository.ExistsWithCode(TEST_CODE) |> should be True
+        repository.ExistsWithCode(TEST_CODE + "-000") |> should be False
+
+    [<Test>]
+    member this.``ExistsWithName`` () =
+        let currency:Currency = { Code=TEST_CODE; Name="Currency AAA" }
+        repository.Create(currency)
+        repository.ExistsWithName("Currency AAA") |> should be True
+        repository.ExistsWithName("Currency BBB") |> should be False
