@@ -51,7 +51,7 @@ type ``Company Repository`` () =
         storedItem |> should equal (Some item)
 
     [<Test>]
-    member this.``Create & Read <when> multiple company types`` () =
+    member this.``Create & Read [when] company has multiple types`` () =
         let item:Company = { Id=TEST_ID; Name="Company Test"; Types=[CompanyType.Stacking; CompanyType.Bank] }
         repository.Create(item)
         let storedItem = repository.Single(TEST_ID)

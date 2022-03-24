@@ -7,7 +7,7 @@ open Portfolio.Core.Entities
 type ICurrencyLogic =
     abstract member Create:Currency -> Result<Currency, string>
     //abstract member Update:Company -> Result<Company, string> // UpdateResult
-    //abstract member Single:string -> Company option
+    abstract member Single:string -> Currency option
     //abstract member List:unit -> Company list
     //abstract member Delete:string -> Result<unit,string>  // DeleteResult
 
@@ -40,4 +40,5 @@ type CurrencyLogic(currencyRepository:ICurrencyRepository, fundRepository:IFundR
                     | _ -> 
                         currencyRepository.Create(validCurrency)
                         Ok validCurrency
-            
+         
+        member this.Single code = currencyRepository.Single code

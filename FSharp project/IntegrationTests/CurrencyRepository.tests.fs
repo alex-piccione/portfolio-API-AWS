@@ -11,6 +11,7 @@ type ``Currency Repository`` () =
     let repository = CurrencyRepository(configuration.connectionString) :> ICurrencyRepository
     let TEST_CODE = "TEST1"
     let TEST_CODE_2 = "TEST2"
+    let aCurrency:Currency = { Code=TEST_CODE; Name="Aaaaa"}
 
     let delete id = repository.Delete id
 
@@ -26,10 +27,13 @@ type ``Currency Repository`` () =
 
     [<Test>]
     member this.``Create & Read`` () =
-        let currency:Currency = { Code=TEST_CODE; Name="Currency Test" }
-        repository.Create(currency)
-        let storedCurrency = repository.Single(TEST_CODE)
-        storedCurrency |> should equal (Some currency)
+        repository.Create(aCurrency)
+        let storedCurrency = repository.Single(aCurrency.Code)
+        storedCurrency |> should equal (Some aCurrency)
+
+    [<Test>]
+    member this.``Single [when] item does not exists [should] return None`` () =
+        repository.Single(aCurrency.Code) |> should equal None
 
     [<Test>]
     member this.``ExistsWithCode`` () =
@@ -44,3 +48,5 @@ type ``Currency Repository`` () =
         repository.Create(currency)
         repository.ExistsWithName("Currency AAA") |> should be True
         repository.ExistsWithName("Currency BBB") |> should be False
+
+    // TODO: test Single with bof success and fail

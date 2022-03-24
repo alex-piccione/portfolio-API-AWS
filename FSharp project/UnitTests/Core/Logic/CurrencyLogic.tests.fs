@@ -74,6 +74,28 @@ type ``CurrencyLogic Test`` () =
         | Error message ->
             message |> should contain $"A currency with name \"{name}\" already exists."
         | _ -> failwith "expected non valid result"
+
+    [<Test>]
+    member this.``Single [when] currency exists`` () =
+        let code = aCurrency.Code
+        let repository = Mock<ICurrencyRepository>()
+                             .SetupFunc(fun rep -> rep.Single code).Returns(Some aCurrency)
+                             .Create()
+
+        match (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).Single code with
+        | Some c -> c |> should equal aCurrency
+        | _ -> failwith "Currency not retrived"
+
+    [<Test>]
+    member this.``Single [when] currency NOT exists`` () =
+        let code = aCurrency.Code
+        let repository = Mock<ICurrencyRepository>()
+                                .SetupFunc(fun rep -> rep.Single code).Returns(None)
+                                .Create()
+
+        match (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).Single code with
+        | None -> ()
+        | Some _ -> failwith "Currency should not be returned"
 (*
      [<Test>]
     member this.``Update``() =
@@ -125,28 +147,7 @@ type ``CurrencyLogic Test`` () =
         | _ -> failwith "expected non valid result"
 
     
-    [<Test>]
-    member this.``Single [when] company exists`` () =
-        let company = aCompany
 
-        let repository = Mock<ICompanyRepository>()
-                             .SetupFunc(fun rep -> rep.Single company.Id).Returns(Some company)
-                             .Create()
-
-        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Single company.Id with
-        | Some c -> c |> should equal aCompany
-        | _ -> failwith "Company not etrived"
-
-    [<Test>]
-    member this.``Single [when] company NOT exists`` () =
-        let company = aCompany
-        let repository = Mock<ICompanyRepository>()
-                                .SetupFunc(fun rep -> rep.Single (company.Id)).Returns(None)
-                                .Create()
-
-        match (CompanyLogic(repository, fundRepository) :> ICompanyLogic).Single company.Id with
-        | None -> ()
-        | Some _ -> failwith "Company should not be returned"
 
     [<Test>]
     member this.List () =
