@@ -5,17 +5,19 @@ open Amazon.Lambda.Core
 open Portfolio.Api.Functions
 open Portfolio.Core
 open Portfolio.MongoRepository
+open Portfolio.Core.Logic
 
 
-type CurrencyFunctions (repository:ICurrencyRepository) =
+type CurrencyFunctions (currencyLogic:ICurrencyLogic, repository:ICurrencyRepository) =
     inherit FunctionBase()
 
     new () =
-        CurrencyFunctions(CurrencyRepository(helper.ConnectionString))
+        let fundRepository = FundRepository(helper.ConnectionString)
+        CurrencyFunctions(CurrencyLogic(CurrencyRepository(helper.ConnectionString), fundRepository), CurrencyRepository(helper.ConnectionString))
 
     member private this.single id =
         try 
-            match repository.Single id with
+            match currencyLogic.Single id with
             | Some item -> this.createOkWithData item
             | _ -> base.createNotFound()
         with exc ->
@@ -23,7 +25,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member private this.all () =
         try
-            let list = repository.All()
+            let list = currencyLogic.All()
             base.createOkWithData(list)
         with exc ->
             this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
