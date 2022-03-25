@@ -129,13 +129,13 @@ type ``CompanyLogic Test`` () =
         | Some _ -> failwith "Company should not be returned"
 
     [<Test>]
-    member this.List () =
+    member this.All () =
         let companies = [aCompany]
         let repository = Mock<ICompanyRepository>()
                                 .SetupFunc(fun rep -> rep.All ()).Returns(companies)
                                 .Create()
 
-        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).List ()
+        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).All ()
         |> should equal companies
 
     [<Test>]

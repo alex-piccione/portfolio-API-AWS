@@ -8,7 +8,7 @@ type ICompanyLogic =
     abstract member Create:Company -> Result<Company, string> // CreateResult
     abstract member Update:Company -> Result<Company, string> // UpdateResult
     abstract member Single:string -> Company option
-    abstract member List:unit -> Company list
+    abstract member All:unit -> Company list
     abstract member Delete:string -> Result<unit,string>  // DeleteResult
 
 type CompanyValidation = Valid of Company | NotValid of string
@@ -50,7 +50,7 @@ type CompanyLogic(companyRepository:ICompanyRepository, fundRepository:IFundRepo
 
         member this.Single id = companyRepository.Single id
 
-        member this.List () = List.ofSeq (companyRepository.All ())
+        member this.All () = List.ofSeq (companyRepository.All ())
 
         member this.Delete id =
             match (fundRepository.GetFundsOfCompany id).IsEmpty with

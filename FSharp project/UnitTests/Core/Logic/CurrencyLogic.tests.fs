@@ -97,13 +97,13 @@ type ``CurrencyLogic Test`` () =
         | Some _ -> failwith "Currency should not be returned"
 
     [<Test>]
-    member this.List () =
+    member this.All () =
         let items = [aCurrency]
         let repository = Mock<ICurrencyRepository>()
                                 .SetupFunc(fun rep -> rep.All ()).Returns(items)
                                 .Create()
 
-        (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).List ()
+        (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).All ()
         |> should equal items
 
         verify <@ repository.All () @> once
