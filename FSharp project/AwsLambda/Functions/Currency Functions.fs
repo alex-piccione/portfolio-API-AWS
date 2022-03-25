@@ -3,17 +3,18 @@
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Core
 open Portfolio.MongoRepository
 open Portfolio.Core.Logic
 
 
-type CurrencyFunctions (currencyLogic:ICurrencyLogic, repository:ICurrencyRepository) =
+type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     inherit FunctionBase()
 
-    new () =
-        let fundRepository = FundRepository(helper.ConnectionString)
-        CurrencyFunctions(CurrencyLogic(CurrencyRepository(helper.ConnectionString), fundRepository), CurrencyRepository(helper.ConnectionString))
+    new () =                
+        CurrencyFunctions(
+            CurrencyLogic(
+                CurrencyRepository(helper.ConnectionString), 
+                FundRepository(helper.ConnectionString)))
 
     member private this.single id =
         try 
@@ -33,10 +34,12 @@ type CurrencyFunctions (currencyLogic:ICurrencyLogic, repository:ICurrencyReposi
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
+
         try
             let currency = base.Deserialize request.Body
-            repository.Create(currency)
-            this.createOkWithStatus 201
+            match currencyLogic.Create currency with
+            | Ok currency -> this.createOkWithStatus 201
+            | Error message -> this.createError $"Failed to create Currency. Error: {message}"
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
