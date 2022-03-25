@@ -8,7 +8,7 @@ type ICurrencyLogic =
     abstract member Create:Currency -> Result<Currency, string>
     //abstract member Update:Company -> Result<Company, string> // UpdateResult
     abstract member Single:string -> Currency option
-    //abstract member List:unit -> Company list
+    abstract member List:unit -> Currency list
     //abstract member Delete:string -> Result<unit,string>  // DeleteResult
 
 type CurrencyValidation = Valid of Currency | NotValid of string
@@ -42,3 +42,4 @@ type CurrencyLogic(currencyRepository:ICurrencyRepository, fundRepository:IFundR
                         Ok validCurrency
          
         member this.Single code = currencyRepository.Single code
+        member this.List () = List.ofSeq (currencyRepository.All ())

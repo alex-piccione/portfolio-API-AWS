@@ -49,4 +49,13 @@ type ``Currency Repository`` () =
         repository.ExistsWithName("Currency AAA") |> should be True
         repository.ExistsWithName("Currency BBB") |> should be False
 
-    // TODO: test Single with bof success and fail
+    [<Test>]
+    member this.``All`` () =
+        repository.Create({ aCurrency with Code=TEST_CODE })
+        repository.Create({ aCurrency with Code=TEST_CODE_2 })
+
+        // execute
+        let items = repository.All() |> List.ofSeq
+        items |> should contain { aCurrency with Code=TEST_CODE}
+        items |> should contain { aCurrency with Code=TEST_CODE_2}
+

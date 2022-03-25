@@ -11,7 +11,6 @@ open Portfolio.Core.Entities
 
 type ``CurrencyLogic Test`` () =
 
-    let newGuid () = Guid.NewGuid().ToString();
     let aCurrency:Currency = { Code="AAA"; Name="Aaa"}
     let fundRepository = Mock.Of<IFundRepository>()
 
@@ -96,6 +95,18 @@ type ``CurrencyLogic Test`` () =
         match (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).Single code with
         | None -> ()
         | Some _ -> failwith "Currency should not be returned"
+
+    [<Test>]
+    member this.List () =
+        let items = [aCurrency]
+        let repository = Mock<ICurrencyRepository>()
+                                .SetupFunc(fun rep -> rep.All ()).Returns(items)
+                                .Create()
+
+        (CurrencyLogic(repository, fundRepository) :> ICurrencyLogic).List ()
+        |> should equal items
+
+        verify <@ repository.All () @> once
 (*
      [<Test>]
     member this.``Update``() =
@@ -149,15 +160,7 @@ type ``CurrencyLogic Test`` () =
     
 
 
-    [<Test>]
-    member this.List () =
-        let companies = [aCompany]
-        let repository = Mock<ICompanyRepository>()
-                                .SetupFunc(fun rep -> rep.All ()).Returns(companies)
-                                .Create()
 
-        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).List ()
-        |> should equal companies
 
     [<Test>]
     member this.Delete () =
