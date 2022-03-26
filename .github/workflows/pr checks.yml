@@ -20,6 +20,9 @@ jobs:
     needs: [check-build]
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      id: checkout
+      uses: actions/checkout@v2
 
     - name: Buid VS solution
       id: build
