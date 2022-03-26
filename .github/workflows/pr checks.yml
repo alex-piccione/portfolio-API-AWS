@@ -31,7 +31,7 @@ jobs:
 
   integration-tests:
     name: Integration Tests
-    needs: [build, unit-tests]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
