@@ -107,61 +107,53 @@ type ``CurrencyLogic Test`` () =
         |> should equal items
 
         verify <@ repository.All () @> once
-(*
-     [<Test>]
+
+    [<Test>]
     member this.``Update``() =
-        let name = "test"
-        let currency = {aCurrency with Name=name}
+       let name = "test"
+       let currency = {aCurrency with Name=name}
 
-        let repository = Mock<ICurrencyRepository>()
-                            .SetupFunc(fun rep -> rep.ExistsWithName name).Returns(false)
-                            .Create()
+       let repository = Mock<ICurrencyRepository>()
+                           .SetupFunc(fun rep -> rep.ExistsWithName name).Returns(false)
+                           .Create()
 
-        let logic = CurrencyLogic(repository, fundRepository) :> ICurrencyLogic
+       let logic = CurrencyLogic(repository, fundRepository) :> ICurrencyLogic
 
-        // execute
-        match logic.Update currency with
-        | Ok c -> c.Id |> should equal currency.Id
-        | _ -> failwith "expected OK"
+       // execute
+       match logic.Update currency with
+       | Ok c -> c.Code |> should equal currency.Code
+       | _ -> failwith "expected OK"
 
-        verify <@ repository.Update currency @> once
-        
+       verify <@ repository.Update currency @> once
 
     [<Test>]
     member this.``Update [when] name is Empty [should] raise specific error``() =
-        let name = " "
-        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
-        let repository = Mock.Of<ICompanyRepository>()
-        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
+        let item = {aCurrency with Name=" "}
+        let repository = Mock.Of<ICurrencyRepository>()
+        let logic = CurrencyLogic(repository, fundRepository) :> ICurrencyLogic
 
         // execute
-        match logic.Update company with
-        | Error message ->
-            message |> should contain $"Name cannot be empty."
+        match logic.Update item with
+        | Error message -> message |> should contain $"Name cannot be empty."
         | _ -> failwith "expected Error"
 
+        verify <@ repository.Update (any()) @> never
+
     [<Test>]
-    member this.``Update [when] name Already Exists [should] raise specific error``() =
+    member this.``Update [when] Name already exists [should] raise specific error``() =
         let name = "test"
-        let duplicatedName = name.ToUpper()
-        let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
-        let existingCompany = {company with Id=Guid.NewGuid().ToString(); Name=duplicatedName}
-        let repository = Mock<ICompanyRepository>()
-                             .SetupFunc(fun rep -> rep.GetByName name).Returns(Some existingCompany)
+        let item = {aCurrency with Name=name}
+        let repository = Mock<ICurrencyRepository>()
+                             .SetupFunc(fun rep -> rep.ExistsWithName name).Returns(true)
                              .Create()
-        let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
+        let logic = CurrencyLogic(repository, fundRepository) :> ICurrencyLogic
 
         // execute
-        match logic.Update company with
-        | Error message ->
-            message |> should contain $"A company with name \"{name}\" already exists."
-        | _ -> failwith "expected non valid result"
+        match logic.Update item with
+        | Error message -> message |> should contain $"A currency with name \"{name}\" already exists."
+        | _ -> failwith "a not valid result was expected"
 
-    
-
-
-
-
+(*
     [<Test>]
     member this.Delete () =
         let repository = Mock<ICompanyRepository>().Create()

@@ -12,7 +12,7 @@ type ``User Repository`` () =
 
     let TEST_EMAIL = "test@test.com"
     let TEST_EMAIL_2 = "test_2@test.com"
-    let repository = UserRepository(configuration.connectionString) :> IUserRepository
+    let repository = UserRepository(configuration.connectionString, "User_test") :> IUserRepository
 
     let delete (id:string) = repository.Delete (id.ToLowerInvariant())
 

@@ -5,8 +5,10 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open MongoDB.Driver
 
-type CurrencyRepository (connectionString:string) =
-    inherit CrudRepository<Currency>(connectionString, "Currency", (fun x -> x.Code))
+type CurrencyRepository (connectionString:string, collectionName:string) =
+    inherit CrudRepository<Currency>(connectionString, collectionName, (fun x -> x.Code))
+
+    new (connectionString:string) = CurrencyRepository(connectionString, "Currency")
 
     interface ICurrencyRepository with 
         member this.Create(item: Currency) = base.Create item

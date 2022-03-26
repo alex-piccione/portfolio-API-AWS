@@ -25,7 +25,7 @@ type equalCompany(expected:Company) =
 
 type ``Company Repository`` () =
 
-    let repository = CompanyRepository(configuration.connectionString) :> ICompanyRepository
+    let repository = CompanyRepository(configuration.connectionString, "Company_test") :> ICompanyRepository
     let TEST_ID = "TEST 1"
     let TEST_ID_2 = "TEST 2"
 
