@@ -18,9 +18,8 @@ type ``CompanyLogic Test`` () =
     [<Test>]
     member this.``Create``() =
         let repository = Mock.Of<ICompanyRepository>()
-        let fundRepository = Mock.Of<IFundRepository>()
         let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
-        let company:Company = {Id=""; Name="a name"; Types=[Bank]}
+        let company:Company = { Id=""; Name="a name"; Types=[Bank]}
 
         // execute
         match logic.Create company with
@@ -31,7 +30,7 @@ type ``CompanyLogic Test`` () =
         | _ -> failwith "expected OK result"
 
     [<Test>]
-    member this.``Create <when> name is Empty <should> raise specific error``() =
+    member this.``Create [when] Name is empty [should] raise specific error``() =
         let name = " "
         let repository = Mock.Of<ICompanyRepository>()
         let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
@@ -44,20 +43,17 @@ type ``CompanyLogic Test`` () =
         | _ -> failwith "expected non valid result"
 
     [<Test>]
-    member this.``Create <when> name Already Exists <should> raise specific error``() =
-
-        let name = "test"
+    member this.``Create [when] Name already exists [should] raise specific error``() =
+        let name = aCompany.Name
         let repository = Mock<ICompanyRepository>()
                              .SetupFunc(fun rep -> rep.Exists name).Returns(true)
                              .Create()
         let logic = CompanyLogic(repository, fundRepository) :> ICompanyLogic
 
-        let company:Company = {Id=""; Name=name; Types=[Bank]}
-
         // execute
-        match logic.Create company with
+        match logic.Create aCompany with
         | Error message ->
-            message |> should contain $"A company with name \"{name}\" already exists."
+            message |> should contain $"A company with name \"{aCompany.Name}\" already exists."
         | _ -> failwith "expected non valid result"
 
     [<Test>]
@@ -80,7 +76,7 @@ type ``CompanyLogic Test`` () =
         verify <@ repository.Update company @> once
 
     [<Test>]
-    member this.``Update <when> name is Empty <should> raise specific error``() =
+    member this.``Update [when] Name is empty [should] raise specific error``() =
         let name = " "
         let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
         let repository = Mock.Of<ICompanyRepository>()
@@ -88,12 +84,11 @@ type ``CompanyLogic Test`` () =
 
         // execute
         match logic.Update company with
-        | Error message ->
-            message |> should contain $"Name cannot be empty."
-        | _ -> failwith "expected Error"
+        | Error message -> message |> should contain $"Name cannot be empty."
+        | _ -> failwith "an Error was expected"
 
     [<Test>]
-    member this.``Update <when> name Already Exists <should> raise specific error``() =
+    member this.``Update [when] Name already exists [should] raise specific error``() =
         let name = "test"
         let duplicatedName = name.ToUpper()
         let company:Company = {Id=Guid.NewGuid().ToString(); Name=name; Types=[Bank]}
@@ -106,8 +101,8 @@ type ``CompanyLogic Test`` () =
         // execute
         match logic.Update company with
         | Error message ->
-            message |> should contain $"A company with name \"{name}\" already exists."
-        | _ -> failwith "expected non valid result"
+            message |> should contain $"Another company with name \"{name}\" already exists."
+        | _ -> failwith "a not valid result was expected"
 
     [<Test>]
     member this.``Single [when] company exists`` () =
@@ -133,13 +128,13 @@ type ``CompanyLogic Test`` () =
         | Some _ -> failwith "Company should not be returned"
 
     [<Test>]
-    member this.List () =
+    member this.All () =
         let companies = [aCompany]
         let repository = Mock<ICompanyRepository>()
                                 .SetupFunc(fun rep -> rep.All ()).Returns(companies)
                                 .Create()
 
-        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).List ()
+        (CompanyLogic(repository, fundRepository) :> ICompanyLogic).All ()
         |> should equal companies
 
     [<Test>]

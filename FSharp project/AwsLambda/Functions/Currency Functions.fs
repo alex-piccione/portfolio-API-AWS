@@ -3,19 +3,22 @@
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Core
 open Portfolio.MongoRepository
+open Portfolio.Core.Logic
 
 
-type CurrencyFunctions (repository:ICurrencyRepository) =
+type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     inherit FunctionBase()
 
-    new () =
-        CurrencyFunctions(CurrencyRepository(helper.ConnectionString))
+    new () =                
+        CurrencyFunctions(
+            CurrencyLogic(
+                CurrencyRepository(helper.ConnectionString), 
+                FundRepository(helper.ConnectionString)))
 
     member private this.single id =
         try 
-            match repository.Single id with
+            match currencyLogic.Single id with
             | Some item -> this.createOkWithData item
             | _ -> base.createNotFound()
         with exc ->
@@ -23,7 +26,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member private this.all () =
         try
-            let list = repository.All()
+            let list = currencyLogic.All()
             base.createOkWithData(list)
         with exc ->
             this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
@@ -31,10 +34,12 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
+
         try
             let currency = base.Deserialize request.Body
-            repository.Create(currency)
-            this.createOkWithStatus 201
+            match currencyLogic.Create currency with
+            | Ok currency -> this.createOkWithStatus 201
+            | Error message -> this.createError $"Failed to create Currency. Error: {message}"
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"

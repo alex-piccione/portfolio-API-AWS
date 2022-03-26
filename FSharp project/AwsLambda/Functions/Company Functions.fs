@@ -33,7 +33,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
         context.Logger.Log $"request.QueryStringParameters: {request.QueryStringParameters}"
 
         match request.QueryStringParameters with
-        | null -> this.createOkWithData (companyLogic.List())
+        | null -> this.createOkWithData (companyLogic.All())
         | _ -> match request.QueryStringParameters.TryGetValue("id") with
                | (true, id) ->
                     match companyLogic.Single id with 

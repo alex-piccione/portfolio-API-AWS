@@ -173,7 +173,7 @@ type ``Fund Repository`` () =
         repository.CreateFundAtDate fundAtDate
 
         let updateAtDate:FundAtDate = { 
-            Id=TEST_ID; Date=DateTime.Today.AddDays(2.)
+            Id=TEST_ID; Date=DateTime.Today.AddDays(-2.)
             CurrencyCode = TEST_CURRENCY_2
             FundCompanyId = "Company 2"
             Quantity = 2m

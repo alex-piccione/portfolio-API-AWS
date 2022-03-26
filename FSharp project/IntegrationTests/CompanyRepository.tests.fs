@@ -25,7 +25,7 @@ type equalCompany(expected:Company) =
 
 type ``Company Repository`` () =
 
-    let repository = CompanyRepository(configuration.connectionString) :> ICompanyRepository
+    let repository = CompanyRepository(configuration.connectionString, "Company_test") :> ICompanyRepository
     let TEST_ID = "TEST 1"
     let TEST_ID_2 = "TEST 2"
 
@@ -51,7 +51,7 @@ type ``Company Repository`` () =
         storedItem |> should equal (Some item)
 
     [<Test>]
-    member this.``Create & Read <when> multiple company types`` () =
+    member this.``Create & Read [when] company has multiple types`` () =
         let item:Company = { Id=TEST_ID; Name="Company Test"; Types=[CompanyType.Stacking; CompanyType.Bank] }
         repository.Create(item)
         let storedItem = repository.Single(TEST_ID)

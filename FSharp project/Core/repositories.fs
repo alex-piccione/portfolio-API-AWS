@@ -23,6 +23,9 @@ type IUserRepository =
 type ICurrencyRepository =
     inherit CRUD<Currency>
     inherit All<Currency>
+    abstract member ExistsWithCode: code:string -> bool
+    abstract member ExistsWithName: name:string -> bool
+
 
 type ICompanyRepository =
     inherit CRUD<Company>
