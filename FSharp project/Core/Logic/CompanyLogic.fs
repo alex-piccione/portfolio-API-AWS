@@ -34,12 +34,17 @@ type CompanyLogic(companyRepository:ICompanyRepository, fundRepository:IFundRepo
                     Ok newCompany
             
         member this.Update (company:Company) =
+            let checkNameExists company = 
+                match companyRepository.GetByName company.Name with
+                | Some c when c.Id <> company.Id -> Error $"A company with name \"{company.Name}\" already exists."
+                | _ -> Ok company
+
             match normalize company |> validate with
             | Error msg -> Error msg
             | Ok validCompany ->
-                match companyRepository.GetByName company.Name with
-                | Some c when c.Id <> company.Id -> Error $"Another company with name \"{company.Name}\" already exists."
-                | _ -> companyRepository.Update validCompany; Ok validCompany
+                match checkNameExists validCompany with 
+                | Error msg -> Error msg
+                | Ok _ -> companyRepository.Update validCompany; Ok validCompany
 
         member this.Single id = companyRepository.Single id
 
