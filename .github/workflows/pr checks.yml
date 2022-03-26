@@ -13,7 +13,6 @@ jobs:
     #environment: production
     steps:
     - name: Checkout
-      id: checkout
       uses: actions/checkout@v2
 
   build:
@@ -22,12 +21,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      id: checkout
       uses: actions/checkout@v2
 
     - name: Buid VS solution
       id: build
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
+
+  unit-tests:
+    name: Unit Tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Unit Tests
       id: unit-tests
