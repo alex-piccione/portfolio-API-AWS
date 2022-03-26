@@ -17,4 +17,4 @@ jobs:
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
 
     - name: Unit Tests
-      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj"" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
