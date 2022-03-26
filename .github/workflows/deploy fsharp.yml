@@ -38,8 +38,10 @@ jobs:
 
     - name: Buid VS solution
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
-    #- name: Unit Tests
-    #  run: dotnet test src/UnitTests/UnitTests.fsproj -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+        
+    - name: Unit Tests
+      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+    
     - name: Publish zip
       run: |
         dotnet publish "FSharp project/AwsLambda/AWS Lambda.fsproj" -c RELEASE -o "FSharp project/publish"
