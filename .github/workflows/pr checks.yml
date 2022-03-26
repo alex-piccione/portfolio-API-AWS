@@ -37,8 +37,7 @@ jobs:
     - name: Integration Tests
       id: integration-tests
       if: github.event.action == 'labeled' && github.event.label.name == 'pr:ready'
-      #run: dotnet test "FSharp project/IntegrationTests/IntegrationTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
-      run: echo::integration tests
+      run: dotnet test "FSharp project/IntegrationTests/IntegrationTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
 
 
 
