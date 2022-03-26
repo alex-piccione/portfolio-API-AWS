@@ -13,8 +13,6 @@ type ICurrencyLogic =
 
 type CurrencyLogic(currencyRepository:ICurrencyRepository, fundRepository:IFundRepository) =
     
-    //let assignNewCode currency:Currency = {currency with Id=Guid.NewGuid().ToString()}
-
     let normalize currency:Currency = {currency with Code=currency.Code.Trim(); Name=currency.Name.Trim()}
       
     let isEmpty value = String.IsNullOrWhiteSpace value
