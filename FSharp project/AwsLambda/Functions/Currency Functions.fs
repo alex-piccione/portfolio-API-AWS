@@ -38,8 +38,8 @@ type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
         try
             let currency = base.Deserialize request.Body
             match currencyLogic.Create currency with
-            | Ok currency -> this.createOkWithStatus 201
-            | Error message -> this.createError $"Failed to create Currency. Error: {message}"
+            | Ok created -> this.createCreated created
+            | Error message -> this.createErrorForConflict message
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"

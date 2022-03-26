@@ -47,6 +47,24 @@ type ``Currency Functions`` () =
         let response = functions.Create(this.emulateApi item) 
         response.StatusCode |> should equal 201
 
+    [<Test>]
+    member this.``Create [when] code already exuists`` () =
+        let item = {testCurrency with Code="AAA"}
+        let message = "Already exists"
+
+        let s:unit = ()
+        let logic = Mock<ICurrencyLogic>()
+                        .SetupFunc(fun rep -> rep.Create item)
+                        .Returns(Error message)
+                        .Create()
+
+        let functions = CurrencyFunctions(logic)
+
+        // execute
+        let response = functions.Create(this.emulateApi item) 
+        response.StatusCode |> should equal 409
+        response.Body |> should equal message
+
      (*
     [<Test>]
     member this.``Update`` () =
