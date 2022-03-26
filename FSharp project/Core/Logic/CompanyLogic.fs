@@ -36,7 +36,7 @@ type CompanyLogic(companyRepository:ICompanyRepository, fundRepository:IFundRepo
         member this.Update (company:Company) =
             let checkNameExists company = 
                 match companyRepository.GetByName company.Name with
-                | Some c when c.Id <> company.Id -> Error $"A company with name \"{company.Name}\" already exists."
+                | Some c when c.Id <> company.Id -> Error $"Another company with name \"{company.Name}\" already exists."
                 | _ -> Ok company
 
             match normalize company |> validate with

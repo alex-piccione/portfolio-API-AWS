@@ -100,8 +100,7 @@ type ``CompanyLogic Test`` () =
 
         // execute
         match logic.Update company with
-        | Error message ->
-            message |> should contain $"Another company with name \"{name}\" already exists."
+        | Error message -> message |> should contain $"Another company with name \"{name}\" already exists."
         | _ -> failwith "a not valid result was expected"
 
     [<Test>]

@@ -1,0 +1,20 @@
+name: Pull Request Checks
+
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened]
+  
+jobs:
+  check-build:
+    name: check build
+    runs-on: ubuntu-latest
+    #environment: production
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Buid VS solution
+      run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
+
+    - name: Unit Tests
+      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
