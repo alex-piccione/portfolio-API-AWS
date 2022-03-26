@@ -84,9 +84,8 @@ type ``CompanyLogic Test`` () =
 
         // execute
         match logic.Update company with
-        | Error message ->
-            message |> should contain $"Name cannot be empty."
-        | _ -> failwith "expected Error"
+        | Error message -> message |> should contain $"Name cannot be empty."
+        | _ -> failwith "an Error was expected"
 
     [<Test>]
     member this.``Update [when] Name already exists [should] raise specific error``() =
@@ -102,8 +101,8 @@ type ``CompanyLogic Test`` () =
         // execute
         match logic.Update company with
         | Error message ->
-            message |> should contain $"A company with name \"{name}\" already exists."
-        | _ -> failwith "expected non valid result"
+            message |> should contain $"Another company with name \"{name}\" already exists."
+        | _ -> failwith "a not valid result was expected"
 
     [<Test>]
     member this.``Single [when] company exists`` () =
