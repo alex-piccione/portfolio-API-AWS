@@ -2,7 +2,7 @@ name: Pull Request Checks
 
 on: 
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
   
 jobs:
   check-build:
@@ -11,10 +11,29 @@ jobs:
     #environment: production
     steps:
     - name: Checkout
+      id: checkout
       uses: actions/checkout@v2
 
+  build:
+    name: Build
+    needs: [check-build]
+    runs-on: ubuntu-latest
+    steps:
+
     - name: Buid VS solution
+      id: build
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
 
     - name: Unit Tests
+      id: unit-tests
       run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+
+    - name: Integration Tests
+      id: integration-tests
+      if: github.event.action == "labeled" && github.event.label.name == "ready"
+      #run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+      run: echo::integration tests
+
+
+
+
