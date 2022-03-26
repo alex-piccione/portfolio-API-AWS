@@ -10,7 +10,6 @@ jobs:
 
   build:
     name: Build
-    needs: [check-build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
