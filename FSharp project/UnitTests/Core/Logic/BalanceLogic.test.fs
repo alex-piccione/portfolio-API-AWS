@@ -8,7 +8,6 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-open match_helper
 
 type BalanceLogicTest() =
 
@@ -79,7 +78,6 @@ type BalanceLogicTest() =
 
     [<Test>]
     member this.``GetBalance with a complex scenario``() =
-
         let date = DateTime(2010, 08, 15)
         //let old_date = date.AddDays(-10.)
         let older_date = date.AddDays(-100.)
@@ -173,6 +171,29 @@ type BalanceLogicTest() =
         (logic.GetBalance date).LastUpdateDate |> should equal changeDate2
 
     [<Test>]
+    member this.``GetBalance [when] a Currency exists on multiple Companies [should] return the total at latest date``() =
+        let date = DateTime(2020, 08, 15)
+        let changeDate1 = DateTime(2020, 06, 01)
+        let changeDate2 = DateTime(2020, 05, 01) 
+        
+        let funds:FundAtDate list = [
+            {Id="1"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company 1"; Quantity=10m; LastChangeDate = changeDate1}
+            {Id="2"; Date=date; CurrencyCode="AAA"; FundCompanyId="Company 1"; Quantity=11m; LastChangeDate = changeDate2}
+        ]
+
+        let fundRepository = Mock<IFundRepository>()
+                                .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
+                                .Create()
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+
+        // execute
+        let balance = logic.GetBalance date
+        balance.LastUpdateDate |> should equal changeDate1
+        balance.FundsByCurrency |> should haveLength 1
+        balance.FundsByCurrency[0].CompaniesIds |> should haveLength 2
+        balance.FundsByCurrency[0].Quantity |> should equal 21    
+
+    [<Test>]
     member this.``CreateOrUpdate [when] record exists [should] update`` () =
         let fundRepository = Mock<IFundRepository>()
                                  .Setup(fun r -> r.FindFundAtDate (any()))
@@ -227,6 +248,13 @@ type BalanceLogicTest() =
             Quantity = 2m
         }
 
+        // execute
+        //logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
+        logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
+        //match logic.CreateOrUpdate request with
+        //| Ok x -> x |> should equal Created
+        //| _ -> failwith "Expected Ok"
+
         let expectedRecord = fun r -> r.Id |> should equal "new id"
                                       r.Date |> should equal request.Date.Date
                                       r.CurrencyCode |> should equal request.CurrencyCode
@@ -234,13 +262,12 @@ type BalanceLogicTest() =
                                       r.Quantity |> should equal request.Quantity 
                                       r.LastChangeDate |> should equal Now
                                       true
-        // execute
-        //logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
-        logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
-        //match logic.CreateOrUpdate request with
-        //| Ok x -> x |> should equal Created
-        //| _ -> failwith "Expected Ok"
                 
+        let expectedFundAtDate = fun (f:FundAtDate) -> f.CurrencyCode |> should equal request.CurrencyCode
+                                                       f.Date.Date |> should equal request.Date.Date
+                                                       true
+
+        verify <@ fundRepository.FindFundAtDate (is expectedFundAtDate) @> once
         verify <@ fundRepository.CreateFundAtDate (is expectedRecord) @> once
 
     [<Test>]

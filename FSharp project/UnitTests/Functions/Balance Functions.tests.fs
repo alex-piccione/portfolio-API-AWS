@@ -78,6 +78,42 @@ type ``Balance Functions`` () =
         response.StatusCode |> should equal 409
 
     [<Test>]
+    member this.``Update [should] call Logic function``() =
+        let balanceLogic = Mock<IBalanceLogic>()
+                              .Setup(fun l -> l.CreateOrUpdate(any()))
+                              .Returns(Ok(BalanceUpdateResult.Created))
+                              .Create()
+                         
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.Body <- $@"{{            
+            ""currencyCode"": ""CCC"",
+            ""date"": ""2000-12-31"",
+            ""companyId"": ""AAA"",
+            ""quantity"": 11
+        }}"
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.Update(request, context)
+        response.StatusCode |> should equal 201
+        //response.Body |> should contain "Fund request"
+        
+        let isExpectedRecord = 
+            fun (r:BalanceUpdateRequest) -> 
+                // r.Date
+                r.CurrencyCode |> should equal "CCC"
+                r.Quantity |> should equal 11
+                r.CompanyId |> should equal "AAA"
+                true
+
+        verify <@ balanceLogic.CreateOrUpdate(is isExpectedRecord) @> once
+
+    [<Test>]
     member this.``Update [when] Logic returns request validation error [should] return error``() =
         let error = Error "invalid request"
         let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()

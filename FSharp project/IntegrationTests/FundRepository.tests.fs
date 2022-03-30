@@ -36,6 +36,7 @@ type ``Fund Repository`` () =
     let TEST_CURRENCY_2 = "TESTTEST 2"
     // no millisecond fraction because of limited precision on repository precision
     let Now = DateTime(2022, 12, 31, 01, 02, 03, 999, DateTimeKind.Utc) 
+    let today = DateTime.UtcNow.Date
 
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
     let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
@@ -113,47 +114,47 @@ type ``Fund Repository`` () =
 
 
     [<Test>]
-    member this.``FindFundAtDate [should] return the record`` () =
-        let fundAtDate:FundAtDate = { Id="123"; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=Now}
+    member this.``FindFundAtDate [should] return the record`` () = 
+        let fundAtDate:FundAtDate = { Id="123"; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=Now}
+        let fundAtDate_2 = { fundAtDate with Id="124"; Date=today.AddDays(+1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=Now}
+        let fundAtDate_3 = { fundAtDate with Id="125"; Date=today.AddDays(-1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=Now}
         addRecord fundAtDate
+        addRecord fundAtDate_2
+        addRecord fundAtDate_3
 
+        //
         let t1 = fundAtDate.LastChangeDate
         let t2 = (repository.FindFundAtDate fundAtDate).Value.LastChangeDate
 
         let ticks1 = t1.Ticks
         let ticks2 = t2.Ticks
+
         // execute
-        repository.FindFundAtDate fundAtDate
-        |> should equal (Some fundAtDate)
+        repository.FindFundAtDate fundAtDate |> should equal (Some fundAtDate)
 
     [<Test>]
     member this.``FindFundAtDate [when] differ by date [should] not return the record`` () =
-
-        let fundAtDate:FundAtDate = { Id="123"; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
+        let fundAtDate:FundAtDate = { Id="123"; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
 
         addRecord fundAtDate
 
-        let newRecord = { fundAtDate with Date = fundAtDate.Date.AddDays(10.); Quantity = 2m}
+        let newRecord = { fundAtDate with Date = today.AddDays(1.) }
 
         // execute
-        repository.FindFundAtDate newRecord
-        |> should equal None
+        repository.FindFundAtDate newRecord |> should equal None
 
 
     [<Test>]
     member this.``FindFundAtDate [when] record does not exist [should] return None`` () =
-
-        let fundAtDate:FundAtDate = { Id=""; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
+        let fundAtDate:FundAtDate = { Id=""; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
 
         // execute
-        repository.FindFundAtDate fundAtDate
-        |> should equal None
+        repository.FindFundAtDate fundAtDate |> should equal None
 
 
     [<Test>]
-    member this.``CreateFundAtDate`` () =
-
-        let fundAtDate:FundAtDate = { Id=TEST_ID; Date=DateTime.Today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
+    member this.``CreateFundAtDate`` () =        
+        let fundAtDate:FundAtDate = { Id=TEST_ID; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=DateTime.UtcNow}
 
         // execute
         repository.CreateFundAtDate fundAtDate
@@ -166,14 +167,14 @@ type ``Fund Repository`` () =
     member this.``UpdateFundAtDate`` () =
 
         let fundAtDate:FundAtDate = { 
-            Id=TEST_ID; Date=DateTime.Today
+            Id=TEST_ID; Date=today
             CurrencyCode=TEST_CURRENCY
             FundCompanyId="Company"; Quantity=1m
             LastChangeDate=DateTime.UtcNow }
         repository.CreateFundAtDate fundAtDate
 
         let updateAtDate:FundAtDate = { 
-            Id=TEST_ID; Date=DateTime.Today.AddDays(-2.)
+            Id=TEST_ID; Date=today.AddDays(-2.)
             CurrencyCode = TEST_CURRENCY_2
             FundCompanyId = "Company 2"
             Quantity = 2m
