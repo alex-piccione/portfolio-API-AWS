@@ -78,7 +78,7 @@ type ``Fund Repository`` () =
         fund.Quantity |> should equal (item.Quantity)
 
     [<Test>]
-    member this.``GetFundsToDate [should] NOT return a fund saved in successive date`` () =
+    member this.``GetFundsToDate [should] NOT return a fund saved on after the reference date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(+10.);
         let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=Now } 
