@@ -98,19 +98,23 @@ type ``Fund Repository`` () =
         // valid record
         let item_1:FundAtDate = {Id="1"; Date=toDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now}
         let item_2:FundAtDate = {Id="2"; Date=beforeDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now } 
+        let item_3:FundAtDate = {Id="3"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="GGG"; Quantity=1.1m; LastChangeDate=Now}
         // non valid
-        let item_3:FundAtDate = {Id="3"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
-        let item_4:FundAtDate = {Id="4"; Date=oldDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
-        let item_5:FundAtDate = {Id="5"; Date=afterDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now} 
-        let item_6:FundAtDate = {Id="6"; Date=oldDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now } 
-        addRecords([item_1; item_2; item_3; item_4; item_5; item_6])
+        let item_10:FundAtDate = {Id="10"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
+        let item_11:FundAtDate = {Id="11"; Date=oldDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
+        let item_12:FundAtDate = {Id="12"; Date=afterDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now} 
+        let item_13:FundAtDate = {Id="13"; Date=oldDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now } 
+        addRecords([
+            item_1; item_2; item_3; 
+            item_10; item_11; item_12; item_13])
 
         // execute
         let data = repository.GetFundsToDate(toDate)
 
-        data.Length |> should equal 2
+        data.Length |> should equal 3
         data |> should contain item_1
         data |> should contain item_2
+        data |> should contain item_3
 
 
     [<Test>]
