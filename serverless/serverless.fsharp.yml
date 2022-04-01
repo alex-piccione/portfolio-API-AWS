@@ -169,7 +169,8 @@ functions:
     handler: ${self:provider.environment.balanceFunctions}::Get
     package: 
       <<: *package
-    timeout: 20
+    timeout: 30
+    memorySize: 1024
     events:
     - http:
         method: GET
