@@ -165,9 +165,11 @@ functions:
 
   # Balance
   BalanceGet:
+    name: "GET Balance"
     handler: ${self:provider.environment.balanceFunctions}::Get
     package: 
       <<: *package
+    timeout: 10
     events:
     - http:
         method: GET
