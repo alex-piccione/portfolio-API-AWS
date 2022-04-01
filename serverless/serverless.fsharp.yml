@@ -169,7 +169,7 @@ functions:
     handler: ${self:provider.environment.balanceFunctions}::Get
     package: 
       <<: *package
-    timeout: 10
+    timeout: 20
     events:
     - http:
         method: GET
