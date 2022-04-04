@@ -64,10 +64,8 @@ type ``Balance Functions`` () =
         let balanceLogic = Mock<IBalanceLogic>().Create()
         let functions = BalanceFunctions(balanceLogic)
 
-        let querystring = Dictionary<string, string>() :> IDictionary<string, string>
-
         let request = Mock<APIGatewayProxyRequest>().Create()
-        request.QueryStringParameters <- querystring
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
@@ -75,6 +73,22 @@ type ``Balance Functions`` () =
 
         // execute
         let response = functions.Get(request, context)
+        response.StatusCode |> should equal 409
+
+    [<Test>]
+    member this.``GetFund [when] querystring parameter is missing [should] return error``() =
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409
 
     [<Test>]
