@@ -76,6 +76,8 @@ type ``Balance Functions`` () =
         // execute
         let response = functions.Get(request, context)
         response.StatusCode |> should equal 409
+        test_helper.verifyResponseContainsError response "Parameter \"base-currency\" not found in querystring"
+        
 
     [<Test>]
     member this.``Update [should] call Logic function``() =
