@@ -16,7 +16,8 @@ type IBalanceLogic =
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
-    
+    inherit LogicBase()
+
     interface IBalanceLogic with
         member this.GetBalance(day: DateTime): Balance = 
             let funds = fundRepository.GetFundsToDate(day)
@@ -47,19 +48,15 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest): Result<BalanceUpdateResult, string> = 
 
-            [
-                validator.checkDateExists (fun _ -> request.Date) "Date"
-                validator.checkFieldIsDefined (fun _ -> request.CompanyId) "Date"
-            ]
-
-            //let rule:Rule<BalanceUpdateRequest> = validator.mustBeDefined("Date" , fun r -> r.Date)
-            let rules = [
-                checkDateIsDefined (fun _ -> request.Date)
-                //request.Date = Unchecked.defaultof<DateTime> -> mustBeDefined "Date"
-            ]
-            let result = validate(request, rules)
+            //let errors = validate [
+            //    checkDateIsDefined_ request.Date "Date"
+            //    checkDateIsInTheFuture request.Date "Date"
+            //]
+            //if not errors.IsEmpty Error errors.Head
+            //else
 
             match request with 
+            | r when base.isDateUndefined r.Date -> Error <| mustBeDefined "Date"
             | r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
             | r when r.Date > chronos.Now -> Error <| mustBeInThePast "Date"
             | r when String.IsNullOrWhiteSpace r.CurrencyCode -> Error (mustBeDefined "CurrencyCode")

@@ -1,7 +1,8 @@
 ﻿//namespace Portfolio.Core.Logic
 module validator
 open System
-open Portfolio.Core.Entities
+
+let isDateUndefined date = date = Unchecked.defaultof<DateTime>
 
 type LogicResult = { IsSuccess:bool; Errors:string list }
 type RuleResult = { Pass:bool; Error:string }
@@ -59,10 +60,23 @@ let pass () = { IsSuccess=true; Errors=List.Empty }
 let fails (errors:string list) = { IsSuccess=false; Errors=errors }
 
 
-let checkDateIsDefined getData fieldName = 
+let checkDateIsDefined__ getData fieldName = 
     match getData() = Unchecked.defaultof<DateTime> with 
     | true -> false, $"{fieldName} must be defined"
     | _ -> true, ""
+
+type FieldValidationResult = { FieldName:string; IsValid:bool; Errors:string list }
+
+let checkDateIsDefined_ value fieldName = 
+    match value = Unchecked.defaultof<DateTime> with 
+    | true -> Some $"{fieldName} must be defined"
+    | _ -> None
+
+let validate (rules:string option list) = rules |> List.choose (fun e -> e)
+
+let validate_ rules =
+    rules |> List.filter (fun v -> not v.IsValid) 
+    |> List.map (fun v -> v.Errors)
 
 
     (*
