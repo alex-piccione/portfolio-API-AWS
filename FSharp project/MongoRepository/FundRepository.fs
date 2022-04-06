@@ -22,15 +22,19 @@ type FundRepository (connectionString:string, collectionName:string) =
         map.MapProperty(fun f -> f.LastChangeDate).SetDefaultValue(DateTime(2000, 01, 01)) |> ignore
 
     interface IFundRepository with
+        member this.GetFundsOfCompany(companyId: string): FundAtDate list = 
+            let filter = base.Filter().Eq( (fun f -> f.FundCompanyId), companyId)
+            List.ofSeq (this.Collection.FindSync(filter).ToEnumerable())
 
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
-
             let currencies = List.ofSeq (this.Collection.Distinct((fun x -> x.CurrencyCode), FilterDefinition<FundAtDate>.Empty).ToEnumerable())
+            let companies = List.ofSeq (this.Collection.Distinct((fun x -> x.FundCompanyId), FilterDefinition<FundAtDate>.Empty).ToEnumerable())
 
-            let getLast currencyCode = Seq.tryHead( this.Collection.FindSync((fun f -> f.CurrencyCode = currencyCode && f.Date <= date))
-                                           .ToEnumerable().OrderByDescending( (fun f -> f.Date)))
+            let getLast currencyCode companyId = 
+                Seq.tryHead( this.Collection.FindSync((fun f -> f.CurrencyCode = currencyCode && f.FundCompanyId = companyId && f.Date <= date))
+                    .ToEnumerable().OrderByDescending((fun f -> f.Date)))
 
-            currencies |> List.choose (fun c -> getLast c)
+            List.allPairs currencies companies |> List.choose (fun x -> getLast (fst(x)) (snd(x)))
 
          member this.FindFundAtDate(record: FundAtDate): FundAtDate option = 
              this.Collection.FindOneOrNone(

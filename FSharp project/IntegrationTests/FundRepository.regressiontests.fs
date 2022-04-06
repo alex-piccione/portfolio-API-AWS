@@ -26,7 +26,7 @@ type ``Fund Repository (regression)`` () =
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
 
-    // no millisecond fraction because of limited precision on repository precision
+    // no millisecond fraction because of limited precision on repository
     let Now = DateTime(2022, 12, 31, 01, 02, 03, 999, DateTimeKind.Utc) 
 
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))

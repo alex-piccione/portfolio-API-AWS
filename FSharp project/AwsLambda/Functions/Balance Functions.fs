@@ -1,7 +1,6 @@
 ﻿namespace Portfolio.Api.Functions
 
 open System
-open Microsoft.Extensions.Configuration
 open Amazon.Lambda.Core
 open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Api.Functions
@@ -14,17 +13,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     inherit FunctionBase()
 
     new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        BalanceFunctions(BalanceLogic(FundRepository(connectionString), Chronos(), IdGenerator()))
+        BalanceFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
 
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
@@ -46,9 +35,9 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         try
             let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body
             match balanceLogic.CreateOrUpdate(updateRequest) with
-            | Created -> this.createOkWithStatus 201
-            | Updated -> this.createOkWithStatus 200
-            | InvalidRequest error -> this.createErrorForConflict error
+            | Ok Created -> this.createCreated ()
+            | Ok Updated -> this.createOk ()
+            | Error error -> this.createErrorForConflict error
         with exc ->
             context.Logger.Log $"Failed to update Balance. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to update Balance. Error: {exc.Message}"

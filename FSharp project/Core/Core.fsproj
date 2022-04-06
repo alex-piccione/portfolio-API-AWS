@@ -15,6 +15,7 @@
     <Compile Include="Logic\request validator.fs" />
     <Compile Include="Logic\helper.fs" />
     <Compile Include="Logic\LogicBase.fs" />
+    <Compile Include="Logic\CurrencyLogic.fs" />
     <Compile Include="Logic\CompanyLogic.fs" />
     <Compile Include="Logic\BalanceLogic.fs" />
   </ItemGroup>

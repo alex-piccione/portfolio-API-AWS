@@ -25,9 +25,11 @@ type equalCompany(expected:Company) =
 
 type ``Company Repository`` () =
 
-    let repository = CompanyRepository(configuration.connectionString) :> ICompanyRepository
+    let repository = CompanyRepository(configuration.connectionString, "Company_test") :> ICompanyRepository
     let TEST_ID = "TEST 1"
     let TEST_ID_2 = "TEST 2"
+
+    let aCompany = { Company.Id=TEST_ID; Name="Name"; Types=[Exchange] }
 
     let delete id = repository.Delete id
 
@@ -49,7 +51,7 @@ type ``Company Repository`` () =
         storedItem |> should equal (Some item)
 
     [<Test>]
-    member this.``Create & Read <when> multiple company types`` () =
+    member this.``Create & Read [when] company has multiple types`` () =
         let item:Company = { Id=TEST_ID; Name="Company Test"; Types=[CompanyType.Stacking; CompanyType.Bank] }
         repository.Create(item)
         let storedItem = repository.Single(TEST_ID)
@@ -97,3 +99,13 @@ type ``Company Repository`` () =
         let result = repository.GetByName("company test")
 
         result |> should equal (Some item)
+
+    [<Test>]
+    member this.``All`` () =
+        repository.Create({ aCompany with Id=TEST_ID })
+        repository.Create({ aCompany with Id=TEST_ID_2 })
+
+        // execute
+        let items = repository.All() |> List.ofSeq
+        items |> should contain { aCompany with Id=TEST_ID }
+        items |> should contain { aCompany with Id=TEST_ID_2 }

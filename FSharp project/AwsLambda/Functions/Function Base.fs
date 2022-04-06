@@ -12,46 +12,41 @@ type DataOrOption<'T> =
     | Data of 'T
 
 type FunctionBase () =
-
-    //let jsonOptions = Options.ISO8601CamelCase;
-
-    member this.createResponse<'T> statusCode (data:'T option): APIGatewayProxyResponse =
+    
+    member this.createResponse statusCode (data:obj option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- statusCode
-        response.Headers <- dict["Content-Type", "application/json"]
-        response.Body <-
-            match data with
-            | None -> ""
-            | Some x -> Json.JsonSerializer.Serialize(x)
+        match data with 
+        | None -> 
+            response.Body <- ""
+            response.Headers <- dict<string, string>["Content-Type", "text/plain"]
+        | Some value -> 
+            if value :? string 
+            then 
+                response.Headers <- dict<string, string>["Content-Type", "text/plain"]
+                response.Body <- value :?> string 
+            else 
+                response.Headers <- dict<string, string>["Content-Type", "application/json"]
+                response.Body <- Json.JsonSerializer.Serialize(value)
         response
 
-    member this.createOk () =
-        this.createResponse 200 None
+    member this.createOk () = this.createResponse 200 None
 
-    member this.createOkWithStatus statusCode =
-        this.createResponse statusCode None
+    member this.createOkWithData data = this.createResponse 200 (Some data)
 
-    member this.createOkWithData<'T> data =
-        this.createResponse<'T> 200 (Some data)
+    member this.createCreated data = this.createResponse 201 (Some data)
 
-    member this.createCreated<'T> data =
-        this.createResponse<'T> 201 (Some data)
+    member this.createNotFound () = this.createResponse 404 None
 
-    member this.createNotFound () =
-        this.createResponse<string> 404 (Some "")
+    member this.createError (message:string) = this.createResponse 500 (Some message)
 
-    member this.createError message =
-        this.createResponse<string> 500 (Some message)
-
-    member this.createErrorForConflict message =
-        this.createResponse<string> 409 (Some message)
+    member this.createErrorForConflict (message:string) = this.createResponse 409 (Some message)
 
     member this.createErrorForMissingQuerystring missingParameter =
         this.createErrorForConflict $"\"{missingParameter}\" parameter is missing in the querystring."
 
 
     member this.Deserialize<'T>(requestBody:string) =
-
         if String.IsNullOrEmpty requestBody then failwith $"Request body is empty"
 
         let options = JsonSerializerOptions()

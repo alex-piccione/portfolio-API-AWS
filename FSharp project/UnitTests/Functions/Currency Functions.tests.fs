@@ -13,10 +13,10 @@ open Portfolio.Core.Logic
 open Portfolio.Api.Functions
 
 
-type ``Company Functions`` () =
+type ``Currency Functions`` () =
 
-    let testCompany:Company = { Id="test"; Name="UnitTest"; Types=[CompanyType.Bank]}
-    let getLogic () = Mock<ICompanyLogic>().Create()
+    let testCurrency:Currency = { Code="test"; Name="UnitTest" }
+    //let getLogic () = Mock.Of<ICurrencyLogic>()
  
     member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
@@ -32,37 +32,56 @@ type ``Company Functions`` () =
         ()
 
     [<Test>]
-    member this.``Update`` () =
-        let item:Company = {testCompany with Name="Test Update"; Types=[CompanyType.Exchange]}
+    member this.``Create`` () =
+        let item = {testCurrency with Code="AAA"}
 
         let s:unit = ()
-        let logic = Mock<ICompanyLogic>()
-                        .SetupFunc(fun rep -> rep.Single item.Id).Returns(Some item)
+        let logic = Mock<ICurrencyLogic>()
+                        .SetupFunc(fun rep -> rep.Create item)
+                        .Returns(Ok item)
+                        .Create()
+
+        let functions = CurrencyFunctions(logic)
+
+        // execute
+        let response = functions.Create(this.emulateApi item) 
+        response.StatusCode |> should equal 201
+
+    [<Test>]
+    member this.``Create [when] code already exuists`` () =
+        let item = {testCurrency with Code="AAA"}
+        let message = "Already exists"
+
+        let s:unit = ()
+        let logic = Mock<ICurrencyLogic>()
+                        .SetupFunc(fun rep -> rep.Create item)
+                        .Returns(Error message)
+                        .Create()
+
+        let functions = CurrencyFunctions(logic)
+
+        // execute
+        let response = functions.Create(this.emulateApi item) 
+        response.StatusCode |> should equal 409
+        response.Body |> should equal message
+
+     (*
+    [<Test>]
+    member this.``Update`` () =
+        let item = {testCurrency with Name="Test Update"}
+
+        let s:unit = ()
+        let logic = Mock<ICurrencyLogic>()
+                        //.SetupFunc(fun rep -> rep.Single item.Code).Returns(Some item)
                         .SetupFunc(fun rep -> rep.Update item).Returns(Ok item)
                         .Create()
 
-        let functions = CompanyFunctions(logic)
+        let functions = CurrencyFunctions(logic)
 
         // execute
         let response = functions.Update(this.emulateApi item) 
         response.StatusCode |> should equal 200
 
- 
-    [<Test>]
-    member this.``Create`` () =
-        let item:Company = {testCompany with Id="aaa"}
-
-        let s:unit = ()
-        let logic = Mock<ICompanyLogic>()
-                        .SetupFunc(fun rep -> rep.Create item)
-                        .Returns(Ok item)
-                        .Create()
-
-        let functions = CompanyFunctions(logic)
-
-        // execute
-        let response = functions.Create(this.emulateApi item) 
-        response.StatusCode |> should equal 201
 
 
     [<Test>]
@@ -94,3 +113,5 @@ type ``Company Functions`` () =
        let item:Company = functions.Deserialize json
        item.Name |> should equal "Test"
        item.Types |> should equivalent [CompanyType.Bank; CompanyType.Exchange]
+
+       *)

@@ -7,10 +7,13 @@ open Portfolio.Core
 open error_messages
 open validator
 
+type BalanceUpdateResult = 
+| Created
+| Updated
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
-    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> BalanceUpdateResult
+    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
     
@@ -42,7 +45,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             let balance:Balance = {Date=day; FundsByCurrency = aggregates; LastUpdateDate = balanceLastUpdate }
             balance
 
-        member this.CreateOrUpdate(request: BalanceUpdateRequest): BalanceUpdateResult = 
+        member this.CreateOrUpdate(request: BalanceUpdateRequest): Result<BalanceUpdateResult, string> = 
 
             [
                 validator.checkDateExists (fun _ -> request.Date) "Date"
@@ -56,13 +59,12 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             ]
             let result = validate(request, rules)
 
-            let invalidRequest error = BalanceUpdateResult.InvalidRequest error
-
             match request with 
-            | r when r.Date = Unchecked.defaultof<DateTime> -> invalidRequest <| mustBeDefined "Date"
-            | r when r.Date = Unchecked.defaultof<DateTime> -> invalidRequest (mustBeDefined "Date")
-            | r when String.IsNullOrWhiteSpace r.CompanyId -> invalidRequest (mustBeDefined "CompanyId")
-            | r when r.Quantity <= 0m -> invalidRequest (mustBeGreaterThanZero "Quantity")
+            | r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
+            | r when r.Date > chronos.Now -> Error <| mustBeInThePast "Date"
+            | r when String.IsNullOrWhiteSpace r.CurrencyCode -> Error (mustBeDefined "CurrencyCode")
+            | r when String.IsNullOrWhiteSpace r.CompanyId -> Error (mustBeDefined "CompanyId")
+            | r when r.Quantity <= 0m -> Error (mustBeGreaterThanZero "Quantity")
             | _ ->
                 let record:FundAtDate = { 
                     Id = "" // to be set
@@ -77,7 +79,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                 match fundRepository.FindFundAtDate(record) with
                 | Some existing ->
                     fundRepository.UpdateFundAtDate { record with Id = existing.Id }
-                    BalanceUpdateResult.Updated
+                    Ok Updated
                 | None -> 
                     fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
-                    BalanceUpdateResult.Created
+                    Ok Created

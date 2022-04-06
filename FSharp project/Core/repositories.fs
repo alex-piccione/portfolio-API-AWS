@@ -23,6 +23,9 @@ type IUserRepository =
 type ICurrencyRepository =
     inherit CRUD<Currency>
     inherit All<Currency>
+    abstract member ExistsWithCode: code:string -> bool
+    abstract member ExistsWithName: name:string -> bool
+
 
 type ICompanyRepository =
     inherit CRUD<Company>
@@ -38,6 +41,7 @@ type ISessionRepository =
 
 type IFundRepository = 
     abstract member GetFundsToDate: date:DateTime -> FundAtDate list
+    abstract member GetFundsOfCompany: companyId:string -> FundAtDate list
     abstract member FindFundAtDate: record:FundAtDate -> FundAtDate option
     abstract member UpdateFundAtDate: record:FundAtDate -> unit
     abstract member CreateFundAtDate: record:FundAtDate -> unit

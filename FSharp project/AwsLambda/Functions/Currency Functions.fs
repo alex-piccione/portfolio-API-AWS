@@ -3,30 +3,22 @@
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open Portfolio.Api.Functions
-open Portfolio.Core
-open Microsoft.Extensions.Configuration
 open Portfolio.MongoRepository
+open Portfolio.Core.Logic
 
 
-type CurrencyFunctions (repository:ICurrencyRepository) =
+type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     inherit FunctionBase()
 
-    new () =
-        let configFile = "configuration.json"
-        let variable = "MongoDB_connection_string"
-
-        let configuration = ConfigurationBuilder()
-                                .AddJsonFile(configFile)
-                                .Build()
-
-        let connectionString = configuration.[variable]
-        if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-
-        CurrencyFunctions(CurrencyRepository(connectionString))
+    new () =                
+        CurrencyFunctions(
+            CurrencyLogic(
+                CurrencyRepository(helper.ConnectionString), 
+                FundRepository(helper.ConnectionString)))
 
     member private this.single id =
         try 
-            match repository.Single id with
+            match currencyLogic.Single id with
             | Some item -> this.createOkWithData item
             | _ -> base.createNotFound()
         with exc ->
@@ -34,7 +26,7 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member private this.all () =
         try
-            let list = repository.All()
+            let list = currencyLogic.All()
             base.createOkWithData(list)
         with exc ->
             this.createError $"Failed to retrieve Currencies. Error: {exc.Message}"
@@ -42,10 +34,12 @@ type CurrencyFunctions (repository:ICurrencyRepository) =
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Create: {request.Body}"
+
         try
             let currency = base.Deserialize request.Body
-            repository.Create(currency)
-            this.createOkWithStatus 201
+            match currencyLogic.Create currency with
+            | Ok created -> this.createCreated created
+            | Error message -> this.createErrorForConflict message
         with exc ->
             context.Logger.Log $"Failed to create Currency. Data: {request.Body}. Error: {exc}"
             this.createError $"Failed to create Currency. Error: {exc.Message}"
