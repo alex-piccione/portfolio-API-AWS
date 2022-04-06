@@ -13,6 +13,7 @@ type BalanceUpdateResult =
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
+    abstract member GetFund: currencyCode:string * limit:int option -> FundAtDate list
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
@@ -69,3 +70,6 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                 | None -> 
                     fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
                     Ok Created
+
+        member this.GetFund(currencyCode: string, limit: int option): FundAtDate list = 
+            raise (System.NotImplementedException())

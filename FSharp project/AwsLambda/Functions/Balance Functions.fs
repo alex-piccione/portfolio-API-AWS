@@ -27,15 +27,14 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Fund. {request.Body}"
 
-        // TODO: create a Validate function that accept many checks as a list and pass over all of them exiting at the fist one and returning a DU OK or the Fail
-        // https://github.com/alex-piccione/portfolio-API-AWS/issues/38
-        let baseCurrencyCode:string option = this.GetValueFromQuerystring request "base-currency"
-        if baseCurrencyCode.IsNone then base.createErrorForMissingQuerystring "base-currency"
-
-        else
-            let balance = balanceLogic.GetBalance(DateTime.UtcNow.Date)
-            base.createOkWithData balance
-
+        let errors = ValidateRequest request [ParameterMustExist "currency"]
+        if errors.IsEmpty then
+            match this.GetValueFromQuerystring request "currency" with            
+            | Some currencyCode ->                 
+                 let limit = this.GetIntFromQuerystring request "limit"   
+                 base.createOkWithData (balanceLogic.GetFund (currencyCode, limit))
+            | None -> base.createErrorForInvalidRequest errors              
+        else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Balance. {request.Body}"
