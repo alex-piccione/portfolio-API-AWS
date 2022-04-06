@@ -15,7 +15,6 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
     new () =
         BalanceFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
-
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Balance. {request.Body}"
 
@@ -23,8 +22,7 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
         if errors.IsEmpty then
             let balance = balanceLogic.GetBalance(DateTime.UtcNow.Date)
             base.createOkWithData balance        
-        else base.createErrorForInvalidRequest errors
-      
+        else base.createErrorForInvalidRequest errors      
 
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
