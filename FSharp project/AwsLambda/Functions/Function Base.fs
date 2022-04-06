@@ -6,10 +6,7 @@ open System.Text.Json
 open Microsoft.Extensions.Configuration
 open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Core.Entities
-
-type DataOrOption<'T> =
-    | Option of Option<'T>
-    | Data of 'T
+open request_validator
 
 type FunctionBase () =
     
@@ -44,6 +41,10 @@ type FunctionBase () =
 
     member this.createErrorForMissingQuerystring missingParameter =
         this.createErrorForConflict $"\"{missingParameter}\" parameter is missing in the querystring."
+
+    member this.createErrorForInvalidRequest (errors:ValidationError list) =
+        let errorMessages = errors |> List.map (fun error -> $"{error.Message}")
+        this.createResponse 409 (Some errorMessages)
 
 
     member this.Deserialize<'T>(requestBody:string) =

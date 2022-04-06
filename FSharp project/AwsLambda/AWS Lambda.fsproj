@@ -15,6 +15,7 @@
     </None>
     <Compile Include="assembly.fs" />
     <Compile Include="Business\SessionManager.fs" />
+    <Compile Include="Functions\request validator.fs" />
     <Compile Include="Functions\helper.fs" />
     <Compile Include="Functions\exceptions.fs" />
     <Compile Include="Functions\Request and Responses\User Login.fs" />
