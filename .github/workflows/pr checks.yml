@@ -29,7 +29,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Unit Tests
       id: unit-tests
-      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+      #run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
+      run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --filter "TestCategory!=SKIP_ON_DEPLOY"
 
   integration-tests:
     name: Integration Tests
