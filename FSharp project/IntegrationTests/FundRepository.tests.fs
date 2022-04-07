@@ -219,7 +219,7 @@ type ``Fund Repository`` () =
 
         // execute
         let data = repository.GetFundsOfCurrency(currencyCode, limit)
-        data |> should haveCount 2
+        data |> should haveLength 2
         // data |> should containItem (fun x -> x.Id == "1")
         data |> should containItemWithId "2"
         data |> should containItemWithId "4"
