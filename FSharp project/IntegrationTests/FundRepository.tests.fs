@@ -32,6 +32,8 @@ type equalFundAtDate(expected:FundAtDate) =
 type containItem(find:Func<FundAtDate, bool>) = 
     inherit Constraints.EqualConstraint(find)
 
+    override this.Description = "should contain zzz"
+
     override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
         match box actual with 
         | :? option<FundAtDate> as fund ->
@@ -46,10 +48,9 @@ type containItemWithId(id:string) =
 
     override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
         match box actual with 
-        | :? option<FundAtDate> as fund ->
-            fund.IsSome |> should be True   
-            fund.Value.Id |> should equal id
-            ConstraintResult(this, actual, true)
+        | :? (FundAtDate list) as funds ->
+            let result = funds |> List.exists (fun x -> x.Id = id)
+            ConstraintResult(this, actual, result)
         | _ ->
             ConstraintResult(this, actual, false)
 
@@ -208,13 +209,14 @@ type ``Fund Repository`` () =
     [<Test>]
     member this.``GetFundsOfCurrency [should] return funds of that currency`` () =
         let currencyCode = "aaa"
-        let limit = Some 10   
+        let limit = Some 2 
 
         addRecords([
             {item with Id="1"; CurrencyCode="bbb"}
             {item with Id="2"; CurrencyCode="aaa"}
             {item with Id="3"; CurrencyCode="aa"}
             {item with Id="4"; CurrencyCode="aaa"}            
+            {item with Id="5"; CurrencyCode="aaa"; Date=DateTime.MaxValue}    
         ])
 
         // execute
@@ -222,4 +224,4 @@ type ``Fund Repository`` () =
         data |> should haveLength 2
         // data |> should containItem (fun x -> x.Id == "1")
         data |> should containItemWithId "2"
-        data |> should containItemWithId "4"
+        data |> should containItemWithId "5"
