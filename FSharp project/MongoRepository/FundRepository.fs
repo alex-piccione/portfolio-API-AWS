@@ -23,8 +23,11 @@ type FundRepository (connectionString:string, collectionName:string) =
 
     interface IFundRepository with
         member this.GetFundsOfCompany(companyId: string): FundAtDate list = 
-            let filter = base.Filter().Eq( (fun f -> f.FundCompanyId), companyId)
+            let filter = base.Filter().Eq((fun f -> f.FundCompanyId), companyId)
             List.ofSeq (this.Collection.FindSync(filter).ToEnumerable())
+
+        member this.GetFundsOfCurrency(currencyCode: string, limit: int option): FundAtDate list = 
+            raise (System.NotImplementedException())
 
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
             let currencies = List.ofSeq (this.Collection.Distinct((fun x -> x.CurrencyCode), FilterDefinition<FundAtDate>.Empty).ToEnumerable())
