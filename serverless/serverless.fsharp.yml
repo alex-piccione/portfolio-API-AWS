@@ -1,3 +1,5 @@
+# This file is used to  
+
 # syntax ref.: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml/
 service: Portfolio-FSharp
 configValidationMode: error
@@ -17,11 +19,12 @@ provider:
   # The CloudFormation template is invalid: Template error: instance of Fn::GetAtt references undefined resource ApiGatewayRestApi
 
   environment:
-    functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  # Assembly::Namespace prefix, concatenate .Class::Method
-    userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
-    currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
-    companyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CompanyFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
-    balanceFunctions: "Portfolio.Api::Portfolio.Api.Functions.BalanceFunctions"  # Assembly::Namespace prefix, concatenate .Class::Method
+    functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  
+    # variable = Assembly::Namespace.Class  (concatenate .Class::Method to get the handler)
+    userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  
+    currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  
+    companyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CompanyFunctions"  
+    balanceFunctions: "Portfolio.Api::Portfolio.Api.Functions.BalanceFunctions"
 
 package:
   individually: true
