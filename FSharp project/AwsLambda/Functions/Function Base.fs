@@ -63,3 +63,13 @@ type FunctionBase () =
         | _ -> match request.QueryStringParameters.TryGetValue property with
                | true, value -> Some(value)
                | _ -> None
+
+    member this.GetIntFromQuerystring (request:APIGatewayProxyRequest) (property:string) =
+        match request.QueryStringParameters with
+        | null -> None
+        | _ -> match request.QueryStringParameters.TryGetValue property with
+               | true, value -> 
+                   match System.Int32.TryParse value with
+                   | true, intValue -> Some intValue
+                   | _ -> None
+               | _ -> None

@@ -8,6 +8,7 @@ open Portfolio.Core.Entities
 open Extensions
 open MongoDB.Driver
 open MongoDB.Bson.Serialization
+open MongoDB.Driver.Linq
 
 
 type FundRepository (connectionString:string, collectionName:string) =
@@ -23,8 +24,15 @@ type FundRepository (connectionString:string, collectionName:string) =
 
     interface IFundRepository with
         member this.GetFundsOfCompany(companyId: string): FundAtDate list = 
-            let filter = base.Filter().Eq( (fun f -> f.FundCompanyId), companyId)
+            let filter = base.Filter().Eq((fun f -> f.FundCompanyId), companyId)
             List.ofSeq (this.Collection.FindSync(filter).ToEnumerable())
+
+        member this.GetFundsOfCurrency(currencyCode: string, limit: int option): FundAtDate list = 
+            let filter = base.Filter().Eq((fun f -> f.CurrencyCode), currencyCode)
+            let options = FindOptions<FundAtDate>()
+            options.Sort <- Builders<FundAtDate>.Sort.Descending((fun f -> f.Date :> obj))
+            options.Limit <- Option.toNullable limit
+            List.ofSeq (this.Collection.FindSync(filter, options).ToEnumerable())
 
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
             let currencies = List.ofSeq (this.Collection.Distinct((fun x -> x.CurrencyCode), FilterDefinition<FundAtDate>.Empty).ToEnumerable())

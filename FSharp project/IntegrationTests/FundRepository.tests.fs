@@ -28,42 +28,59 @@ type equalFundAtDate(expected:FundAtDate) =
         | _ ->
             ConstraintResult(this, actual, false)
 
-type ``Fund Repository`` () =
+// TODO: implement and use it. Currently not able to call.
+type containItem(find:Func<FundAtDate, bool>) = 
+    inherit Constraints.EqualConstraint(find)
 
+    override this.Description = "should contain zzz"
+
+    override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
+        match box actual with 
+        | :? option<FundAtDate> as fund ->
+            fund.IsSome |> should be True            
+            let result = find.Invoke(fund.Value)    
+            ConstraintResult(this, actual, result)
+        | _ ->
+            ConstraintResult(this, actual, false)
+
+type containItemWithId(id:string) = 
+    inherit Constraints.EqualConstraint(id)
+
+    override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
+        match box actual with 
+        | :? (FundAtDate list) as funds ->
+            let result = funds |> List.exists (fun x -> x.Id = id)
+            ConstraintResult(this, actual, result)
+        | _ ->
+            ConstraintResult(this, actual, false)
+
+type ``Fund Repository`` () =
     let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
     let TEST_ID = "TEST 1"
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
     // no millisecond fraction because of limited precision on repository precision
-    let Now = DateTime(2022, 12, 31, 01, 02, 03, 999, DateTimeKind.Utc) 
+    let now = DateTime(2022, 12, 31, 01, 02, 03, 999, DateTimeKind.Utc) 
     let today = DateTime.UtcNow.Date
-
+    
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
     let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
 
     let newGuid() = Guid.NewGuid().ToString()
-
     let addRecord item = collection.InsertOne item
-
     let addRecords items = items |> List.iter collection.InsertOne
 
-    let removeAllRecords item = 
-        let builder = FilterDefinitionBuilder<FundAtDate>()
-        let filter = builder.Or([
-            builder.Eq( (fun i -> i.CurrencyCode), TEST_CURRENCY)
-            builder.Eq( (fun i -> i.CurrencyCode), TEST_CURRENCY_2)
-        ])
-        collection.DeleteMany filter |> ignore
+    let item:FundAtDate = {Id=newGuid(); Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=now } 
 
     [<SetUp>]
     member this.Setup () =
-        removeAllRecords()
+        collection.DeleteMany (FilterDefinitionBuilder<FundAtDate>().Empty) |> ignore
  
     [<Test>]
     member this.``GetFundsToDate [should] return a fund saved in previous date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(-10.);
-        let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=DateTime.UtcNow } 
+        let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=now } 
         addRecord(item)
 
         // execute
@@ -81,7 +98,7 @@ type ``Fund Repository`` () =
     member this.``GetFundsToDate [should] NOT return a fund saved on after the reference date`` () =
         let toDate = DateTime(2000, 01, 31)
         let itemDate = toDate.AddDays(+10.);
-        let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=Now } 
+        let item:FundAtDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; LastChangeDate=now } 
         addRecord(item)
 
         // execute
@@ -96,14 +113,14 @@ type ``Fund Repository`` () =
         let beforeDate = toDate.AddDays(-10.);
         let afterDate = toDate.AddDays(+10.);
         // valid record
-        let item_1:FundAtDate = {Id="1"; Date=toDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now}
-        let item_2:FundAtDate = {Id="2"; Date=beforeDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now } 
-        let item_3:FundAtDate = {Id="3"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="GGG"; Quantity=1.1m; LastChangeDate=Now}
+        let item_1:FundAtDate = {Id="1"; Date=toDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now}
+        let item_2:FundAtDate = {Id="2"; Date=beforeDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now } 
+        let item_3:FundAtDate = {Id="3"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="GGG"; Quantity=1.1m; LastChangeDate=now}
         // non valid
-        let item_10:FundAtDate = {Id="10"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
-        let item_11:FundAtDate = {Id="11"; Date=oldDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now }
-        let item_12:FundAtDate = {Id="12"; Date=afterDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now} 
-        let item_13:FundAtDate = {Id="13"; Date=oldDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=Now } 
+        let item_10:FundAtDate = {Id="10"; Date=beforeDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now }
+        let item_11:FundAtDate = {Id="11"; Date=oldDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now }
+        let item_12:FundAtDate = {Id="12"; Date=afterDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now} 
+        let item_13:FundAtDate = {Id="13"; Date=oldDate; CurrencyCode=TEST_CURRENCY_2; FundCompanyId="FFF"; Quantity=1m; LastChangeDate=now } 
         addRecords([
             item_1; item_2; item_3; 
             item_10; item_11; item_12; item_13])
@@ -119,19 +136,12 @@ type ``Fund Repository`` () =
 
     [<Test>]
     member this.``FindFundAtDate [should] return the record`` () = 
-        let fundAtDate:FundAtDate = { Id="123"; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=Now}
-        let fundAtDate_2 = { fundAtDate with Id="124"; Date=today.AddDays(+1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=Now}
-        let fundAtDate_3 = { fundAtDate with Id="125"; Date=today.AddDays(-1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=Now}
+        let fundAtDate:FundAtDate = { Id="123"; Date=today; CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=1m; LastChangeDate=now}
+        let fundAtDate_2 = { fundAtDate with Id="124"; Date=today.AddDays(+1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=now}
+        let fundAtDate_3 = { fundAtDate with Id="125"; Date=today.AddDays(-1); CurrencyCode=TEST_CURRENCY; FundCompanyId="Company"; Quantity=100m; LastChangeDate=now}
         addRecord fundAtDate
         addRecord fundAtDate_2
         addRecord fundAtDate_3
-
-        //
-        let t1 = fundAtDate.LastChangeDate
-        let t2 = (repository.FindFundAtDate fundAtDate).Value.LastChangeDate
-
-        let ticks1 = t1.Ticks
-        let ticks2 = t2.Ticks
 
         // execute
         repository.FindFundAtDate fundAtDate |> should equal (Some fundAtDate)
@@ -189,3 +199,29 @@ type ``Fund Repository`` () =
 
         let savedRecord = repository.FindFundAtDate(updateAtDate)
         savedRecord |> should equalFundAtDate updateAtDate
+
+    //[<Test>]
+    //member this.``GetFundsOfCurrency [should] return funds of that currency`` () =
+    //    let companyId = "aaa"
+    //    let data = repository.GetFundsOfCompany companyId
+
+
+    [<Test>]
+    member this.``GetFundsOfCurrency [should] return funds of that currency`` () =
+        let currencyCode = "aaa"
+        let limit = Some 2 
+
+        addRecords([
+            {item with Id="1"; CurrencyCode="bbb"}
+            {item with Id="2"; CurrencyCode="aaa"}
+            {item with Id="3"; CurrencyCode="aa"}
+            {item with Id="4"; CurrencyCode="aaa"}            
+            {item with Id="5"; CurrencyCode="aaa"; Date=DateTime.MaxValue}    
+        ])
+
+        // execute
+        let data = repository.GetFundsOfCurrency(currencyCode, limit)
+        data |> should haveLength 2
+        // data |> should containItem (fun x -> x.Id == "1")
+        data |> should containItemWithId "2"
+        data |> should containItemWithId "5"

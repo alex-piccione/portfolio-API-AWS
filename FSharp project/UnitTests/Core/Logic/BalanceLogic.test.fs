@@ -327,3 +327,20 @@ type BalanceLogicTest() =
         testRequestValidation
             {request with CompanyId = ""}
             (error_messages.mustBeDefined "CompanyId")
+
+    [<Test>]
+    member this.``GetFund [should] return proper result``() =
+        let currencyCode = "aaa"
+        let limit = Some 10
+        let funds = [fundAtDate]
+        let fundRepository = Mock<IFundRepository>()
+                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
+                                .Returns(funds)
+                                .Create()
+        // execute
+        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+
+        logic.GetFund(currencyCode, None) |> should equal funds
+        verify <@ fundRepository.GetFundsOfCurrency(currencyCode, limit) @> once
+
+
