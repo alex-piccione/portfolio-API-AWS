@@ -45,7 +45,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             let balance:Balance = {Date=day; FundsByCurrency = aggregates; LastUpdateDate = balanceLastUpdate }
             balance
 
-        member this.CreateOrUpdate(request: BalanceUpdateRequest): Result<BalanceUpdateResult, string> = 
+        member this.CreateOrUpdate(request: BalanceUpdateRequest) = //: Result<BalanceUpdateResult, string> = 
 
             match request with 
             | r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
