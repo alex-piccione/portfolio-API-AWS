@@ -11,16 +11,21 @@ open Portfolio.Core.Logic
 open Portfolio.Core.Entities
 
 
-type equalResult<'a>(expected:Result<'a,_>) = 
-    inherit Constraints.EqualConstraint(expected)
+//type equalResult<'a>(expected:Result<'a,_>) = 
+//    inherit Constraints.EqualConstraint(expected)
 
     //override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
     //    match box actual with 
     //    | :? option<FundAtDate> as fund ->
+type equalResult<'x,'y>(expected:Result<_,'b>) = 
+    inherit Constraints.EqualConstraint(expected)
 
     override this.ApplyTo<'C> (actual:'C):  ConstraintResult =   
+
         match box actual with 
+        //| :? Result<'a,obj> as result -> 
         | :? Result<BalanceUpdateResult,string> as result -> 
+        //| :? Result<_,'b> as result -> 
             match expected with 
             | Ok x -> 
                match result with 
@@ -33,7 +38,12 @@ type equalResult<'a>(expected:Result<'a,_>) =
                 | Error f -> 
                     f |> should equal e
                     ConstraintResult(this, actual, true)
-                | _ -> ConstraintResult(this, actual, false)  
+                | _ -> ConstraintResult(this, actual, false) 
+        //| :? Result<BalanceUpdateResult,string> as result -> ConstraintResult(this, actual, true)
+        | :? Result<obj,obj> as result -> ConstraintResult(this, actual, true)
+        | :? Result<obj,_> as result -> ConstraintResult(this, actual, true)
+        | :? Result<BalanceUpdateResult,_> as result -> ConstraintResult(this, actual, true)
+        //| :? Result<BalanceUpdateResult,string> as result -> ConstraintResult(this, actual, true)
         | _ -> ConstraintResult(this, actual, false)  
             
 type BalanceLogicTest() =
