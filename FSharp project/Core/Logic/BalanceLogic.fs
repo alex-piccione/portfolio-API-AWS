@@ -72,4 +72,4 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                     Ok Created
 
         member this.GetFund(currencyCode: string, limit: int option): FundAtDate list = 
-            raise (System.NotImplementedException())
+            fundRepository.GetFundsOfCurrency(currencyCode, limit)

@@ -151,7 +151,6 @@ type BalanceLogicTest() =
 
     [<Test>]
     member this.``GetBalance [should] return the LastUpdateDate``() =
-
         let date = DateTime(2010, 08, 15)
         let changeDate1 = DateTime(2020, 06, 01)
         let changeDate2 = DateTime(2020, 12, 01) // newer
@@ -334,13 +333,11 @@ type BalanceLogicTest() =
         let limit = Some 10
         let funds = [fundAtDate]
         let fundRepository = Mock<IFundRepository>()
-                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, any()))
+                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
                                 .Returns(funds)
                                 .Create()
         // execute
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
-        logic.GetFund(currencyCode, None) |> should equal funds
+        logic.GetFund(currencyCode, limit) |> should equal funds
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, limit) @> once
-
-
