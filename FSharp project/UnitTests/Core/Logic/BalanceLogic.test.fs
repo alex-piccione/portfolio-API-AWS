@@ -334,7 +334,7 @@ type BalanceLogicTest() =
         let limit = Some 10
         let funds = [fundAtDate]
         let fundRepository = Mock<IFundRepository>()
-                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
+                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, any()))
                                 .Returns(funds)
                                 .Create()
         // execute
