@@ -336,6 +336,7 @@ type BalanceLogicTest() =
                                 // TODO: resolve this: https://github.com/alex-piccione/portfolio-API-AWS/issues/77
                                 //.Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
                                 .Setup(fun r -> r.GetFundsOfCurrency(any(), any()))
+
                                 .Returns(funds)
                                 .Create()
         // execute
