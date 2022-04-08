@@ -12,8 +12,14 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+    - uses: actions-ecosystem/action-remove-labels@v1
+      if: github.event.action != 'labeled'
+      with:
+        labels: |
+          build:success
+          build:failure
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Buid VS solution
       id: build
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
@@ -41,3 +47,25 @@ jobs:
     - name: Integration Tests
       id: integration-tests      
       run: dotnet test "FSharp project/IntegrationTests/IntegrationTests.fsproj" -c Release --filter "TestCategory!=SKIP_ON_DEPLOY"
+
+  # We mark the build Success only when build and all the tests passes
+  label_success:
+    runs-on: ubuntu-latest
+    #if: github.event.action != 'labeled'
+    if: github.event.action == 'pull_request'
+    needs: [build, unit-tests, integration-tests]
+    steps:
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: build:success
+
+  #label_failure:
+  #  runs-on: ubuntu-latest
+  #  #if: github.event.action != 'labeled'
+  #  ${{ ! contains(github.event.pull_request.labels.*.name, 'pr:draft') }}
+  #  if: github.event.action == 'pull_request'
+  #  needs: [build, unit-tests, integration-tests]
+  #  steps:
+  #    - uses: actions-ecosystem/action-add-labels@v1
+  #      with:
+  #        labels: build:failure
