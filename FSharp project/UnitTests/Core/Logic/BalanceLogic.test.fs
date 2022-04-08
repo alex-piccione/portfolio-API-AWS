@@ -333,6 +333,7 @@ type BalanceLogicTest() =
         let limit = Some 10
         let funds = [fundAtDate]
         let fundRepository = Mock<IFundRepository>()
+                                // TODO: resolve this: https://github.com/alex-piccione/portfolio-API-AWS/issues/77
                                 //.Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
                                 .Setup(fun r -> r.GetFundsOfCurrency(any(), any()))
                                 .Returns(funds)
