@@ -53,7 +53,7 @@ jobs:
   label_success:
     runs-on: ubuntu-latest
     #if: github.event.action != 'labeled'
-    if: github.action_name == 'pull_request'
+    if: github.action_name == 'pull_request' || github.action_name == 'synchronize'
     needs: [build, unit-tests, integration-tests]
     steps:
       - uses: actions-ecosystem/action-add-labels@v1
