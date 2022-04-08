@@ -52,7 +52,6 @@ type BalanceLogicTest() =
 
     [<Test>]
     member this.``GetBalance with a simple scenario``() =
-
         let date = DateTime(2010, 08, 15)
         let older_date = DateTime(2010, 07, 15)
         let funds:FundAtDate list = [
@@ -334,13 +333,14 @@ type BalanceLogicTest() =
         let limit = Some 10
         let funds = [fundAtDate]
         let fundRepository = Mock<IFundRepository>()
-                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
+                                //.Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
+                                .Setup(fun r -> r.GetFundsOfCurrency(any(), any()))
                                 .Returns(funds)
                                 .Create()
         // execute
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
-        logic.GetFund(currencyCode, None) |> should equal funds
+        logic.GetFund(currencyCode, limit) |> should equal funds
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, limit) @> once
 
 
