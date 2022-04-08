@@ -10,18 +10,10 @@ open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
 
-
-//type equalResult<'a>(expected:Result<'a,_>) = 
-//    inherit Constraints.EqualConstraint(expected)
-
-    //override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
-    //    match box actual with 
-    //    | :? option<FundAtDate> as fund ->
-type equalResult<'x,'y>(expected:Result<_,'b>) = 
+type equalResult<'x,'y>(expected:Result<_,_>) = 
     inherit Constraints.EqualConstraint(expected)
 
     override this.ApplyTo<'C> (actual:'C):  ConstraintResult =   
-
         match box actual with 
         //| :? Result<'a,obj> as result -> 
         | :? Result<BalanceUpdateResult,string> as result -> 
@@ -36,13 +28,13 @@ type equalResult<'x,'y>(expected:Result<_,'b>) =
             | Error e -> 
                 match result with 
                 | Error f -> 
-                    f |> should equal e
+                    f |> should equal (unbox e)
                     ConstraintResult(this, actual, true)
                 | _ -> ConstraintResult(this, actual, false) 
         //| :? Result<BalanceUpdateResult,string> as result -> ConstraintResult(this, actual, true)
         | :? Result<obj,obj> as result -> ConstraintResult(this, actual, true)
-        | :? Result<obj,_> as result -> ConstraintResult(this, actual, true)
-        | :? Result<BalanceUpdateResult,_> as result -> ConstraintResult(this, actual, true)
+        //| :? Result<obj,_> as result -> ConstraintResult(this, actual, true)
+        //| :? Result<BalanceUpdateResult,_> as result -> ConstraintResult(this, actual, true)
         //| :? Result<BalanceUpdateResult,string> as result -> ConstraintResult(this, actual, true)
         | _ -> ConstraintResult(this, actual, false)  
             
@@ -252,10 +244,7 @@ type BalanceLogicTest() =
         }
 
         // execute
-        //logic.CreateOrUpdate update :> Result<BalanceUpdateResult, string> |> should equal (Ok Updated )
-        logic.CreateOrUpdate update |> should equal (Ok Updated ) 
-        //let result = logic.CreateOrUpdate update
-        //result : Result<BalanceUpdateResult, string> |> should equal (Ok Updated)
+        logic.CreateOrUpdate update |> should equalResult (Ok Updated)
 
         let isExpectedRecord = 
             fun r -> 
@@ -288,12 +277,7 @@ type BalanceLogicTest() =
         }
 
         // execute
-        //logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
-        //logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
         logic.CreateOrUpdate request |> should equalResult (Ok Created)
-        //match logic.CreateOrUpdate request with
-        //| Ok x -> x |> should equal Created
-        //| _ -> failwith "Expected Ok"
 
         let expectedRecord = fun r -> r.Id |> should equal "new id"
                                       r.Date |> should equal request.Date.Date
@@ -335,7 +319,7 @@ type BalanceLogicTest() =
                 true
 
         // execute
-        logic.CreateOrUpdate request |> should equal (Ok Updated :> Result<BalanceUpdateResult, string>)
+        logic.CreateOrUpdate request |> should equalResult (Ok Updated)
         verify <@ fundRepository.UpdateFundAtDate (is expectedRecord) @> once
 
     [<Test>]
