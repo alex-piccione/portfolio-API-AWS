@@ -201,5 +201,5 @@ functions:
     events:
     - http:
         method: GET
-        path: balance/fund
+        path: fund
         cors: true
