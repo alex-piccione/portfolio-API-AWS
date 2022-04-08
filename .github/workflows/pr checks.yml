@@ -1,7 +1,6 @@
 # This workflow is used to chech the code changes in pull requests
 # This workflow has to fail if tests fail
 
-
 name: Pull Request Checks
 
 on: 
@@ -9,27 +8,25 @@ on:
     types: [opened, synchronize, reopened, labeled]
   
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Buid VS solution
       id: build
       run: dotnet build "FSharp project/Portfolio AWS API.sln" -c RELEASE
-
+      
   unit-tests:
     name: Unit Tests
     needs: [build]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Unit Tests
       id: unit-tests
-      #run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
       run: dotnet test "FSharp project/UnitTests/UnitTests.fsproj" -c Release --filter "TestCategory!=SKIP_ON_DEPLOY"
 
   integration-tests:
@@ -38,12 +35,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Integration Tests
       id: integration-tests
-      if: github.event.action == 'labeled' && github.event.label.name == 'pr:ready'
-      run: dotnet test "FSharp project/IntegrationTests/IntegrationTests.fsproj" -c Release --no-build --filter "TestCategory!=SKIP_ON_DEPLOY"
-
-
-
+      #if: github.event.action == 'labeled' && github.event.label.name == 'pr:ready'
+      run: dotnet test "FSharp project/IntegrationTests/IntegrationTests.fsproj" -c Release --filter "TestCategory!=SKIP_ON_DEPLOY"
+      
+  # We mark the build Success only when build and all the tests passes
+  label_success:
+    runs-on: ubuntu-latest
+    #if: github.event.action != 'labeled'
+    if: github.event.action == 'pull_request'
+    needs: [build, unit-tests, integration-tests]
+    steps:
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: build:success
 
