@@ -3,13 +3,11 @@
 open System
 open System.Linq
 open System.Linq.Expressions
+open MongoDB.Driver
+open MongoDB.Bson.Serialization
 open Portfolio.Core
 open Portfolio.Core.Entities
 open Extensions
-open MongoDB.Driver
-open MongoDB.Bson.Serialization
-open MongoDB.Driver.Linq
-
 
 type FundRepository (connectionString:string, collectionName:string) =
     inherit CrudRepository<FundAtDate>(connectionString, collectionName, (fun x -> x.Id), FundRepository.overloadMap)
