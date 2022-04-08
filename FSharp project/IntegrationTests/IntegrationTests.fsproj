@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include=".env.example" />
     <Compile Include="helper.fs" />
     <Compile Include="configuration.fs" />
     <Compile Include="UserRepository.tests.fs" />
@@ -18,9 +19,12 @@
     <Compile Include="FundRepository.regressiontests.fs" />
   </ItemGroup>
 
+  <ItemGroup />
+
   <ItemGroup>
     <PackageReference Include="Foq" Version="1.8.0" />
     <PackageReference Include="FsUnit" Version="4.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
