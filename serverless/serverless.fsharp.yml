@@ -183,6 +183,23 @@ functions:
         #  template:
         #    application/json: '{"base-currency": "$input.params(''base-currency'')"}'
 
+  # Balance
+  BalanceGet.v2:
+    #name: "GET Balance"
+    handler: ${self:provider.environment.balanceFunctions}::Get
+    package: 
+      <<: *package
+    timeout: 30
+    memorySize: 1024
+    events:
+    - http:
+        method: GET
+        path: balance
+        cors: true
+        #request:
+        #  template:
+        #    application/json: '{"base-currency": "$input.params(''base-currency'')"}'
+
   BalanceUpdateFund:
     handler: ${self:provider.environment.balanceFunctions}::Update
     package:
