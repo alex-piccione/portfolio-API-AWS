@@ -2,6 +2,7 @@
 
 open System
 open NUnit.Framework
+open NUnit.Framework.Constraints
 open FsUnit
 open Foq
 open Foq.Linq
@@ -9,6 +10,32 @@ open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
 
+
+type equalResult<'a>(expected:Result<'a,_>) = 
+    inherit Constraints.EqualConstraint(expected)
+
+    //override this.ApplyTo<'C> (actual: 'C):  ConstraintResult =
+    //    match box actual with 
+    //    | :? option<FundAtDate> as fund ->
+
+    override this.ApplyTo<'C> (actual:'C):  ConstraintResult =   
+        match box actual with 
+        | :? Result<BalanceUpdateResult,string> as result -> 
+            match expected with 
+            | Ok x -> 
+               match result with 
+               | Ok y -> 
+                    x |> should equal y
+                    ConstraintResult(this, actual, true)
+               | _ -> ConstraintResult(this, actual, false)
+            | Error e -> 
+                match result with 
+                | Error f -> 
+                    f |> should equal e
+                    ConstraintResult(this, actual, true)
+                | _ -> ConstraintResult(this, actual, false)  
+        | _ -> ConstraintResult(this, actual, false)  
+            
 type BalanceLogicTest() =
 
     let Now = DateTime.UtcNow
@@ -215,7 +242,10 @@ type BalanceLogicTest() =
         }
 
         // execute
-        logic.CreateOrUpdate update |> should equal (Ok Updated :> Result<BalanceUpdateResult, string>)
+        //logic.CreateOrUpdate update :> Result<BalanceUpdateResult, string> |> should equal (Ok Updated )
+        logic.CreateOrUpdate update |> should equal (Ok Updated ) 
+        //let result = logic.CreateOrUpdate update
+        //result : Result<BalanceUpdateResult, string> |> should equal (Ok Updated)
 
         let isExpectedRecord = 
             fun r -> 
@@ -249,7 +279,8 @@ type BalanceLogicTest() =
 
         // execute
         //logic.CreateOrUpdate request |> should matchOkResult<BalanceUpdateResult> (Ok Created)
-        logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
+        //logic.CreateOrUpdate request |> should equal (Ok Created :> Result<BalanceUpdateResult, string>)
+        logic.CreateOrUpdate request |> should equalResult (Ok Created)
         //match logic.CreateOrUpdate request with
         //| Ok x -> x |> should equal Created
         //| _ -> failwith "Expected Ok"
