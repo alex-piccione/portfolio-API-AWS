@@ -43,6 +43,8 @@ type IFundRepository =
     abstract member GetFundsToDate: date:DateTime -> FundAtDate list
     abstract member GetFundsOfCompany: companyId:string -> FundAtDate list
     abstract member GetFundsOfCurrency: currencyCode:string * limit:int option -> FundAtDate list
+    abstract member GetFundsOfCurrencyGroupedByDate: currencyCode:string * limit:int option -> FundAtDate list    
+    abstract member GetFundsOfCurrencyLimitedByNumberOfDates: currencyCode:string * limit:int option -> obj list
     abstract member FindFundAtDate: record:FundAtDate -> FundAtDate option
     abstract member UpdateFundAtDate: record:FundAtDate -> unit
     abstract member CreateFundAtDate: record:FundAtDate -> unit
