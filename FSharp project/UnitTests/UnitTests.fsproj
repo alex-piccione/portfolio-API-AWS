@@ -19,6 +19,7 @@
     <Compile Include="Functions\User Functions.tests.fs" />
     <Compile Include="Functions\Currency Functions.tests.fs" />
     <Compile Include="Functions\Company Functions.tests.fs" />
+    <Compile Include="Functions\FundFunctions.tests.fs" />
     <Compile Include="Functions\Balance Functions.tests.fs" />
   </ItemGroup>
 

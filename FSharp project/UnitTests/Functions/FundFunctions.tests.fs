@@ -1,0 +1,81 @@
+namespace UnitTests.Functions
+
+open System
+open System.Text
+open System.Collections.Generic
+open Microsoft.FSharp.Core
+open Amazon.Lambda.Core
+open Amazon.Lambda.APIGatewayEvents
+open NUnit.Framework
+open FsUnit
+open Foq
+open Foq.Linq
+open Portfolio.Core.Entities
+open Portfolio.Core.Logic
+open Portfolio.Api.Functions
+
+
+type ``Fund Functions`` () =
+
+    member this.emulateApi<'T> (item:'T) =
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock<ILambdaLogger>().Create()) 
+                          .Create()
+        let request = APIGatewayProxyRequest()
+        request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> item
+        (request, context)
+
+
+    [<SetUp>]
+    member this.Setup () =
+        ()  
+
+       
+    [<Test>]
+    member this.``GetFund [should] return list returned by logic ``() =
+        let currency = "AAA"
+        let limit = Some 10
+        let aFund:FundAtDate = { Id="1"; Date=DateTime.Today; CurrencyCode=currency; FundCompanyId="c1"; Quantity=1m; LastChangeDate=DateTime.Today} 
+        let records:FundAtDate list = [
+            aFund
+            { aFund with Id="2"}
+            { aFund with Id="3"}
+            ]
+        let balanceLogic = 
+            Mock<IBalanceLogic>()
+                .Setup(fun l -> l.GetFund(currency, limit)).Returns(records)
+                .Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+        request.QueryStringParameters.Add("currency", currency)
+        request.QueryStringParameters.Add("limit", limit.Value.ToString())
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.GetFund(request, context)
+        response.StatusCode |> should equal 200   
+        //response.Body |> should not' (be Empty)
+        Json.JsonSerializer.Deserialize(response.Body) |> should not' (be Null)
+       
+        verify <@ balanceLogic.GetFund(currency, limit) @> once
+
+    [<Test>]
+    member this.``GetFund [when] querystring parameter is missing [should] return error``() =
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.GetFund(request, context)
+        response.StatusCode |> should equal 409
