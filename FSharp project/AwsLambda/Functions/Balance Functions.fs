@@ -24,18 +24,6 @@ type BalanceFunctions (balanceLogic:IBalanceLogic) =
             base.createOkWithData balance        
         else base.createErrorForInvalidRequest errors      
 
-    member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Get Fund. {request.Body}"
-
-        let errors = ValidateRequest request [ParameterMustExist "currency"]
-        if errors.IsEmpty then
-            match this.GetValueFromQuerystring request "currency" with            
-            | Some currencyCode ->                 
-                 let limit = this.GetIntFromQuerystring request "limit"   
-                 base.createOkWithData (balanceLogic.GetFund (currencyCode, limit))
-            | None -> base.createErrorForInvalidRequest errors              
-        else base.createErrorForInvalidRequest errors
-
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Balance. {request.Body}"
 

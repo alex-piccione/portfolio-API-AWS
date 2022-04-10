@@ -45,7 +45,7 @@ type ``Fund Functions`` () =
             Mock<IBalanceLogic>()
                 .Setup(fun l -> l.GetFund(currency, limit)).Returns(records)
                 .Create()
-        let functions = BalanceFunctions(balanceLogic)
+        let functions = FundFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
@@ -67,7 +67,7 @@ type ``Fund Functions`` () =
     [<Test>]
     member this.``GetFund [when] querystring parameter is missing [should] return error``() =
         let balanceLogic = Mock<IBalanceLogic>().Create()
-        let functions = BalanceFunctions(balanceLogic)
+        let functions = FundFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>

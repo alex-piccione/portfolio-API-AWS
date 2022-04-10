@@ -15,15 +15,6 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
     new () =
         FundFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
-    member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Get Balance. {request.Body}"
-
-        let errors = ValidateRequest request [ParameterMustExist "base-currency"]
-        if errors.IsEmpty then
-            let balance = balanceLogic.GetBalance(DateTime.UtcNow.Date)
-            base.createOkWithData balance        
-        else base.createErrorForInvalidRequest errors      
-
     member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Fund. {request.Body}"
 
