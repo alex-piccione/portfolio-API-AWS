@@ -34,7 +34,7 @@ type ``Fund Functions`` () =
     [<Test>]
     member this.``GetFund [should] return list returned by logic ``() =
         let currency = "AAA"
-        let limit = Some 10
+        let minDate = DateTime(2000, 1, 1)
         let aFund:FundAtDate = { Id="1"; Date=DateTime.Today; CurrencyCode=currency; FundCompanyId="c1"; Quantity=1m; LastChangeDate=DateTime.Today} 
         let records:FundAtDate list = [
             aFund
@@ -43,14 +43,14 @@ type ``Fund Functions`` () =
             ]
         let balanceLogic = 
             Mock<IBalanceLogic>()
-                .Setup(fun l -> l.GetFund(currency, limit)).Returns(records)
+                .Setup(fun l -> l.GetFund(currency, minDate)).Returns(records)
                 .Create()
         let functions = FundFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
         request.QueryStringParameters.Add("currency", currency)
-        request.QueryStringParameters.Add("limit", limit.Value.ToString())
+        request.QueryStringParameters.Add("from", minDate.ToString())
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
@@ -62,7 +62,7 @@ type ``Fund Functions`` () =
         //response.Body |> should not' (be Empty)
         Json.JsonSerializer.Deserialize(response.Body) |> should not' (be Null)
        
-        verify <@ balanceLogic.GetFund(currency, limit) @> once
+        verify <@ balanceLogic.GetFund(currency, minDate) @> once
 
     [<Test>]
     member this.``GetFund [when] querystring parameter is missing [should] return error``() =

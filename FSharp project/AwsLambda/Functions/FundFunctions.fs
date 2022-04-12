@@ -18,13 +18,20 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
     member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Fund. {request.Body}"
 
-        let errors = ValidateRequest request [ParameterMustExist "currency"]
+        let errors = ValidateRequest request [ParameterMustExist "currency"; ParameterMustExist "from"]
         if errors.IsEmpty then
-            match this.GetValueFromQuerystring request "currency" with            
-            | Some currencyCode ->                 
-                 let limit = this.GetIntFromQuerystring request "limit"   
-                 base.createOkWithData (balanceLogic.GetFund (currencyCode, limit))
-            | None -> base.createErrorForInvalidRequest errors              
+            let currency = this.GetValueFromQuerystring request "currency" 
+            let minDate = this.GetDateFromQuerystring request "from" 
+            match (currency, minDate) with
+            //| None, None -> 
+            | None, _ -> base.createErrorForConflict (emptyStringParameter "currency")
+            | _, None -> base.createErrorForConflict (emptyStringParameter "currency")
+            | Some currencuCode, Some date  -> base.createOkWithData (balanceLogic.GetFund (currencuCode, date))
+            //match this.GetValueFromQuerystring request "currency" with            
+            //| Some currencyCode ->        
+            //     let minDate = this.GetDateFromQuerystring request "from"  
+            //     base.createOkWithData (balanceLogic.GetFund (currencyCode, minDate))
+            //| None -> base.createErrorForInvalidRequest errors              
         else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =

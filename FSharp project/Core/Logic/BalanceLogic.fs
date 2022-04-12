@@ -13,7 +13,7 @@ type BalanceUpdateResult =
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
-    abstract member GetFund: currencyCode:string * limit:int option -> FundAtDate list
+    abstract member GetFund: currencyCode:string * minDate:DateTime -> FundAtDate list
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
@@ -71,5 +71,5 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                     fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
                     Ok Created
 
-        member this.GetFund(currencyCode: string, limit: int option): FundAtDate list = 
-            fundRepository.GetFundsOfCurrency(currencyCode, limit)
+        member this.GetFund(currencyCode: string, minDate: DateTime): FundAtDate list = 
+            fundRepository.GetFundsOfCurrency(currencyCode, minDate)

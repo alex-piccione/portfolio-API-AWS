@@ -241,7 +241,7 @@ type BalanceLogicTest() =
         logic.CreateOrUpdate update |> should equalResult (Ok Updated)
 
         let isExpectedRecord = 
-            fun r -> 
+            fun (r:FundAtDate) -> 
                 r.Id |> should equal (expectedRecord.Id)
                 r.Date |> should equal (expectedRecord.Date.Date)
                 r.CurrencyCode |> should equal (expectedRecord.CurrencyCode)
@@ -273,13 +273,15 @@ type BalanceLogicTest() =
         // execute
         logic.CreateOrUpdate request |> should equalResult (Ok Created)
 
-        let expectedRecord = fun r -> r.Id |> should equal "new id"
-                                      r.Date |> should equal request.Date.Date
-                                      r.CurrencyCode |> should equal request.CurrencyCode
-                                      r.FundCompanyId |> should equal request.CompanyId 
-                                      r.Quantity |> should equal request.Quantity 
-                                      r.LastChangeDate |> should equal Now
-                                      true
+        let expectedRecord = 
+            fun (r:FundAtDate) -> 
+                r.Id |> should equal "new id"
+                r.Date |> should equal request.Date.Date
+                r.CurrencyCode |> should equal request.CurrencyCode
+                r.FundCompanyId |> should equal request.CompanyId 
+                r.Quantity |> should equal request.Quantity 
+                r.LastChangeDate |> should equal Now
+                true
                 
         let expectedFundAtDate = fun (f:FundAtDate) -> f.CurrencyCode |> should equal request.CurrencyCode
                                                        f.Date.Date |> should equal request.Date.Date
@@ -305,7 +307,7 @@ type BalanceLogicTest() =
         }
 
         let expectedRecord = 
-            fun r -> 
+            fun (r:FundAtDate) -> 
                 r.Id |> should equal fundAtDate.Id
                 r.Date |> should equal request.Date.Date
                 r.Quantity |> should equal request.Quantity
@@ -349,14 +351,14 @@ type BalanceLogicTest() =
     [<Test>]
     member this.``GetFund [should] return proper result``() =
         let currencyCode = "aaa"
-        let limit = Some 10
+        let minDate = DateTime(2000, 1, 1)
         let funds = [fundAtDate]
         let fundRepository = Mock<IFundRepository>()
-                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, limit))
+                                .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, minDate))
                                 .Returns(funds)
                                 .Create()
         // execute
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
-        logic.GetFund(currencyCode, limit) |> should equal funds
-        verify <@ fundRepository.GetFundsOfCurrency(currencyCode, limit) @> once
+        logic.GetFund(currencyCode, minDate) |> should equal funds
+        verify <@ fundRepository.GetFundsOfCurrency(currencyCode, minDate) @> once

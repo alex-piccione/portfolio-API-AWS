@@ -73,3 +73,13 @@ type FunctionBase () =
                    | true, intValue -> Some intValue
                    | _ -> None
                | _ -> None
+
+    member this.GetDateFromQuerystring (request:APIGatewayProxyRequest) (property:string) =
+        match request.QueryStringParameters with
+        | null -> None
+        | _ -> match request.QueryStringParameters.TryGetValue property with
+               | true, value -> 
+                   match System.DateTime.TryParse value with
+                   | true, dateValue -> Some dateValue
+                   | _ -> None
+               | _ -> None
