@@ -4,8 +4,6 @@ open System
 open System.Linq
 open System.Linq.Expressions
 open MongoDB.Driver
-open MongoDB.Driver.Linq
-open MongoDB.Bson
 open MongoDB.Bson.Serialization
 open Portfolio.Core
 open Portfolio.Core.Entities
@@ -27,16 +25,7 @@ type FundRepository (connectionString:string, collectionName:string) =
             let filter = base.Filter().Eq((fun f -> f.FundCompanyId), companyId)
             List.ofSeq (this.Collection.FindSync(filter).ToEnumerable())
 
-        member this.GetFundsOfCurrency(currencyCode: string, minDate: DateTime): FundAtDate list =        
-            (*let filter = base.Filter().And([
-                base.Filter().Eq((fun f -> f.CurrencyCode), currencyCode)
-                base.Filter().Gte((fun f -> f.Date), minDate)    
-                ])
-            let options = FindOptions<FundAtDate>()
-            options.Sort <- Builders<FundAtDate>.Sort.Descending((fun f -> f.Date :> obj))
-            List.ofSeq (this.Collection.FindSync(filter, options).ToEnumerable())      
-            *)
-     
+        member this.GetFundsOfCurrency(currencyCode: string, minDate: DateTime): FundAtDate list =       
             List.ofSeq(this.Collection.FindSync(fun f -> f.CurrencyCode = currencyCode && f.Date >= minDate).ToEnumerable())
 
         member this.GetFundsToDate(date: System.DateTime): FundAtDate list = 
