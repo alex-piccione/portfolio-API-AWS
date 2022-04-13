@@ -55,7 +55,7 @@ type containItemWithId(id:string) =
             ConstraintResult(this, actual, false)
 
 type ``Fund Repository`` () =
-    let repository = FundRepository(configuration.connectionString, "FundOperation_test") :> IFundRepository
+    let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
     let TEST_ID = "TEST 1"
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
@@ -64,7 +64,7 @@ type ``Fund Repository`` () =
     let today = DateTime.UtcNow.Date
     
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
-    let collection = client.GetDatabase("Portfolio").GetCollection("FundOperation_test")
+    let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
 
     let newGuid() = Guid.NewGuid().ToString()
     let addRecord item = collection.InsertOne item
