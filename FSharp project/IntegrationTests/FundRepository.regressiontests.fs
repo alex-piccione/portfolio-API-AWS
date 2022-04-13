@@ -10,7 +10,6 @@ open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 open helper
 
-
 type FundAtDateWithoutLastChangeDate = {
      Id: string
      Date: DateTime

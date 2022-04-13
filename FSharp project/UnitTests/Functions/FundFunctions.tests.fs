@@ -50,7 +50,7 @@ type ``Fund Functions`` () =
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
         request.QueryStringParameters.Add("currency", currency)
-        request.QueryStringParameters.Add("from", minDate.ToString())
+        request.QueryStringParameters.Add("from", minDate.ToString("o"))
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
@@ -65,12 +65,13 @@ type ``Fund Functions`` () =
         verify <@ balanceLogic.GetFund(currency, minDate) @> once
 
     [<Test>]
-    member this.``GetFund [when] querystring parameter is missing [should] return error``() =
+    member this.``GetFund [when] querystring "currency" parameter is missing [should] return error``() =
         let balanceLogic = Mock<IBalanceLogic>().Create()
         let functions = FundFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+        request.QueryStringParameters["from"] <- DateTime(2000, 1, 1).ToString("o") // "20000-01-01T00:00:00.000"
 
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
@@ -79,3 +80,23 @@ type ``Fund Functions`` () =
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409
+        response.Body |> should contain "currency"
+
+    [<Test>]
+    member this.``GetFund [when] querystring "from" parameter is missing [should] return error``() =
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = FundFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+        request.QueryStringParameters["currency"] <- "aaa"
+        
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
+
+        // execute
+        let response = functions.GetFund(request, context)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "from"
