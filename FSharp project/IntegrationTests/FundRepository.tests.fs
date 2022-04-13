@@ -205,7 +205,6 @@ type ``Fund Repository`` () =
     //    let companyId = "aaa"
     //    let data = repository.GetFundsOfCompany companyId
 
-
     [<Test>]
     member this.``GetFundsOfCurrency [should] return funds of that currency with Date equal or after the limit`` () =
         let currencyCode = "aaa"
@@ -224,72 +223,3 @@ type ``Fund Repository`` () =
         // data |> should containItem (fun x -> x.Id == "1")
         data |> should containItemWithId "2"
         data |> should containItemWithId "4"
-
-    (*[<Test>]
-    member this.``GetFundsOfCurrencyLimitedByDate``() =
-        let currency1 = "AAA"
-        let currency2 = "BBB"
-        let company1 = "C1"
-        let company2 = "C2"
-        let limit = Some 3
-
-        let date1 = new DateTime(2000, 01, 01)
-        let date2 = new DateTime(2000, 02, 01)
-        let date3 = new DateTime(2000, 03, 01)
-        let date4 = new DateTime(2000, 04, 01)
-
-        // AAA 
-        //   c1: d1 d2 -- d4  -> d1, d2
-        //   c2: -- d2 d3 --  ->     d2, d3
-        // BBB
-        //   c1: d1 -- -- --  -> --
-        addRecords([
-            {item with Id="1"; CurrencyCode="AAA"; Date=date1; FundCompanyId=company1; Quantity=1m} // valid
-            {item with Id="2"; CurrencyCode="BBB"; Date=date1; FundCompanyId=company1; Quantity=100m} 
-            {item with Id="3"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company1; Quantity=2m} // valid
-            {item with Id="4"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company2; Quantity=20m} // valid
-            {item with Id="5"; CurrencyCode="AAA"; Date=date3; FundCompanyId=company2; Quantity=30m} // valid
-            {item with Id="6"; CurrencyCode="AAA"; Date=date4; FundCompanyId=company1; Quantity=4m}   
-        ])
-        
-        let data = repository.GetFundsOfCurrencyLimitedByNumberOfDates("AAA", limit)
-
-        data |> should not' (be Empty)*)
-
-    (*
-    [<Test>]
-    member this.``GetFundsOfCurrencyGroupedByDate [should] return funds of that currency grouped by date`` () =
-        let currency1 = "AAA"
-        let currency2 = "BBB"
-        let company1 = "C1"
-        let company2 = "C2"
-        let limit = Some 3
-
-        let date1 = new DateTime(2000, 01, 01)
-        let date2 = new DateTime(2000, 02, 01)
-        let date3 = new DateTime(2000, 03, 01)
-        let date4 = new DateTime(2000, 04, 01)
-
-        // AAA 
-        //   c1: d1 d2 -- d4  -> d1, d2
-        //   c2: -- d2 d3 --  ->     d2, d3
-        // BBB
-        //   c1: d1 -- -- --  -> --
-        addRecords([
-            {item with Id="1"; CurrencyCode="AAA"; Date=date1; FundCompanyId=company1; Quantity=1m} // valid
-            {item with Id="2"; CurrencyCode="BBB"; Date=date1; FundCompanyId=company1; Quantity=100m} 
-            {item with Id="3"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company1; Quantity=2m} // valid
-            {item with Id="4"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company2; Quantity=20m} // valid
-            {item with Id="5"; CurrencyCode="AAA"; Date=date3; FundCompanyId=company2; Quantity=30m} // valid
-            {item with Id="6"; CurrencyCode="AAA"; Date=date4; FundCompanyId=company1; Quantity=4m}   
-        ])
-
-        // execute
-        let data = repository.GetFundsOfCurrencyGroupedByDate("AAA", limit)
-        data |> should haveLength 4
-        // data |> should containItem (fun x -> x.Id == "1")
-        data |> should containItemWithId "1"
-        data |> should containItemWithId "3"
-        data |> should containItemWithId "4"
-        data |> should containItemWithId "5"
-        *)
