@@ -167,7 +167,7 @@ functions:
         #authorizer: aws_iam
 
   # Balance
-  BalanceGet:
+  Balance-Get:
     #name: "GET Balance"
     handler: ${self:provider.environment.balanceFunctions}::Get
     package: 
@@ -183,7 +183,7 @@ functions:
         #  template:
         #    application/json: '{"base-currency": "$input.params(''base-currency'')"}'
 
-  BalanceUpdateFund:
+  Balance-UpdateFund:
     handler: ${self:provider.environment.balanceFunctions}::Update
     package:
       <<: *package
@@ -194,7 +194,7 @@ functions:
         cors: true
 
   # Fund (under balance fuctions)
-  FundGetForCurrency:
+  Fund-GetForCurrency:
     handler: ${self:provider.environment.balanceFunctions}::GetFund
     package: 
       <<: *package
