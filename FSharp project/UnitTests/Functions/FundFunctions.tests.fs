@@ -95,7 +95,26 @@ type ``Fund Functions`` () =
         let context = Mock<ILambdaContext>()
                           .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
                           .Create()
+        // execute
+        let response = functions.GetFund(request, context)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "from"
 
+    [<TestCase("")>]
+    [<TestCase("20220101")>]
+    [<TestCase("aaa")>]
+    member this.``GetFund [when] querystring "from" parameter is wrong [should] return error``(from:string) =
+        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let functions = FundFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
+        request.QueryStringParameters["currency"] <- "aaa"
+        request.QueryStringParameters["from"] <- from        
+
+        let context = Mock<ILambdaContext>()
+                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                          .Create()
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409

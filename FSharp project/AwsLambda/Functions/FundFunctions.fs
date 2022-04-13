@@ -23,15 +23,9 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
             let currency = this.GetValueFromQuerystring request "currency" 
             let minDate = this.GetDateFromQuerystring request "from" 
             match (currency, minDate) with
-            //| None, None -> 
             | None, _ -> base.createErrorForConflict (emptyStringParameter "currency")
-            | _, None -> base.createErrorForConflict (emptyStringParameter "currency")
+            | _, None -> base.createErrorForConflict (invalidDateParameter "from")
             | Some currencuCode, Some date  -> base.createOkWithData (balanceLogic.GetFund (currencuCode, date))
-            //match this.GetValueFromQuerystring request "currency" with            
-            //| Some currencyCode ->        
-            //     let minDate = this.GetDateFromQuerystring request "from"  
-            //     base.createOkWithData (balanceLogic.GetFund (currencyCode, minDate))
-            //| None -> base.createErrorForInvalidRequest errors              
         else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
