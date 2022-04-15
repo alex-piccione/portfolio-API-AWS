@@ -25,6 +25,7 @@ provider:
     currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  
     companyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CompanyFunctions"  
     balanceFunctions: "Portfolio.Api::Portfolio.Api.Functions.BalanceFunctions"
+    fundFunctions: "Portfolio.Api::Portfolio.Api.Functions.FundFunctions"
 
 package:
   individually: true
@@ -195,7 +196,7 @@ functions:
 
   # Fund (under balance fuctions)
   Fund-GetForCurrency:
-    handler: ${self:provider.environment.balanceFunctions}::GetFund
+    handler: ${self:provider.environment.fundFunctions}::GetFund
     package: 
       <<: *package
     events:
