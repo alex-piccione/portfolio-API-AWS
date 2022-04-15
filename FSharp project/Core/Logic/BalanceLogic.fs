@@ -77,6 +77,8 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                 funds
                 |> List.map(fun f -> {Id=f.Id; CompanyId=f.FundCompanyId; Quantity=f.Quantity; LastUpdateDate=f.LastChangeDate })
 
+            let sum (funds:FundAtDate list) = funds |> List.fold (fun acc f -> acc+f.Quantity) 0m
+
             operations 
                 |> List.groupBy(fun f  -> f.Date)
-                |> List.map(fun g -> { Date=fst(g); CompanyFunds=groupCompanies (snd(g)); TotalQuantity=0m })
+                |> List.map(fun (date:DateTime, funds:FundAtDate list) -> { Date=date; CompanyFunds=groupCompanies funds; TotalQuantity=sum funds })

@@ -230,10 +230,10 @@ type BalanceLogicTest() =
 
         let record:CompanyFund = {Id=""; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
         let expectedResult:CurrencyFundAtDate list = [
-                {Date=date1; TotalQuantity=0m; CompanyFunds=[
+                {Date=date1; TotalQuantity=1m; CompanyFunds=[
                     {record with Id="1"; CompanyId=company1; Quantity=1m;}
                 ]}
-                {Date=date2; TotalQuantity=0m; CompanyFunds=[
+                {Date=date2; TotalQuantity=6m; CompanyFunds=[
                     {record with Id="2"; CompanyId=company2; Quantity=2m;}  
                     {record with Id="3"; CompanyId=company1; Quantity=4m;}                
                 ]}
@@ -274,14 +274,14 @@ type BalanceLogicTest() =
 
         let record:CompanyFund = {Id=""; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
         let expectedResult:CurrencyFundAtDate list = [
-                {Date=date1; TotalQuantity=0m; CompanyFunds=[
+                {Date=date1; TotalQuantity=1m; CompanyFunds=[
                     {record with Id="1"; CompanyId=company1; Quantity=1m;}
                 ]}
-                {Date=date2; TotalQuantity=0m; CompanyFunds=[
+                {Date=date2; TotalQuantity=22m; CompanyFunds=[
                     {record with Id="3"; CompanyId=company1; Quantity=2m;}
                     {record with Id="4"; CompanyId=company2; Quantity=20m;}                    
                 ]}
-                {Date=date3; TotalQuantity=0m; CompanyFunds=[
+                {Date=date3; TotalQuantity=30m; CompanyFunds=[
                     {record with Id="5"; CompanyId=company2; Quantity=30m;}
                 ]}
             ]
