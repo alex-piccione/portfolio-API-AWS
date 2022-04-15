@@ -84,18 +84,19 @@ type FundAtDate = {
     LastChangeDate: DateTime
 }
 
-type FundsOfCurrency = {    
-    CurrencyCode: string
-    Dates: CurrencyFundDate[]
-}
-and CurrencyFundDate = {
+// CurrencyAsset can be a better name?
+//type CurrencyFundsByDate = {
+//    Dates: CurrencyFundDate list
+//}
+//and 
+type CurrencyFundAtDate = {
     Date: DateTime
-    CompanyFunds: CompanyFund []
+    CompanyFunds: CompanyFund list
 } 
 and CompanyFund = {
     Id: string
-    Quantity: decimal
-    FundCompanyId: string
+    CompanyId: string    
+    Quantity: decimal    
     LastUpdateDate: DateTime
 }
 

@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Portfolio.UnitTests</AssemblyName>
@@ -14,12 +13,13 @@
     <Compile Include="Core\Logic\CurrencyLogic.tests.fs" />
     <Compile Include="Core\Logic\CompanyLogic.tests.fs" />
     <Compile Include="Core\Logic\BalanceLogic.test.fs" />
+    <Compile Include="Core\Logic\BalanceLogic GetBalance.test.fs" />
     <Compile Include="Functions\test helper.fs" />
     <Compile Include="Functions\request validator.tests.fs" />
     <Compile Include="Functions\User Functions.tests.fs" />
     <Compile Include="Functions\Currency Functions.tests.fs" />
     <Compile Include="Functions\Company Functions.tests.fs" />
-    <Compile Include="Functions\FundFunctions.tests.fs" />
+    <Compile Include="Functions\Fund Functions.tests.fs" />
     <Compile Include="Functions\Balance Functions.tests.fs" />
   </ItemGroup>
 

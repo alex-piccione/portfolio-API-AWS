@@ -13,7 +13,8 @@ type BalanceUpdateResult =
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
-    abstract member GetFund: currencyCode:string * minDate:DateTime -> FundAtDate list
+    //abstract member GetFund: currencyCode:string * minDate:DateTime -> FundAtDate list
+    abstract member GetFundOfCurrencyByDate: currencyCode:string * minDate:DateTime -> CurrencyFundAtDate list
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
@@ -46,7 +47,6 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest) = //: Result<BalanceUpdateResult, string> = 
-
             match request with 
             | r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
             | r when r.Date > chronos.Now -> Error <| mustBeInThePast "Date"
@@ -71,5 +71,24 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                     fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
                     Ok Created
 
-        member this.GetFund(currencyCode: string, minDate: DateTime): FundAtDate list = 
-            fundRepository.GetFundsOfCurrency(currencyCode, minDate)
+        //member this.GetFund(currencyCode: string, minDate: DateTime): FundAtDate list = 
+        //    fundRepository.GetFundsOfCurrency(currencyCode, minDate)
+
+        member this.GetFundOfCurrencyByDate(currencyCode: string, minDate: DateTime): CurrencyFundAtDate list = 
+            let operations = fundRepository.GetFundsOfCurrency(currencyCode, minDate)
+
+            let getCompanyFund (companyId:string, funds:FundAtDate list):CompanyFund =
+               let fund = funds.Head // there is only one fund per company
+               { Id=fund.Id; CompanyId=companyId; Quantity=fund.Quantity; LastUpdateDate=fund.LastChangeDate }
+
+            let groupCompanies (funds:FundAtDate list):CompanyFund list = 
+                funds
+                |> List.map(fun f -> {Id=f.Id; CompanyId=f.FundCompanyId; Quantity=f.Quantity; LastUpdateDate=f.LastChangeDate })
+                
+                //funds 
+                //|> List.groupBy(fun f -> f.FundCompanyId)
+                //|> List.map getCompanyFund
+
+            operations 
+                |> List.groupBy(fun f  -> f.Date)
+                |> List.map(fun g -> { Date=fst(g); CompanyFunds=groupCompanies (snd(g)) })
