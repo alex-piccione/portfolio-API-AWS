@@ -223,9 +223,9 @@ type BalanceLogicTest() =
         // BBB
         //   c1: d1 -- -- --  -> --
         let funds = [
-            {fundAtDate with Id="1"; Date=date1; FundCompanyId=company1; Quantity=1m} // valid
-            {fundAtDate with Id="2"; Date=date2; FundCompanyId=company2; Quantity=2m} // valid
-            {fundAtDate with Id="3"; Date=date2; FundCompanyId=company1; Quantity=4m} // valid
+            {fundAtDate with Id="1"; Date=date1; FundCompanyId=company1; Quantity=1m}
+            {fundAtDate with Id="2"; Date=date2; FundCompanyId=company2; Quantity=2m}
+            {fundAtDate with Id="3"; Date=date2; FundCompanyId=company1; Quantity=4m}
         ]
 
         let record:CompanyFund = {Id=""; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
