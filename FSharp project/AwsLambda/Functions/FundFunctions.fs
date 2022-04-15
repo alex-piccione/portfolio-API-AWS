@@ -25,7 +25,7 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
             match (currency, minDate) with
             | None, _ -> base.createErrorForConflict (emptyStringParameter "currency")
             | _, None -> base.createErrorForConflict (invalidDateParameter "from")
-            | Some currencuCode, Some date  -> base.createOkWithData (balanceLogic.GetFund (currencuCode, date))
+            | Some currencuCode, Some minDate  -> base.createOkWithData (balanceLogic.GetFundOfCurrencyByDate (currencuCode, minDate))
         else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
