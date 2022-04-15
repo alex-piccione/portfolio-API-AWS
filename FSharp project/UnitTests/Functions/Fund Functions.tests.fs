@@ -81,37 +81,6 @@ type ``Fund Functions`` () =
         response.StatusCode |> should equal 409
         response.Body |> should contain "from"
 
-    (*[<Test>]
-    member this.``GetFund [should] return list returned by logic``() =
-        let currency = "AAA"
-        let minDate = DateTime(2000, 1, 1)
-        let aFund:FundAtDate = { Id="1"; Date=DateTime.Today; CurrencyCode=currency; FundCompanyId="c1"; Quantity=1m; LastChangeDate=DateTime.Today} 
-        let records:FundAtDate list = [
-            aFund
-            { aFund with Id="2"}
-            { aFund with Id="3"}
-            ]
-        let balanceLogic = 
-            Mock<IBalanceLogic>()
-                .Setup(fun l -> l.GetFund(currency, minDate)).Returns(records)
-                .Create()
-        let functions = FundFunctions(balanceLogic)
-
-        let request = Mock<APIGatewayProxyRequest>().Create()
-        request.QueryStringParameters <- dict [("currency", currency); ("from", minDate.ToString("o"))]
-
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
-
-        // execute
-        let response = functions.GetFund(request, context)
-        response.StatusCode |> should equal 200   
-        //response.Body |> should not' (be Empty)
-        Json.JsonSerializer.Deserialize(response.Body) |> should not' (be Null)
-   
-        verify <@ balanceLogic.GetFund(currency, minDate) @> once
-        *)
     [<Test>]
     member this.``GetFund [should] return list returned by logic``() =
         let currency = "AAA"
@@ -121,7 +90,7 @@ type ``Fund Functions`` () =
                 
         let records:CurrencyFundAtDate list = 
             [{
-                Date=minDate; CompanyFunds= [companyFund1]
+                Date=minDate; CompanyFunds= [companyFund1]; TotalQuantity=1m
             }]
         let balanceLogic = 
             Mock<IBalanceLogic>()

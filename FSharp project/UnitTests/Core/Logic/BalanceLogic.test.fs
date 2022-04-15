@@ -205,11 +205,39 @@ type BalanceLogicTest() =
             {request with CompanyId = ""}
             (error_messages.mustBeDefined "CompanyId")
 
-    (*[<Test>]
-    member this.``GetFund [should] return proper result``() =
-        let currencyCode = "aaa"
+    [<Test>]
+    member this.``GetFundOfCurrencyByDate [should] return proper result (simple case)``() =
+        let currencyCode = "AAA"
         let minDate = DateTime(2000, 1, 1)
-        let funds = [fundAtDate]
+
+        let date1 = new DateTime(2000, 01, 01)
+        let date2 = new DateTime(2000, 02, 01)
+        let updateDate = new DateTime(2000, 04, 05)
+        let company1 = "C1"
+        let company2 = "C2"
+
+        let fundAtDate:FundAtDate = { Id=""; Date=date1; CurrencyCode=currencyCode; FundCompanyId="c1"; Quantity=1m; LastChangeDate=updateDate }
+
+        // AAA 
+        //   c1: d1 d2  -> d1, d2
+        // BBB
+        //   c1: d1 -- -- --  -> --
+        let funds = [
+            {fundAtDate with Id="1"; Date=date1; FundCompanyId=company1; Quantity=1m} // valid
+            {fundAtDate with Id="2"; Date=date2; FundCompanyId=company2; Quantity=2m} // valid
+            {fundAtDate with Id="3"; Date=date2; FundCompanyId=company1; Quantity=4m} // valid
+        ]
+
+        let record:CompanyFund = {Id=""; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
+        let expectedResult:CurrencyFundAtDate list = [
+                {Date=date1; TotalQuantity=0m; CompanyFunds=[
+                    {record with Id="1"; CompanyId=company1; Quantity=1m;}
+                ]}
+                {Date=date2; TotalQuantity=0m; CompanyFunds=[
+                    {record with Id="2"; CompanyId=company2; Quantity=2m;}  
+                    {record with Id="3"; CompanyId=company1; Quantity=4m;}                
+                ]}
+            ]
         let fundRepository = Mock<IFundRepository>()
                                 .Setup(fun r -> r.GetFundsOfCurrency(currencyCode, minDate))
                                 .Returns(funds)
@@ -217,10 +245,10 @@ type BalanceLogicTest() =
         // execute
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
-        logic.GetFund(currencyCode, minDate) |> should equal funds
+        logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equal expectedResult
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, minDate) @> once
-        *)
 
+    [<Test>]
     member this.``GetFundOfCurrencyByDate [should] return proper result``() =
         let currencyCode = "AAA"
         let minDate = DateTime(2000, 1, 1)
@@ -228,7 +256,6 @@ type BalanceLogicTest() =
         let date1 = new DateTime(2000, 01, 01)
         let date2 = new DateTime(2000, 02, 01)
         let date3 = new DateTime(2000, 03, 01)
-        let date4 = new DateTime(1999, 04, 01)
         let updateDate = new DateTime(2000, 04, 05)
         let company1 = "C1"
         let company2 = "C2"
@@ -238,27 +265,23 @@ type BalanceLogicTest() =
         // AAA 
         //   c1: d1 d2 -- d4  -> d1, d2
         //   c2: -- d2 d3 --  ->     d2, d3
-        // BBB
-        //   c1: d1 -- -- --  -> --
         let funds = [
-            {fundAtDate with Id="1"; CurrencyCode="AAA"; Date=date1; FundCompanyId=company1; Quantity=1m} // valid
-            {fundAtDate with Id="2"; CurrencyCode="BBB"; Date=date1; FundCompanyId=company1; Quantity=100m} 
-            {fundAtDate with Id="3"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company1; Quantity=2m} // valid
-            {fundAtDate with Id="4"; CurrencyCode="AAA"; Date=date2; FundCompanyId=company2; Quantity=20m} // valid
-            {fundAtDate with Id="5"; CurrencyCode="AAA"; Date=date3; FundCompanyId=company2; Quantity=30m} // valid
-            {fundAtDate with Id="6"; CurrencyCode="AAA"; Date=date4; FundCompanyId=company1; Quantity=4m}  
+            {fundAtDate with Id="1"; Date=date1; FundCompanyId=company1; Quantity=1m} 
+            {fundAtDate with Id="3"; Date=date2; FundCompanyId=company1; Quantity=2m} 
+            {fundAtDate with Id="4"; Date=date2; FundCompanyId=company2; Quantity=20m}
+            {fundAtDate with Id="5"; Date=date3; FundCompanyId=company2; Quantity=30m} 
         ]
 
         let record:CompanyFund = {Id=""; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
-        let data:CurrencyFundAtDate list = [
-                {Date=date1; CompanyFunds=[
+        let expectedResult:CurrencyFundAtDate list = [
+                {Date=date1; TotalQuantity=0m; CompanyFunds=[
                     {record with Id="1"; CompanyId=company1; Quantity=1m;}
                 ]}
-                {Date=date2; CompanyFunds=[
+                {Date=date2; TotalQuantity=0m; CompanyFunds=[
                     {record with Id="3"; CompanyId=company1; Quantity=2m;}
-                    {record with Id="4"; CompanyId=company2; Quantity=20m;}
+                    {record with Id="4"; CompanyId=company2; Quantity=20m;}                    
                 ]}
-                {Date=date3; CompanyFunds=[
+                {Date=date3; TotalQuantity=0m; CompanyFunds=[
                     {record with Id="5"; CompanyId=company2; Quantity=30m;}
                 ]}
             ]
@@ -269,5 +292,5 @@ type BalanceLogicTest() =
         // execute
         let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
 
-        logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equal data
+        logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equal expectedResult
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, minDate) @> once

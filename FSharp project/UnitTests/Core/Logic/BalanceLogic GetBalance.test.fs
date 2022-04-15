@@ -2,9 +2,7 @@
 
 open System
 open NUnit.Framework
-open NUnit.Framework.Constraints
 open FsUnit
-open Foq
 open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic

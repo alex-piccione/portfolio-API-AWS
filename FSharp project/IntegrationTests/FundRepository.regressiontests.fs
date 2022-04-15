@@ -42,7 +42,7 @@ type ``Fund Repository (regression)`` () =
         removeAllRecords()
  
     // Some Documents where saved before the LastChangeDate was added to the Collection,
-    // we need to be sure they are retrived
+    // we need to be sure they are retrieved
     [<Test>]
     member this.``GetFundsToDate [should] return a fund saved without LastChangeDate`` () =
         let toDate = DateTime(2000, 01, 31)
