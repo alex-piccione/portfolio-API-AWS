@@ -201,27 +201,25 @@ type ``Fund Repository`` () =
         savedRecord |> should equalFundAtDate updateAtDate
 
     //[<Test>]
-    //member this.``GetFundsOfCurrency [should] return funds of that currency`` () =
+    //member this.``GetFundsOfCompany [should] return funds of that company`` () =
     //    let companyId = "aaa"
     //    let data = repository.GetFundsOfCompany companyId
 
-
     [<Test>]
-    member this.``GetFundsOfCurrency [should] return funds of that currency`` () =
+    member this.``GetFundsOfCurrency [should] return funds of that currency with Date equal or after the limit`` () =
         let currencyCode = "aaa"
-        let limit = Some 2 
+        let aDay = DateTime(2000, 1, 1)
 
         addRecords([
-            {item with Id="1"; CurrencyCode="bbb"}
-            {item with Id="2"; CurrencyCode="aaa"}
-            {item with Id="3"; CurrencyCode="aa"}
-            {item with Id="4"; CurrencyCode="aaa"}            
-            {item with Id="5"; CurrencyCode="aaa"; Date=DateTime.MaxValue}    
+            {item with Id="1"; CurrencyCode="bbb"; Date=aDay} // no, wrong currency
+            {item with Id="2"; CurrencyCode="aaa"; Date=aDay} // ok
+            {item with Id="3"; CurrencyCode="aaa"; Date=aDay.AddDays(-1)} // no, earlier than limit           
+            {item with Id="4"; CurrencyCode="aaa"; Date=aDay.AddDays(1)} // ok
         ])
 
         // execute
-        let data = repository.GetFundsOfCurrency(currencyCode, limit)
+        let data = repository.GetFundsOfCurrency(currencyCode, aDay)
         data |> should haveLength 2
         // data |> should containItem (fun x -> x.Id == "1")
         data |> should containItemWithId "2"
-        data |> should containItemWithId "5"
+        data |> should containItemWithId "4"

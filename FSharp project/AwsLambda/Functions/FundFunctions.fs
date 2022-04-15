@@ -9,20 +9,24 @@ open Portfolio.Core.Logic
 open Portfolio.Core.Entities
 open request_validator
 
-type BalanceFunctions (balanceLogic:IBalanceLogic) =
+type FundFunctions (balanceLogic:IBalanceLogic) =
     inherit FunctionBase()
 
     new () =
-        BalanceFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
+        FundFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
-    member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Get Balance. {request.Body}"
+    member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
+        context.Logger.Log $"Get Fund. {request.Body}"
 
-        let errors = ValidateRequest request [ParameterMustExist "base-currency"]
+        let errors = ValidateRequest request [ParameterMustExist "currency"; ParameterMustExist "from"]
         if errors.IsEmpty then
-            let balance = balanceLogic.GetBalance(DateTime.UtcNow.Date)
-            base.createOkWithData balance        
-        else base.createErrorForInvalidRequest errors      
+            let currency = this.GetValueFromQuerystring request "currency" 
+            let minDate = this.GetDateFromQuerystring request "from" 
+            match (currency, minDate) with
+            | None, _ -> base.createErrorForConflict (emptyStringParameter "currency")
+            | _, None -> base.createErrorForConflict (invalidDateParameter "from")
+            | Some currencuCode, Some minDate  -> base.createOkWithData (balanceLogic.GetFundOfCurrencyByDate (currencuCode, minDate))
+        else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Update Balance. {request.Body}"
