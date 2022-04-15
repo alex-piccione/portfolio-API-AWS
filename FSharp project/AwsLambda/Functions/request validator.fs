@@ -5,7 +5,7 @@ open Amazon.Lambda.APIGatewayEvents
 
 let missingParameter parameter = $@"Parameter ""{parameter}"" not found in querystring"
 let emptyStringParameter parameter = $@"Querystring parameter ""{parameter}"" should not be empty"
-let invalidDateParameter parameter = $@"Querystring parameter ""{parameter}"" is not a valid date"
+let invalidDateParameter parameter value = $@"Querystring parameter ""{parameter}"" is not a valid date (""{value}"")"
 let invalidIntegerParameter parameter = $@"Querystring parameter ""{parameter}"" is not a valid integer"
 
 type ValidationRule (parameterName:String) = 

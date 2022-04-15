@@ -24,7 +24,7 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
             let minDate = this.GetDateFromQuerystring request "from" 
             match (currency, minDate) with
             | None, _ -> base.createErrorForConflict (emptyStringParameter "currency")
-            | _, None -> base.createErrorForConflict (invalidDateParameter "from")
+            | _, None -> base.createErrorForConflict (invalidDateParameter "from" minDate)
             | Some currencuCode, Some minDate  -> base.createOkWithData (balanceLogic.GetFundOfCurrencyByDate (currencuCode, minDate))
         else base.createErrorForInvalidRequest errors
 
