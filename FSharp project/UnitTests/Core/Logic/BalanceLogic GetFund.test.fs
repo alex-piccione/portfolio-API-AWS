@@ -65,6 +65,7 @@ type ``BalanceLogic GetFund Test``() =
         let date1 = new DateTime(2000, 01, 01)
         let date2 = new DateTime(2000, 02, 01)
         let date3 = new DateTime(2000, 03, 01)
+        let date4 = new DateTime(2000, 04, 01)
         let updateDate = new DateTime(2000, 04, 05)
         let company1 = "C1"
         let company2 = "C2"
@@ -79,6 +80,7 @@ type ``BalanceLogic GetFund Test``() =
             {fundAtDate with Id="3"; Date=date2; FundCompanyId=company1; Quantity=2m} 
             {fundAtDate with Id="4"; Date=date2; FundCompanyId=company2; Quantity=20m}
             {fundAtDate with Id="5"; Date=date3; FundCompanyId=company2; Quantity=30m} 
+            {fundAtDate with Id="6"; Date=date4; FundCompanyId=company2; Quantity=40m} 
         ]
 
         let record:CompanyFund = {Id=None; CompanyId=""; Quantity=0m; LastUpdateDate=updateDate}
@@ -93,6 +95,10 @@ type ``BalanceLogic GetFund Test``() =
                 {Date=date3; TotalQuantity=32m; CompanyFunds=[
                     {record with Id=None; CompanyId=company1; Quantity=2m;}
                     {record with Id=Some("5"); CompanyId=company2; Quantity=30m;}                    
+                ]}
+                {Date=date4; TotalQuantity=42m; CompanyFunds=[
+                    {record with Id=None; CompanyId=company1; Quantity=2m;}
+                    {record with Id=Some("6"); CompanyId=company2; Quantity=40m;}                    
                 ]}
             ]
         let fundRepository = Mock<IFundRepository>()
