@@ -9,29 +9,7 @@ open Foq.Linq
 open Portfolio.Core
 open Portfolio.Core.Logic
 open Portfolio.Core.Entities
-
-type equalResult(expected:Result<_,_>) = 
-    inherit Constraints.EqualConstraint(expected)
-
-    override this.ApplyTo<'C> (actual:'C):  ConstraintResult =   
-        match box actual with 
-        | :? Result<BalanceUpdateResult,string> as result -> 
-            match expected with 
-            | Ok x -> 
-               match result with 
-               | Ok y -> 
-                    x |> should equal y
-                    ConstraintResult(this, actual, true)
-               | _ -> ConstraintResult(this, actual, false)
-            | Error e -> 
-                match result with 
-                | Error f -> 
-                    f |> should equal (unbox e)
-                    ConstraintResult(this, actual, true)
-                | _ -> ConstraintResult(this, actual, false) 
-        | :? Result<obj,obj> as result -> ConstraintResult(this, actual, true)
-        | _ -> ConstraintResult(this, actual, false)  
-            
+          
 type BalanceLogicTest() =
     let Now = DateTime.UtcNow
     let chronos = Mock<IChronos>().SetupPropertyGet(fun c -> c.Now).Returns(Now).Create()
@@ -198,3 +176,26 @@ type BalanceLogicTest() =
         testRequestValidation
             {request with CompanyId = ""}
             (error_messages.mustBeDefined "CompanyId")
+
+
+and equalResult(expected:Result<_,_>) = 
+    inherit Constraints.EqualConstraint(expected)
+
+    override this.ApplyTo<'C> (actual:'C): ConstraintResult =   
+        match box actual with 
+        | :? Result<BalanceUpdateResult,string> as result -> 
+            match expected with 
+            | Ok x -> 
+               match result with 
+               | Ok y -> 
+                    x |> should equal y
+                    ConstraintResult(this, actual, true)
+               | _ -> ConstraintResult(this, actual, false)
+            | Error e -> 
+                match result with 
+                | Error f -> 
+                    f |> should equal (unbox e)
+                    ConstraintResult(this, actual, true)
+                | _ -> ConstraintResult(this, actual, false) 
+        | :? Result<obj,obj> as result -> ConstraintResult(this, actual, true)
+        | _ -> ConstraintResult(this, actual, false)  

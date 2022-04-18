@@ -90,7 +90,8 @@ type CurrencyFundAtDate = {
     TotalQuantity: decimal
 } 
 and CompanyFund = {
-    Id: string
+    //IsInherited: bool
+    Id: string option
     CompanyId: string    
     Quantity: decimal    
     LastUpdateDate: DateTime

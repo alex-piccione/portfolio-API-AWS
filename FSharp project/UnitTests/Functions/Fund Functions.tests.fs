@@ -86,7 +86,7 @@ type ``Fund Functions`` () =
         let currency = "AAA"
         let minDate = DateTime(2000, 1, 1)
 
-        let companyFund1:CompanyFund = {Id="1"; CompanyId="c1"; Quantity=1m; LastUpdateDate=aDate}
+        let companyFund1:CompanyFund = {Id=Some("1"); CompanyId="c1"; Quantity=1m; LastUpdateDate=aDate}
                 
         let records:CurrencyFundAtDate list = 
             [{
