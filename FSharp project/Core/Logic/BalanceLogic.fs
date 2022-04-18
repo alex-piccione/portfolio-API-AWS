@@ -73,30 +73,27 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
         member this.GetFundOfCurrencyByDate(currencyCode: string, minDate: DateTime): CurrencyFundAtDate list = 
             let operations = fundRepository.GetFundsOfCurrency(currencyCode, minDate)
 
-            //type x (date:DateTime, funds:FundAtDate list) list
-
-            //let addInherited (data:(date:DateTime, items:FundAtDate list) list) =
-            let addInherited (byDate: CurrencyFundAtDate list) = // byDate:(DateTime * FundAtDate list) list =
-
+            let addInherited (byDate: CurrencyFundAtDate list) =
                 let add (index:int) (atDate:CurrencyFundAtDate) = 
-                    //let date = fst(data)
-                    //let funds = snd(data)
-                    if index > 0 then
-                        // exists record before ?
-                        let previous:CurrencyFundAtDate = byDate[index-1]                        
-                        for x:CompanyFund in previous.CompanyFunds do                        
-                            match atDate.CompanyFunds |> List.tryFind (fun f -> f.CompanyId = x.CompanyId) with
-                            | Some d -> ()
-                            | None -> atDate.CompanyFunds.Append {x with Id = None} |> ignore
-                        ()
-                    else
-                        //  search for info before the date 0 ???
-                        ()
-                    ()
+                    let renewedFunds =
+                        if index > 0 then
+                            byDate[index-1].CompanyFunds 
+                            |> List.filter (fun x -> x.Quantity > 0m) 
+                            |> List.fold (
+                                fun (acc: CompanyFund list) prev -> 
+                                    match atDate.CompanyFunds |> List.tryFind (fun curr -> curr.CompanyId = prev.CompanyId) with
+                                    | None -> {prev with Id = None}::acc
+                                    | _ -> acc
+                                    ) atDate.CompanyFunds                                   
+                        else
+                            // TODO search for info/checkpoint before the date 0 ???
+                            atDate.CompanyFunds // return the same                 
 
-                byDate |> List.iteri add
+                    {atDate with 
+                        CompanyFunds=renewedFunds |> List.sortBy(fun c -> c.CompanyId); 
+                        TotalQuantity=renewedFunds |> List.sumBy(fun x -> x.Quantity)}
 
-                byDate
+                byDate |> List.mapi add
 
             let groupCompanies (funds:FundAtDate list):CompanyFund list = 
                 funds
@@ -109,3 +106,4 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                 |> List.map(fun (date:DateTime, funds:FundAtDate list) -> { Date=date; CompanyFunds=groupCompanies funds; TotalQuantity=sum funds })
                 |> List.sortBy(fun x -> x.Date)   
                 |> addInherited
+                //|> List.sortByDescending(fun x -> x.Date)   
