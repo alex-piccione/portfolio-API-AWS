@@ -123,7 +123,7 @@ functions:
         #authorizer: aws_iam
 
   # Company
-  CompanyCreate:
+  Company-Create:
     handler: ${self:provider.environment.companyFunctions}::Create
     package: 
       <<: *package
@@ -134,7 +134,7 @@ functions:
         cors: true
         #authorizer: aws_iam
 
-  CompanyRead:
+  Company-Read:
     handler: ${self:provider.environment.companyFunctions}::Read
     package:
       <<: *package
@@ -145,7 +145,7 @@ functions:
         cors: true
         #authorizer: aws_iam
 
-  CompanyUpdate:
+  Company-Update:
     handler: ${self:provider.environment.companyFunctions}::Update
     package:
       <<: *package
@@ -156,7 +156,7 @@ functions:
         cors: true
         #authorizer: aws_iam
 
-  CompanyDelete:
+  Company-Delete:
     handler: ${self:provider.environment.companyFunctions}::Delete
     package:
       <<: *package
