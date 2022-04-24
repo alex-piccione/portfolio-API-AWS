@@ -4,12 +4,16 @@ open System
 open System.Text
 open System.Text.Json
 open Microsoft.Extensions.Configuration
+open Amazon.Lambda.Core
 open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Core.Entities
 open request_validator
 
 type FunctionBase () =
     
+    member this.log (context:ILambdaContext) (action:string) (message:string) =    
+        context.Logger.Log $"[function:{context.FunctionName}] [action:{action}] message"
+
     member this.createResponse statusCode (data:obj option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- statusCode
