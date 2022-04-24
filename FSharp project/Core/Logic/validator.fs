@@ -2,15 +2,12 @@
 module validator
 open System
 
+(*
 let isDateUndefined date = date = Unchecked.defaultof<DateTime>
 
 type LogicResult = { IsSuccess:bool; Errors:string list }
 type RuleResult = { Pass:bool; Error:string }
 type Rule<'request> = 'request -> Option<string> // option
-
-//type Check<'request> = 'request * ('request -> obj) -> Option<string> 
-//type Check = (unit -> obj) -> Option<string> 
-
 
 type ToCheck = 
     | Value of obj
@@ -19,8 +16,6 @@ type ToCheck =
 type Check =
     | CheckDate of (DateTime * string -> string option)
     | CheckString of (string * string -> string option)
-
-//type Rule = string Check
 
 let checkDateIsDefined date field:Check = CheckDate(fun _ ->
     match date <> Unchecked.defaultof<DateTime> with
@@ -36,7 +31,7 @@ let checkStringIsDefined value field:Check = CheckString(fun _ ->
     match String.IsNullOrWhiteSpace(value) with
     | true -> Some(error_messages.mustBeDefined field)
     | _ -> None)
-
+    *)
 
 
 
@@ -111,22 +106,26 @@ type StringIsNotEmptyCheck (property:string, value:string) =
             match String.IsNullOrWhiteSpace(value) with
             | false -> Ok ()
             | _ -> Error (error_messages.mustBeDefined property)
+
+let StringIsNotEmpty property value = StringIsNotEmptyCheck(property, value)
      
- type DateIsDefinedCheck (property:string, value:DateTime) =
+type DateIsDefinedCheck (property:string, value:DateTime) =
      interface IValidationCheck with
          member this.Validate () =
              match value <> Unchecked.defaultof<DateTime> with
              | true -> Ok ()
              | _ -> Error (error_messages.mustBeDefined property)
 
-let DateIsDefinedCheck property value = DateIsDefinedCheck(property, value)
+let DateIsDefined property value = DateIsDefinedCheck(property, value)
 
 type DateIsInThePastCheck (property:string, value:DateTime, now:DateTime) =
     interface IValidationCheck with
         member this.Validate () =
-            match now > value with
+            match value < now with
             | true -> Ok ()
             | _ -> Error (error_messages.mustBeInThePast property)
+
+let DateIsInThePast property now value = DateIsInThePastCheck(property, value, now)
 
 type DecimalIsPositiveCheck (property:string, value) =
     interface IValidationCheck with
@@ -135,11 +134,9 @@ type DecimalIsPositiveCheck (property:string, value) =
             | true -> Ok()
             | _ -> Error (error_messages.mustBeGreaterThanZero property)
 
-let DecimalIsPositiveCheck property value = DecimalIsPositiveCheck(property, value)
+let DecimalIsPositive property value = DecimalIsPositiveCheck(property, value)
 
           
-type ValidationError = { Message:string}
-
 let Validate (checks: IValidationCheck list) =
    let checkRule check =
        match (check:IValidationCheck).Validate () with
@@ -152,54 +149,8 @@ let Validate (checks: IValidationCheck list) =
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-type _Validator (checks:List<Check>) =
-    member this.validate () = 
-        let run = fun check -> 
-            match check with 
-            | CheckDate d -> d(DateTime.Now, "")
-            | _ -> None
-            
-        checks |> List.choose run //(fun check -> check  )
-//type Rulea<'request> = { check: 'request -> bool * string}
-
-
-// ref: https://stackoverflow.com/a/15092057/996946
-// TODO: put in a module to enable pipe syntax
-//type Checks with 
-//    member this.validate () = this |> List.choose (fun c -> c)
-
-let pass () = { IsSuccess=true; Errors=List.Empty }
-let fails (errors:string list) = { IsSuccess=false; Errors=errors }
-
-
-let checkDateIsDefined__ getData fieldName = 
-    match getData() = Unchecked.defaultof<DateTime> with 
-    | true -> false, $"{fieldName} must be defined"
-    | _ -> true, ""
-
 type FieldValidationResult = { FieldName:string; IsValid:bool; Errors:string list }
 
-let checkDateIsDefined_ value fieldName = 
-    match value = Unchecked.defaultof<DateTime> with 
-    | true -> Some $"{fieldName} must be defined"
-    | _ -> None
 
 let validate (rules:string option list) = rules |> List.choose (fun e -> e)
 

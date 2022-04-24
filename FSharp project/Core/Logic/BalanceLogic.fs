@@ -4,7 +4,6 @@ open System
 open System.Linq
 open Portfolio.Core.Entities
 open Portfolio.Core
-open error_messages
 open validator
 
 type BalanceUpdateResult = 
@@ -17,7 +16,6 @@ type IBalanceLogic =
     abstract member GetFundOfCurrencyByDate: currencyCode:string * minDate:DateTime -> CurrencyFundAtDate list
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
-    inherit LogicBase()
 
     interface IBalanceLogic with
         member this.GetBalance(day: DateTime): Balance = 
@@ -47,21 +45,13 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest) =
             let errors = validator.Validate [
-                DateIsDefinedCheck "Date" request.Date
-                DateIsInThePastCheck("Date", request.Date, chronos.Now)
-                StringIsNotEmptyCheck("Currency", request.CurrencyCode)
-                StringIsNotEmptyCheck("Company", request.CompanyId)
-                DecimalIsPositiveCheck "Quantity" request.Quantity
+                request.Date |> DateIsDefined "Date"
+                request.Date |> DateIsInThePast "Date" chronos.Now
+                request.CurrencyCode |> StringIsNotEmpty "Currency" 
+                request.CompanyId |> StringIsNotEmpty "Company" 
+                request.Quantity |> DecimalIsPositive "Quantity" 
                 ]
 
-            //match request with 
-            //| r when base.isDateUndefined r.Date -> Error <| mustBeDefined "Date"
-            //| r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
-            //| r when r.Date > chronos.Now -> Error <| mustBeInThePast "Date"
-            //| r when String.IsNullOrWhiteSpace r.CurrencyCode -> Error (mustBeDefined "CurrencyCode")
-            //| r when String.IsNullOrWhiteSpace r.CompanyId -> Error (mustBeDefined "CompanyId")
-            //| r when r.Quantity <= 0m -> Error (mustBeGreaterThanZero "Quantity")
-            //| _ ->
             if not(errors.IsEmpty) then
                 Error errors.Head
             else
