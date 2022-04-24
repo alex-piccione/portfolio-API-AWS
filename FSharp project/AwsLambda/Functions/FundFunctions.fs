@@ -16,7 +16,7 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
         FundFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
 
     member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Get Fund. {request.Body}"
+        base.Log(context, "Get Fund", request.Body)
 
         let errors = ValidateRequest request [ParameterMustExist "currency"; ParameterMustExist "from"]
         if errors.IsEmpty then
@@ -29,7 +29,7 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
         else base.createErrorForInvalidRequest errors
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Update Balance. {request.Body}"
+        base.Log(context, "Update", request.Body)
 
         try
             let updateRequest = base.Deserialize<BalanceUpdateRequest> request.Body

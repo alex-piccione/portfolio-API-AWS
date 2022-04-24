@@ -33,7 +33,7 @@ type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Create: {request.Body}"
+        base.Log(context, "Create", request.Body)
 
         try
             let currency = base.Deserialize request.Body
@@ -46,7 +46,7 @@ type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
 
 
     member this.Read (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log($"request.QueryStringParameters: {request.QueryStringParameters}")
+        base.Log(context, "Read", $"request.QueryStringParameters: {request.QueryStringParameters}")
 
         if request.QueryStringParameters = null 
         then this.all()
