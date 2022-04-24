@@ -101,7 +101,7 @@ functions:
   #    # cron(Minutes Hours Day-of-month Month Day-of-week Year)
 
   # Currency
-  CurrencyCreate:
+  Currency-Create:
     handler: ${self:provider.environment.currencyFunctions}::Create  # assembly::namespace.class::method
     package: 
       <<: *package
@@ -111,7 +111,7 @@ functions:
         path: currency
         cors: true
 
-  CurrencyRead:
+  Currency-Read:
     handler: ${self:provider.environment.currencyFunctions}::Read
     package: 
       <<: *package
