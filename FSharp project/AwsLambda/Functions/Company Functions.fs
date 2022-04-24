@@ -15,7 +15,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
         CompanyFunctions(CompanyLogic(CompanyRepository(helper.ConnectionString), FundRepository(helper.ConnectionString)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Create: {request.Body}"
+        base.Log(context, "Create", request.Body)
 
         try
             let result = companyLogic.Create (base.Deserialize request.Body)
@@ -30,7 +30,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
 
 
     member this.Read (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"request.QueryStringParameters: {request.QueryStringParameters}"
+        base.Log(context, "Read", $"request.QueryStringParameters: {request.QueryStringParameters}")
 
         match request.QueryStringParameters with
         | null -> this.createOkWithData (companyLogic.All())
@@ -43,7 +43,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
 
 
     member this.Update (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Update Company"
+        base.Log(context, "Update", "")
         
         let itemToUpdate:Company = base.Deserialize request.Body
 
@@ -65,7 +65,7 @@ type CompanyFunctions (companyLogic:ICompanyLogic) =
 
 
     member this.Delete (request:APIGatewayProxyRequest, context:ILambdaContext) =
-        context.Logger.Log $"Delete Company"
+        base.Log(context, "Delete", "")
 
         let found, id = request.PathParameters.TryGetValue "id"
         if not found then failwith @"Path should contain ""id""."

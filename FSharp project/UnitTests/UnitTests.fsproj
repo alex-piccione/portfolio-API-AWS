@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Portfolio.UnitTests</AssemblyName>
@@ -14,19 +13,24 @@
     <Compile Include="Core\Logic\CurrencyLogic.tests.fs" />
     <Compile Include="Core\Logic\CompanyLogic.tests.fs" />
     <Compile Include="Core\Logic\BalanceLogic.test.fs" />
+    <Compile Include="Core\Logic\BalanceLogic GetFund.test.fs" />
+    <Compile Include="Core\Logic\BalanceLogic GetBalance.test.fs" />
+    <Compile Include="Functions\test helper.fs" />
+    <Compile Include="Functions\request validator.tests.fs" />
     <Compile Include="Functions\User Functions.tests.fs" />
     <Compile Include="Functions\Currency Functions.tests.fs" />
     <Compile Include="Functions\Company Functions.tests.fs" />
+    <Compile Include="Functions\Fund Functions.tests.fs" />
     <Compile Include="Functions\Balance Functions.tests.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Foq" Version="1.8.0" />
-    <PackageReference Include="FsUnit" Version="4.0.7" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="coverlet.collector" Version="3.1.0">
+    <PackageReference Include="FsUnit" Version="4.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -38,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="5.0.2" />
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
   </ItemGroup>
 
 </Project>

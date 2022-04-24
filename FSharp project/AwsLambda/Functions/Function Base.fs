@@ -4,15 +4,16 @@ open System
 open System.Text
 open System.Text.Json
 open Microsoft.Extensions.Configuration
+open Amazon.Lambda.Core
 open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Core.Entities
-
-type DataOrOption<'T> =
-    | Option of Option<'T>
-    | Data of 'T
+open request_validator
 
 type FunctionBase () =
     
+    member this.Log (context:ILambdaContext, action:string, message:string) =    
+        context.Logger.Log $"[function:{context.FunctionName}] [action:{action}] message"
+
     member this.createResponse statusCode (data:obj option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
         response.StatusCode <- statusCode
@@ -45,6 +46,10 @@ type FunctionBase () =
     member this.createErrorForMissingQuerystring missingParameter =
         this.createErrorForConflict $"\"{missingParameter}\" parameter is missing in the querystring."
 
+    member this.createErrorForInvalidRequest (errors:ValidationError list) =
+        let errorMessages = errors |> List.map (fun error -> $"{error.Message}")
+        this.createResponse 409 (Some errorMessages)
+
 
     member this.Deserialize<'T>(requestBody:string) =
         if String.IsNullOrEmpty requestBody then failwith $"Request body is empty"
@@ -61,4 +66,24 @@ type FunctionBase () =
         | null -> None
         | _ -> match request.QueryStringParameters.TryGetValue property with
                | true, value -> Some(value)
+               | _ -> None
+
+    member this.GetIntFromQuerystring (request:APIGatewayProxyRequest) (property:string) =
+        match request.QueryStringParameters with
+        | null -> None
+        | _ -> match request.QueryStringParameters.TryGetValue property with
+               | true, value -> 
+                   match System.Int32.TryParse value with
+                   | true, intValue -> Some intValue
+                   | _ -> None
+               | _ -> None
+
+    member this.GetDateFromQuerystring (request:APIGatewayProxyRequest) (property:string) =
+        match request.QueryStringParameters with
+        | null -> None
+        | _ -> match request.QueryStringParameters.TryGetValue property with
+               | true, value -> 
+                   match System.DateTime.TryParse value with
+                   | true, dateValue -> Some dateValue
+                   | _ -> None
                | _ -> None

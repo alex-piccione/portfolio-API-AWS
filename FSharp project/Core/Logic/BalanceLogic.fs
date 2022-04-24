@@ -14,6 +14,7 @@ type BalanceUpdateResult =
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
     abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
+    abstract member GetFundOfCurrencyByDate: currencyCode:string * minDate:DateTime -> CurrencyFundAtDate list
 
 type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
     inherit LogicBase()
@@ -46,8 +47,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             let balance:Balance = {Date=day; FundsByCurrency = aggregates; LastUpdateDate = balanceLastUpdate }
             balance
 
-        member this.CreateOrUpdate(request: BalanceUpdateRequest): Result<BalanceUpdateResult, string> = 
-
+        member this.CreateOrUpdate(request: BalanceUpdateRequest) =
             //let errors = validate [
             //    checkDateIsDefined_ request.Date "Date"
             //    checkDateIsInTheFuture request.Date "Date"
@@ -80,3 +80,38 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                 | None -> 
                     fundRepository.CreateFundAtDate { record with Id = idGenerator.New() }
                     Ok Created
+
+        member this.GetFundOfCurrencyByDate(currencyCode: string, minDate: DateTime): CurrencyFundAtDate list = 
+            let operations = fundRepository.GetFundsOfCurrency(currencyCode, minDate)
+
+            let addInherited (initial:CurrencyFundAtDate list) (current:CurrencyFundAtDate) =
+                match initial.IsEmpty with
+                | true -> current::initial
+                | _ ->
+                    let renewedFunds = 
+                        initial.Head.CompanyFunds
+                        |> List.filter (fun x -> x.Quantity > 0m) // remove Currency set to 0
+                        |> List.fold (
+                            fun (acc: CompanyFund list) prev -> 
+                                match current.CompanyFunds |> List.tryFind (fun curr -> curr.CompanyId = prev.CompanyId) with
+                                | None -> {prev with Id = None}::acc // add inherited
+                                | _ -> acc
+                                ) current.CompanyFunds   
+
+                    let next = {current with 
+                                    CompanyFunds=renewedFunds |> List.sortBy(fun c -> c.CompanyId); 
+                                    TotalQuantity=renewedFunds |> List.sumBy(fun x -> x.Quantity)}
+
+                    next::initial
+
+            let groupCompanies (funds:FundAtDate list):CompanyFund list = 
+                funds
+                |> List.map(fun f -> {Id=Some(f.Id); CompanyId=f.FundCompanyId; Quantity=f.Quantity; LastUpdateDate=f.LastChangeDate })
+
+            let sum (funds:FundAtDate list) = funds |> List.fold (fun acc f -> acc+f.Quantity) 0m
+
+            operations 
+                |> List.groupBy(fun f -> f.Date)                              
+                |> List.map(fun (date:DateTime, funds:FundAtDate list) -> { Date=date; CompanyFunds=groupCompanies funds; TotalQuantity=sum funds })
+                |> List.sortBy(fun x -> x.Date)  
+                |> List.fold addInherited List.Empty
