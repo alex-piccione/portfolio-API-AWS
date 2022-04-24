@@ -22,9 +22,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
     interface IBalanceLogic with
         member this.GetBalance(day: DateTime): Balance = 
             let funds = fundRepository.GetFundsToDate(day)
-
             let fundsByCurrency = funds |> List.groupBy (fun fund -> fund.CurrencyCode)
-
             let mutable balanceLastUpdate = DateTime.MinValue
 
             let aggregates = 
@@ -67,7 +65,6 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
                     Id = "" // to be set
                     Date = request.Date.Date
                     CurrencyCode = request.CurrencyCode
-
                     FundCompanyId = request.CompanyId
                     Quantity = request.Quantity
                     LastChangeDate = chronos.Now
