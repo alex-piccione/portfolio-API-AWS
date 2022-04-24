@@ -160,10 +160,10 @@ type BalanceLogicTest() =
             (error_messages.mustBeInThePast "Date")
 
     [<Test>]
-    member this.``CreateOrUpdate [when] CurrencyCode is missing [should] return error``() =
+    member this.``CreateOrUpdate [when] Currency is missing [should] return error``() =
         testRequestValidation
             {request with CurrencyCode = ""}
-            (error_messages.mustBeDefined "CurrencyCode")
+            (error_messages.mustBeDefined "Currency")
 
     [<Test>]
     member this.``CreateOrUpdate [when] Quantity is not positive [should] return error``() =
@@ -175,7 +175,7 @@ type BalanceLogicTest() =
     member this.``CreateOrUpdate [when] Company is missing [should] return error``() =
         testRequestValidation
             {request with CompanyId = ""}
-            (error_messages.mustBeDefined "CompanyId")
+            (error_messages.mustBeDefined "Company")
 
 
 and equalResult(expected:Result<_,_>) = 
