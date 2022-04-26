@@ -4,11 +4,9 @@ open System
 open System.Linq
 open Portfolio.Core.Entities
 open Portfolio.Core
-open error_messages
+open validation
 
-type BalanceUpdateResult = 
-| Created
-| Updated
+type BalanceUpdateResult = | Created | Updated
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
@@ -20,9 +18,7 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
     interface IBalanceLogic with
         member this.GetBalance(day: DateTime): Balance = 
             let funds = fundRepository.GetFundsToDate(day)
-
             let fundsByCurrency = funds |> List.groupBy (fun fund -> fund.CurrencyCode)
-
             let mutable balanceLastUpdate = DateTime.MinValue
 
             let aggregates = 
@@ -46,13 +42,18 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest) =
-            match request with 
-            | r when r.Date = Unchecked.defaultof<DateTime> -> Error <| mustBeDefined "Date"
-            | r when r.Date > chronos.Now -> Error <| mustBeInThePast "Date"
-            | r when String.IsNullOrWhiteSpace r.CurrencyCode -> Error (mustBeDefined "CurrencyCode")
-            | r when String.IsNullOrWhiteSpace r.CompanyId -> Error (mustBeDefined "CompanyId")
-            | r when r.Quantity <= 0m -> Error (mustBeGreaterThanZero "Quantity")
-            | _ ->
+
+            let errors = validate[
+               request.Date |> dateIsDefined "Date"
+               request.Date |> dateIsInThePast "Date" chronos.Now
+               request.CurrencyCode |> stringIsNotEmpty "Currency" 
+               request.CompanyId |> stringIsNotEmpty "Company" 
+               request.Quantity |> numberIsPositive "Quantity" 
+            ]
+
+            if not(errors.IsEmpty) then
+                Error errors.Head // for now I'm just managing one error
+            else
                 let record:FundAtDate = { 
                     Id = "" // to be set
                     Date = request.Date.Date
