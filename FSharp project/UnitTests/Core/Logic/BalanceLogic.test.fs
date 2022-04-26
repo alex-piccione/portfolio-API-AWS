@@ -150,32 +150,32 @@ type BalanceLogicTest() =
     [<Test>]
     member this.``CreateOrUpdate [when] Date is missing [should] return error``() =
         let request = {request with Date = DateTime.MinValue}
-        let expectedError = error_messages.mustBeDefined "Date"
+        let expectedError = validation.mustBeDefined "Date"
         testRequestValidation request expectedError
 
     [<Test>]
     member this.``CreateOrUpdate [when] Date is in the future [should] return error``() =
         testRequestValidation 
             {request with Date = DateTime.UtcNow.AddDays(1)}
-            (error_messages.mustBeInThePast "Date")
+            (validation.mustBeInThePast "Date")
 
     [<Test>]
     member this.``CreateOrUpdate [when] Currency is missing [should] return error``() =
         testRequestValidation
             {request with CurrencyCode = ""}
-            (error_messages.mustBeDefined "Currency")
+            (validation.mustBeDefined "Currency")
 
     [<Test>]
     member this.``CreateOrUpdate [when] Quantity is not positive [should] return error``() =
         testRequestValidation
             {request with Quantity = 0m}
-            (error_messages.mustBeGreaterThanZero "Quantity")
+            (validation.mustBeGreaterThanZero "Quantity")
 
     [<Test>]
     member this.``CreateOrUpdate [when] Company is missing [should] return error``() =
         testRequestValidation
             {request with CompanyId = ""}
-            (error_messages.mustBeDefined "Company")
+            (validation.mustBeDefined "Company")
 
 
 and equalResult(expected:Result<_,_>) = 

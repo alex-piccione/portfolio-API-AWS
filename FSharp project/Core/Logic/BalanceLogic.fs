@@ -4,11 +4,9 @@ open System
 open System.Linq
 open Portfolio.Core.Entities
 open Portfolio.Core
-open validator
+open validation
 
-type BalanceUpdateResult = 
-| Created
-| Updated
+type BalanceUpdateResult = | Created | Updated
 
 type IBalanceLogic =
     abstract member GetBalance: date:DateTime -> Balance
@@ -44,16 +42,17 @@ type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:
             balance
 
         member this.CreateOrUpdate(request: BalanceUpdateRequest) =
-            let errors = validator.Validate [
-                request.Date |> DateIsDefined "Date"
-                request.Date |> DateIsInThePast "Date" chronos.Now
-                request.CurrencyCode |> StringIsNotEmpty "Currency" 
-                request.CompanyId |> StringIsNotEmpty "Company" 
-                request.Quantity |> DecimalIsPositive "Quantity" 
-                ]
+
+            let errors = validate[
+               request.Date |> dateIsDefined "Date"
+               request.Date |> dateIsInThePast "Date" chronos.Now
+               request.CurrencyCode |> stringIsNotEmpty "Currency" 
+               request.CompanyId |> stringIsNotEmpty "Company" 
+               request.Quantity |> numberIsPositive "Quantity" 
+            ]
 
             if not(errors.IsEmpty) then
-                Error errors.Head
+                Error errors.Head // for now I'm just managing one error
             else
                 let record:FundAtDate = { 
                     Id = "" // to be set

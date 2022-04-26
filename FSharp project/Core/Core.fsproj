@@ -11,9 +11,7 @@
     <Compile Include="entities.fs" />
     <Compile Include="projections.fs" />
     <Compile Include="repositories.fs" />
-    <Compile Include="Logic\error messages.fs" />
-    <Compile Include="Logic\validator.fs" />
-    <Compile Include="Logic\validator spike.fs" />
+    <Compile Include="Logic\validation.fs" />
     <Compile Include="Logic\helper.fs" />
     <Compile Include="Logic\CurrencyLogic.fs" />
     <Compile Include="Logic\CompanyLogic.fs" />
