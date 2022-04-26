@@ -25,10 +25,6 @@ let dateIsInThePast property now value =
     if value < now then Ok ()
     else Error (mustBeInThePast property)
 
-let decimalIsPositive property value = 
-    if  value > 0m then Ok()
-    else Error (mustBeGreaterThanZero property)
-
 let inline numberIsPositive property value = 
     if value > LanguagePrimitives.GenericZero then Ok()
     else Error (mustBeGreaterThanZero property)
