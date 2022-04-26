@@ -14,12 +14,12 @@ let validate (checks: Result<_,string> list) =
    checks |> List.choose checkRule
 
 let stringIsNotEmpty property value = 
-    if  String.IsNullOrWhiteSpace(value) then Ok ()
-    else Error (mustBeDefined property)
+    if String.IsNullOrWhiteSpace(value) then Error (mustBeDefined property)
+    else Ok ()
      
 let dateIsDefined property value = 
-    if value <> Unchecked.defaultof<DateTime> then Ok ()
-    else Error (mustBeDefined property)
+    if value = Unchecked.defaultof<DateTime> then Error (mustBeDefined property)
+    else Ok ()
 
 let dateIsInThePast property now value =
     if value < now then Ok ()
