@@ -26,6 +26,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SmokeTests", "SmokeTests\SmokeTests.fsproj", "{DA82827F-9C9D-4E08-B77E-E702B44930BE}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AWS Lambda Emulator", "AWS Lambda Emulator\AWS Lambda Emulator.fsproj", "{45ECD95F-51CC-49E4-929C-38AC65377CF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{DA82827F-9C9D-4E08-B77E-E702B44930BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA82827F-9C9D-4E08-B77E-E702B44930BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA82827F-9C9D-4E08-B77E-E702B44930BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45ECD95F-51CC-49E4-929C-38AC65377CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45ECD95F-51CC-49E4-929C-38AC65377CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45ECD95F-51CC-49E4-929C-38AC65377CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45ECD95F-51CC-49E4-929C-38AC65377CF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
