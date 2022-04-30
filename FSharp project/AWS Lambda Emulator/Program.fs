@@ -1,16 +1,18 @@
 ﻿// https://docs.microsoft.com/en-us/aspnet/core/migration/50-to-60?view=aspnetcore-6.0&tabs=visual-studio#new-hosting-model
 
-//open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
-open Microsoft.Extensions.Configuration
-
 //open Microsoft.AspNetCore  WebHost
 
 let url = "http://localhost:5000"
+let lamdaFunctionsServerlessFilePath = "../../serverless/serverless.fsharp.yml"
 
-//WebHost
-let builder = WebApplication.CreateBuilder()
+let functions = LambdaFunctionsMappingGenerator.readFunctions lamdaFunctionsServerlessFilePath
+
+for f in functions do
+    printfn $"Function \"{f.Name}\"" 
+    //app.MapGet("/currency", RequestDelegate getCurrency) |> ignore
+
 
 (*
 let configureHost (options:IConfigurationBuilder) =
@@ -20,13 +22,14 @@ let configureHost (options:IConfigurationBuilder) =
 *)
 
 //builder.Host.ConfigureHostConfiguration(configureHost)
+let builder = WebApplication.CreateBuilder()
 let app = builder.Build()
 
 let getHome (context:HttpContext) =    
     context.Response.WriteAsync("hello")
 
 app.MapGet("/", RequestDelegate getHome) |> ignore
-LambdaFunctionsMappingGenerator.generateMapping(app)
+LambdaFunctionsMappingGenerator.generateMapping(app, lamdaFunctionsServerlessFilePath)
 
 app.Urls.Add(url)
 app.Run()

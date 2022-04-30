@@ -9,8 +9,11 @@
   <ItemGroup>
     <Compile Include="LambdaFunctionsMappingGenerator.fs" />
     <Compile Include="Program.fs" />
-    <Content Include="Properties\launchSettings.json__" />
     <None Include="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
