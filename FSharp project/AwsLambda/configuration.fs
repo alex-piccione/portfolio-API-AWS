@@ -13,9 +13,10 @@ let loadConfiguration () =
                    .AddJsonFile("configuration.json")
                    .AddEnvironmentVariables("Portfolio:") // used by Emulator
                    .Build()    
+    let database = conf["MongoDB_database"]
     {
         ConnectionString = conf["MongoDB_connection_string"]
-        Database = conf["MongoDB_database"]
+        Database = if database = null then "Portfolio" else database
         Counter = counter
     }
 
