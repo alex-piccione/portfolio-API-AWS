@@ -7,13 +7,13 @@ open Portfolio.Core.Entities
 open MongoDB.Driver
 open Extensions
 
-type SessionRepository (connectionString:string, database:string, collectionName:string) =
-    inherit RepositoryBase<Session>(connectionString, database, collectionName, (fun x -> x.Token))
+type SessionRepository (config:DatabaseConfig, collectionName:string) =
+    inherit RepositoryBase<Session>(config, collectionName, (fun x -> x.Token))
         
     let createFilter (field:Expression<Func<Session, string>>, value:string):FilterDefinition<Session> =
         FilterDefinitionBuilder<Session>().Eq(field, value)
 
-    new (connectionString:string) = SessionRepository(connectionString, RepositoryBase<_>.DefaultDatabase, "UserSession")
+    new (config:DatabaseConfig) = SessionRepository(config, "UserSession")
 
     member this.CreateFilter<'T> (field:Expression<Func<'T, string>>, value:string):FilterDefinition<'T> =
         FilterDefinitionBuilder<'T>().Eq(field, value)

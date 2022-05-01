@@ -1,6 +1,7 @@
 ﻿module configuration
 
 open Microsoft.Extensions.Configuration
+open Portfolio.MongoRepository
 
 let configuration =
     ConfigurationBuilder()
@@ -13,5 +14,7 @@ let loadSecrets path =
     | null -> failwith $"""Secret with path "{path}" is null."""
     | value -> value
 
-let connectionString = loadSecrets "MongoDB:connection string"
-let database = "Portfolio_Test"
+let databaseConfig:DatabaseConfig = {
+    ConnectionString = loadSecrets "MongoDB:connection string"
+    Database = "Portfolio - Test"
+    }

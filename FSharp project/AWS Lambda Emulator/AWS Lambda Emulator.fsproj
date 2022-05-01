@@ -3,13 +3,13 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>AWS_Lambda_Emulator</RootNamespace>
+    <UserSecretsId>bc578404-fcea-4e98-99f8-ca8fc21cbadf</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="configuration.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".gitignore" />
     <Content Include="Functions page template.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

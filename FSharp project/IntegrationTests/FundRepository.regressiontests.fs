@@ -8,7 +8,7 @@ open MongoDB.Driver
 open Portfolio.Core
 open Portfolio.MongoRepository
 open Portfolio.Core.Entities
-open helper
+open configuration
 
 type FundAtDateWithoutLastChangeDate = {
      Id: string
@@ -20,12 +20,12 @@ type FundAtDateWithoutLastChangeDate = {
 
 type ``Fund Repository (regression)`` () =
 
-    let repository = FundRepository(configuration.connectionString,  configuration.database, "Fund") :> IFundRepository
+    let repository = FundRepository(databaseConfig, "Fund") :> IFundRepository
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
 
-    let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
-    let collection = client.GetDatabase(configuration.database).GetCollection("Fund")
+    let client = new MongoClient(MongoClientSettings.FromConnectionString(databaseConfig.ConnectionString))
+    let collection = client.GetDatabase(databaseConfig.Database).GetCollection("Fund")
 
     let newGuid() = Guid.NewGuid().ToString()
 
@@ -49,7 +49,7 @@ type ``Fund Repository (regression)`` () =
         let itemDate = toDate.AddDays(-10.);
         let item:FundAtDateWithoutLastChangeDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; } 
         
-        client.GetDatabase(configuration.database).GetCollection<FundAtDateWithoutLastChangeDate>("Fund")
+        client.GetDatabase(databaseConfig.Database).GetCollection<FundAtDateWithoutLastChangeDate>("Fund")
             .InsertOne(item)
 
         // execute

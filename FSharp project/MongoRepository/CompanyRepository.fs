@@ -7,10 +7,10 @@ open MongoDB.Driver
 open MongoDB.Bson.Serialization
 open serializers
 
-type CompanyRepository (connectionString:string, database:string, collectionName:string) =
-    inherit CrudRepository<Company>(connectionString, database, collectionName, (fun x -> x.Id), CompanyRepository.overloadMap)
+type CompanyRepository (config:DatabaseConfig, collectionName:string) =
+    inherit CrudRepository<Company>(config, collectionName, (fun x -> x.Id), CompanyRepository.overloadMap)
 
-    new (connectionString:string) = CompanyRepository(connectionString, RepositoryBase<_>.DefaultDatabase, "Company")
+    new (config:DatabaseConfig) = CompanyRepository(config, "Company")
 
     interface ICompanyRepository with
         member this.Create(item: Company) = base.Create item

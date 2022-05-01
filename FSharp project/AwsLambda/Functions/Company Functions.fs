@@ -7,12 +7,15 @@ open Portfolio.Api.Functions
 open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
+open configuration
 
 type CompanyFunctions (companyLogic:ICompanyLogic) =
     inherit FunctionBase()
 
     new () =
-        CompanyFunctions(CompanyLogic(CompanyRepository(configuration.ConnectionString), FundRepository(configuration.ConnectionString)))
+        CompanyFunctions(CompanyLogic(
+            CompanyRepository(databaseConfig), 
+            FundRepository(databaseConfig)))
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
         base.Log(context, "Create", request.Body)
