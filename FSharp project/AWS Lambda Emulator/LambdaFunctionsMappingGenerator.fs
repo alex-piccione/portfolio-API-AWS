@@ -10,6 +10,7 @@ open YamlDotNet.Serialization
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open AwsLambdaDummies
+open Microsoft
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
@@ -76,15 +77,19 @@ let generateCall (f:LambdaFunction) =
     let call (context:HttpContext) =
         let lambdaResponse = 
             try 
+                // from Lazy
                 let parameterlessConstructor = f.Class.GetConstructor(System.Type.EmptyTypes)
                 let functionInstance = parameterlessConstructor.Invoke([||])
 
                 let request:APIGatewayProxyRequest = APIGatewayProxyRequest()
                 request.HttpMethod <- f.HttpMethod
+                let qs = context.Request.Query.ToDictionary( (fun kv -> kv.Key), (fun kv -> String.Join(',', kv.Value.ToArray()) ))
+                if qs.Count > 0 then request.QueryStringParameters <- qs
                 
                 let lambdaContext:ILambdaContext = LambdaContext(f.Name, logger)
                 
                 f.MethodInfo.Invoke(functionInstance, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
+
             with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
 
         context.Response.StatusCode <- lambdaResponse.StatusCode    
