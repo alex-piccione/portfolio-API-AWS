@@ -15,8 +15,8 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
     inherit FunctionBase()
 
     new () =
-        let sessionManager = SessionManager(SessionRepository(helper.ConnectionString))
-        UserFunctions(UserRepository(helper.ConnectionString), sessionManager)
+        let sessionManager = SessionManager(SessionRepository(configuration.ConnectionString))
+        UserFunctions(UserRepository(configuration.ConnectionString), sessionManager)
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =

@@ -13,7 +13,7 @@ type FundFunctions (balanceLogic:IBalanceLogic) =
     inherit FunctionBase()
 
     new () =
-        FundFunctions(BalanceLogic(FundRepository(helper.ConnectionString), Chronos(), IdGenerator()))
+        FundFunctions(BalanceLogic(FundRepository(configuration.ConnectionString), Chronos(), IdGenerator()))
 
     member this.GetFund (request:APIGatewayProxyRequest, context:ILambdaContext) =
         base.Log(context, "Get Fund", request.Body)

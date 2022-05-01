@@ -6,15 +6,14 @@ open Portfolio.Api.Functions
 open Portfolio.MongoRepository
 open Portfolio.Core.Logic
 
-
 type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     inherit FunctionBase()
 
     new () =                
         CurrencyFunctions(
             CurrencyLogic(
-                CurrencyRepository(helper.ConnectionString), 
-                FundRepository(helper.ConnectionString)))
+                CurrencyRepository(configuration.ConnectionString), 
+                FundRepository(configuration.ConnectionString)))
 
     member private this.single id =
         try 

@@ -12,7 +12,7 @@ open request_validator
 type FunctionBase () =
     
     member this.Log (context:ILambdaContext, action:string, message:string) =    
-        context.Logger.Log $"[function:{context.FunctionName}] [action:{action}] message"
+        context.Logger.Log $"[function:{context.FunctionName}] [action:{action}] {message}"
 
     member this.createResponse statusCode (data:obj option): APIGatewayProxyResponse =
         let response = APIGatewayProxyResponse()
