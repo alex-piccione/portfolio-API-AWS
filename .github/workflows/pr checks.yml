@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions-ecosystem/action-remove-labels@v1
-      #if: github.event.action != 'labeled'
       if: github.event.action != 'labeled' || 
           github.event.action == 'unlabeled' && github.event.label.name == 'pr:draft'
       with:
@@ -54,8 +53,6 @@ jobs:
   # We mark the build Success only when build and all the tests passes
   label_success:
     runs-on: ubuntu-latest
-    #if: github.event.action != 'labeled'
-    #if: github.event.action == 'pull_request' || github.event.action == 'synchronize'
     needs: [build, unit-tests, integration-tests]
     steps:
       - uses: actions-ecosystem/action-add-labels@v1
