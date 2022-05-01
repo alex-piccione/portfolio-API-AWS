@@ -10,8 +10,6 @@ open YamlDotNet.Serialization
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open AwsLambdaDummies
-open System.Text
-open System.Text
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
@@ -72,14 +70,14 @@ let generateCall (f:LambdaFunction) =
                 request.HttpMethod <- f.HttpMethod
                 let qs = context.Request.Query.ToDictionary( (fun kv -> kv.Key), (fun kv -> String.Join(',', kv.Value.ToArray()) ))
                 if qs.Count > 0 then request.QueryStringParameters <- qs
-
                 request.Body <- ((new StreamReader(context.Request.Body)).ReadToEndAsync()).Result
                 
                 let lambdaContext:ILambdaContext = LambdaContext(f.Name, logger)
                 
                 f.MethodInfo.Invoke(f.Function, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
 
-            with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
+            with exc -> failwith $"{f.MethodName} caused an error. {exc}"     
+            
 
         context.Response.StatusCode <- lambdaResponse.StatusCode    
         if lambdaResponse.Headers <> null then
