@@ -10,25 +10,24 @@ open YamlDotNet.Serialization
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
 open AwsLambdaDummies
-open Microsoft
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
+    let parameterlessConstructor = clazz.GetConstructor(System.Type.EmptyTypes)
+    let functionInstance = parameterlessConstructor.Invoke([||])
 
     member this.Name = name 
     member this.HttpPath = httpPath 
     member this.HttpMethod = httpMethod
     member this.Class = clazz 
+    member this.Function = functionInstance
     member this.MethodName = methodName
     member this.MethodInfo = methodInfo
 
 
 let readFunctions serverLessFunctionsFile = 
     let text = File.ReadAllText(serverLessFunctionsFile)
-    let deserializer = 
-        DeserializerBuilder()
-            //.WithNamingConvention(UnderscoredNamingConvention.Instance)  // see height_in_inches in sample yml 
-            .Build()
+    let deserializer = DeserializerBuilder().Build()
             
     let lambda = deserializer.Deserialize<IDictionary<string, obj>>(text);
 
@@ -48,7 +47,7 @@ let readFunctions serverLessFunctionsFile =
             let functionItem = kv.Value :?> IDictionary<obj, obj>
             let handler = replacePath (functionItem["handler"].ToString())          
 
-            let values = handler.Split("::")   // Assembly::Namespace.Class::Method
+            let values = handler.Split("::") // Assembly::Namespace.Class::Method
             let assembly = System.Reflection.Assembly.Load(values[0])
             let clazz = assembly.DefinedTypes.ToList().Find(fun t -> t.FullName = values[1])
             let methodName = values[2]
@@ -67,10 +66,6 @@ let generateCall (f:LambdaFunction) =
     let call (context:HttpContext) =
         let lambdaResponse = 
             try 
-                // from Lazy
-                let parameterlessConstructor = lazy (f.Class.GetConstructor(System.Type.EmptyTypes))
-                let functionInstance = parameterlessConstructor.Value.Invoke([||])
-
                 let request:APIGatewayProxyRequest = APIGatewayProxyRequest()
                 request.HttpMethod <- f.HttpMethod
                 let qs = context.Request.Query.ToDictionary( (fun kv -> kv.Key), (fun kv -> String.Join(',', kv.Value.ToArray()) ))
@@ -78,7 +73,7 @@ let generateCall (f:LambdaFunction) =
                 
                 let lambdaContext:ILambdaContext = LambdaContext(f.Name, logger)
                 
-                f.MethodInfo.Invoke(functionInstance, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
+                f.MethodInfo.Invoke(f.Function, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
 
             with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
 
@@ -91,6 +86,7 @@ let generateCall (f:LambdaFunction) =
 
 let generateMapping (app:WebApplication, serverLessFunctionsFile) =
     let functions = readFunctions serverLessFunctionsFile 
+   
     for f in functions do
         printfn $"Function \"{f.Name}\": {f.HttpMethod} {f.HttpPath}" 
         app.MapMethods("/" + f.HttpPath, [f.HttpMethod], RequestDelegate (generateCall f)) |> ignore        
@@ -108,4 +104,3 @@ let generateMapping (app:WebApplication, serverLessFunctionsFile) =
     app.MapGet("/", RequestDelegate getFunctions) |> ignore
 
     functions
-
