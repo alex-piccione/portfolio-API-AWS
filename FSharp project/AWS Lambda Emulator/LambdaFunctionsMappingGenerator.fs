@@ -62,24 +62,14 @@ let readFunctions serverLessFunctionsFile =
             LambdaFunction(functionName, httpPath, httpMethod, clazz, methodName)]
 
 let generateCall (f:LambdaFunction) =   
-
-    (* TODO: Lazy
-    let parameterlessConstructor =
-    try 
-         f.Class.GetConstructor(System.Type.EmptyTypes)
-        f.MethodInfo.Invoke(f.Class.)
-    with
-    | :? Exception as exc -> $"{f.MethodName} caused an error. {exc}"
-    *)
-
     let logger = LambdaLogger() 
 
     let call (context:HttpContext) =
         let lambdaResponse = 
             try 
                 // from Lazy
-                let parameterlessConstructor = f.Class.GetConstructor(System.Type.EmptyTypes)
-                let functionInstance = parameterlessConstructor.Invoke([||])
+                let parameterlessConstructor = lazy (f.Class.GetConstructor(System.Type.EmptyTypes))
+                let functionInstance = parameterlessConstructor.Value.Invoke([||])
 
                 let request:APIGatewayProxyRequest = APIGatewayProxyRequest()
                 request.HttpMethod <- f.HttpMethod
@@ -93,7 +83,8 @@ let generateCall (f:LambdaFunction) =
             with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
 
         context.Response.StatusCode <- lambdaResponse.StatusCode    
-        context.Response.Headers["Content-Type"] <- lambdaResponse.Headers["Content-Type"]
+        if lambdaResponse.Headers <> null then
+            for h in lambdaResponse.Headers do context.Response.Headers[h.Key] <- h.Value        
         context.Response.WriteAsync (lambdaResponse.Body)      
         
     call

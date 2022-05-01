@@ -19,7 +19,6 @@ provider:
   # The CloudFormation template is invalid: Template error: instance of Fn::GetAtt references undefined resource ApiGatewayRestApi
 
   environment:
-    #functionCurrencyPrefix: "Portfolio.Api::Portfolio.Api.Functions.Currency"  
     # variable = Assembly::Namespace.Class  (concatenate .Class::Method to get the handler)
     userFunctions: "Portfolio.Api::Portfolio.Api.Functions.UserFunctions"  
     currencyFunctions: "Portfolio.Api::Portfolio.Api.Functions.CurrencyFunctions"  
