@@ -9,14 +9,7 @@ open Microsoft.AspNetCore.Builder
 open YamlDotNet.Serialization
 open Amazon.Lambda.APIGatewayEvents
 open Amazon.Lambda.Core
-open Portfolio.Core.Entities
 open AwsLambdaDummies
-
-let getCurrency (context:HttpContext) =
-    let currencies:Currency list = [
-        {Code="BTC"; Name="Bitcoin"}
-    ]
-    context.Response.WriteAsJsonAsync(currencies)  
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
@@ -69,7 +62,7 @@ let readFunctions serverLessFunctionsFile =
 
 let generateCall (f:LambdaFunction) =   
 
-    (*
+    (* TODO: Lazy
     let parameterlessConstructor =
     try 
          f.Class.GetConstructor(System.Type.EmptyTypes)
@@ -78,7 +71,6 @@ let generateCall (f:LambdaFunction) =
     | :? Exception as exc -> $"{f.MethodName} caused an error. {exc}"
     *)
 
-    //let getFunction = Lazy<>
     let logger = LambdaLogger() 
 
     let call (context:HttpContext) =
