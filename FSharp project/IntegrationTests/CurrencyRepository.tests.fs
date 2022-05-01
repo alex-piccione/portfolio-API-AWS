@@ -22,7 +22,7 @@ type equalCurrency(expected:Currency) =
 
 type ``Currency Repository`` () =
 
-    let repository = CurrencyRepository(configuration.connectionString, "Currency_test") :> ICurrencyRepository
+    let repository = CurrencyRepository(configuration.connectionString, configuration.database, "Currency") :> ICurrencyRepository
     let TEST_CODE = "TEST1"
     let TEST_CODE_2 = "TEST2"
     let aCurrency:Currency = { Code=TEST_CODE; Name="Aaaaa"}

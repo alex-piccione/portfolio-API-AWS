@@ -14,3 +14,4 @@ let loadSecrets path =
     | value -> value
 
 let connectionString = loadSecrets "MongoDB:connection string"
+let database = "Portfolio_Test"

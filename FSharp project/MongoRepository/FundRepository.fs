@@ -9,10 +9,10 @@ open Portfolio.Core
 open Portfolio.Core.Entities
 open Extensions
 
-type FundRepository (connectionString:string, collectionName:string) =
-    inherit CrudRepository<FundAtDate>(connectionString, collectionName, (fun x -> x.Id), FundRepository.overloadMap)
+type FundRepository (connectionString:string, database:string, collectionName:string) =
+    inherit CrudRepository<FundAtDate>(connectionString, database, collectionName, (fun x -> x.Id), FundRepository.overloadMap)
 
-    new(connectionString:string) = FundRepository(connectionString, "Fund")
+    new(connectionString:string) = FundRepository(connectionString, RepositoryBase<_>.DefaultDatabase, "Fund")
 
     member this.CreateFilter<'T> (field:Expression<Func<'T, string>>, value:string):FilterDefinition<'T> =
         FilterDefinitionBuilder<'T>().Eq(field, value)

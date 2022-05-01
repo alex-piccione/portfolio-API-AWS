@@ -20,12 +20,12 @@ type FundAtDateWithoutLastChangeDate = {
 
 type ``Fund Repository (regression)`` () =
 
-    let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
+    let repository = FundRepository(configuration.connectionString,  configuration.database, "Fund") :> IFundRepository
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
 
     let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
-    let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
+    let collection = client.GetDatabase(configuration.database).GetCollection("Fund")
 
     let newGuid() = Guid.NewGuid().ToString()
 
@@ -49,7 +49,7 @@ type ``Fund Repository (regression)`` () =
         let itemDate = toDate.AddDays(-10.);
         let item:FundAtDateWithoutLastChangeDate = {Id=newGuid(); Date=itemDate; CurrencyCode=TEST_CURRENCY; FundCompanyId="FFF"; Quantity=123.456789m; } 
         
-        client.GetDatabase("Portfolio").GetCollection<FundAtDateWithoutLastChangeDate>("Fund_test")
+        client.GetDatabase(configuration.database).GetCollection<FundAtDateWithoutLastChangeDate>("Fund")
             .InsertOne(item)
 
         // execute

@@ -3,10 +3,10 @@
 open Portfolio.Core
 open Portfolio.Core.Entities
 
-type UserRepository (connectionString:string, collectionName:string) =
-    inherit CrudRepository<User>(connectionString, collectionName, (fun x -> x.Email))
+type UserRepository (connectionString:string, database:string, collectionName:string) =
+    inherit CrudRepository<User>(connectionString, database, collectionName, (fun x -> x.Email))
 
-    new (connectionString:string) = UserRepository(connectionString, "User")
+    new (connectionString:string) = UserRepository(connectionString, RepositoryBase<_>.DefaultDatabase, "User")
 
     interface IUserRepository with
         member this.Create(item: User) = base.Create item
