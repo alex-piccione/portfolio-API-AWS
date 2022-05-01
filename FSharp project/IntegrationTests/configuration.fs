@@ -6,6 +6,7 @@ open Portfolio.MongoRepository
 let configuration =
     ConfigurationBuilder()
         .AddUserSecrets("d118f5b8-a2c9-418a-9068-fc37358467bd")
+        .AddEnvironmentVariables() // use in CI
         .Build()
 
 let loadSecrets path =
