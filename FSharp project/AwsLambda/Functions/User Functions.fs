@@ -9,14 +9,14 @@ open Portfolio.Core.Entities
 open Portfolio.MongoRepository
 open UserLogin
 open SessionManager
-
+open configuration
 
 type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) =
     inherit FunctionBase()
 
-    new () =
-        let sessionManager = SessionManager(SessionRepository(configuration.ConnectionString))
-        UserFunctions(UserRepository(configuration.ConnectionString), sessionManager)
+    new () = UserFunctions(
+                UserRepository(databaseConfig),
+                SessionManager(SessionRepository(databaseConfig)))
 
 
     member this.Create (request:APIGatewayProxyRequest, context:ILambdaContext) =
@@ -69,7 +69,7 @@ type UserFunctions (repository:IUserRepository, sessionManager:ISessionManager) 
             this.createOkWithData list
 
         with exc ->
-            context.Logger.Log $"Failed to retrieve users. {exc}"
+            context.Logger.LogError $"Failed to retrieve users. {exc}"
             this.createError $"Failed to retrieve users. {exc.Message}"
 
     member this.Login (request:APIGatewayProxyRequest, context:ILambdaContext) =

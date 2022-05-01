@@ -1,19 +1,26 @@
 ﻿module configuration
 
 open Microsoft.Extensions.Configuration
+open Portfolio.MongoRepository
 
-let private getConnectionString () =
-    let configFile = "configuration.json"
-    let variable = "MongoDB_connection_string"
+type Configuration = {ConnectionString:string; Database:string; Counter:int}
+    
+let mutable counter = 0
 
+let loadConfiguration () = 
+    counter <- counter + 1
     let conf = ConfigurationBuilder()
-                   .AddJsonFile(configFile)
-                   .AddEnvironmentVariables()
-                   .Build()
+                   .AddJsonFile("configuration.json")
+                   .AddEnvironmentVariables("Portfolio:") // used by Emulator
+                   .Build()    
+    let database = conf["MongoDB_database"]
+    {
+        ConnectionString = conf["MongoDB_connection_string"]
+        Database = if database = null then "Portfolio" else database
+        Counter = counter
+    }
 
-    let connectionString = conf[variable]
-    if connectionString = null then failwith $@"Cannot find ""{variable}"" in ""{configFile}""."
-    connectionString
-
-let connectionString = Lazy<string>.Create(fun () -> getConnectionString())
-let ConnectionString = connectionString.Value
+let databaseConfig:DatabaseConfig = { 
+    ConnectionString = (lazy(loadConfiguration())).Value.ConnectionString
+    Database = (lazy(loadConfiguration())).Value.Database
+    }

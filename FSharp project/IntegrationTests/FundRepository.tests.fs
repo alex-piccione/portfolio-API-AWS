@@ -10,6 +10,7 @@ open Portfolio.MongoRepository
 open Portfolio.Core.Entities
 open NUnit.Framework.Constraints
 open helper
+open configuration
 
 
 type equalFundAtDate(expected:FundAtDate) = 
@@ -55,7 +56,7 @@ type containItemWithId(id:string) =
             ConstraintResult(this, actual, false)
 
 type ``Fund Repository`` () =
-    let repository = FundRepository(configuration.connectionString, "Fund_test") :> IFundRepository
+    let repository = FundRepository(databaseConfig, "Fund") :> IFundRepository
     let TEST_ID = "TEST 1"
     let TEST_CURRENCY = "TESTTEST 1"
     let TEST_CURRENCY_2 = "TESTTEST 2"
@@ -63,8 +64,8 @@ type ``Fund Repository`` () =
     let now = DateTime(2022, 12, 31, 01, 02, 03, 999, DateTimeKind.Utc) 
     let today = DateTime.UtcNow.Date
     
-    let client = new MongoClient(MongoClientSettings.FromConnectionString(configuration.connectionString))
-    let collection = client.GetDatabase("Portfolio").GetCollection("Fund_test")
+    let client = new MongoClient(MongoClientSettings.FromConnectionString(databaseConfig.ConnectionString))
+    let collection = client.GetDatabase(databaseConfig.Database).GetCollection("Fund")
 
     let newGuid() = Guid.NewGuid().ToString()
     let addRecord item = collection.InsertOne item

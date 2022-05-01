@@ -5,6 +5,7 @@ open Amazon.Lambda.Core
 open Portfolio.Api.Functions
 open Portfolio.MongoRepository
 open Portfolio.Core.Logic
+open configuration
 
 type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     inherit FunctionBase()
@@ -12,8 +13,8 @@ type CurrencyFunctions (currencyLogic:ICurrencyLogic) =
     new () =                
         CurrencyFunctions(
             CurrencyLogic(
-                CurrencyRepository(configuration.ConnectionString), 
-                FundRepository(configuration.ConnectionString)))
+                CurrencyRepository(databaseConfig), 
+                FundRepository(databaseConfig)))
 
     member private this.single id =
         try 
