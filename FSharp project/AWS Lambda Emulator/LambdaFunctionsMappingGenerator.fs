@@ -1,21 +1,22 @@
 ﻿module LambdaFunctionsMappingGenerator
 
+open System
 open System.IO
 open System.Linq
+open System.Collections.Generic
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Builder
 open YamlDotNet.Serialization
+open Amazon.Lambda.APIGatewayEvents
+open Amazon.Lambda.Core
 open Portfolio.Core.Entities
-open System.Collections.Generic
-open System
-open Portfolio.Core.Logic
+open AwsLambdaDummies
 
 let getCurrency (context:HttpContext) =
     let currencies:Currency list = [
         {Code="BTC"; Name="Bitcoin"}
     ]
-    context.Response.WriteAsJsonAsync(currencies)
-  
+    context.Response.WriteAsJsonAsync(currencies)  
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
@@ -26,6 +27,7 @@ type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type
     member this.Class = clazz 
     member this.MethodName = methodName
     member this.MethodInfo = methodInfo
+
 
 let readFunctions serverLessFunctionsFile = 
     let text = File.ReadAllText(serverLessFunctionsFile)
@@ -77,21 +79,28 @@ let generateCall (f:LambdaFunction) =
     *)
 
     //let getFunction = Lazy<>
+    let logger = LambdaLogger() 
 
-    let call (context:HttpContext) = 
-        //let data = f.MethodName // $"function: {f.HttpMethod} {f.HttpPath} -> {f.MethodName}"
-
-        let data = 
+    let call (context:HttpContext) =
+        let lambdaResponse = 
             try 
                 let parameterlessConstructor = f.Class.GetConstructor(System.Type.EmptyTypes)
-
-                // request:APIGatewayProxyRequest, context:ILambdaContext
-
                 let functionInstance = parameterlessConstructor.Invoke([||])
-                f.MethodInfo.Invoke(functionInstance, [||])
-            with exc -> $"{f.MethodName} caused an error. {exc}"            
 
-        context.Response.WriteAsJsonAsync(data)
+                let request:APIGatewayProxyRequest = APIGatewayProxyRequest()
+                request.HttpMethod <- f.HttpMethod
+                
+                let lambdaContext:ILambdaContext = LambdaContext(f.Name, logger)
+                
+                f.MethodInfo.Invoke(functionInstance, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
+            with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
+
+        //let response:APIGatewayProxyResponse = LambdaResponse.fromData(data :? )
+
+        context.Response.StatusCode <- lambdaResponse.StatusCode    
+        context.Response.Headers["Content-Type"] <- lambdaResponse.Headers["Content-Type"]
+        context.Response.WriteAsync (lambdaResponse.Body)      
+        
     call
 
 let generateMapping (app:WebApplication, serverLessFunctionsFile) =

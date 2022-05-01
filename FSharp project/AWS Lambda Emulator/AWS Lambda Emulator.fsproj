@@ -13,12 +13,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include=".gitignore" />
+    <Compile Include="AwsLambdaDummies.fs" />
     <Compile Include="LambdaFunctionsMappingGenerator.fs" />
     <Compile Include="Program.fs" />
     <None Include="README.md" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
     <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
     <ProjectReference Include="..\AwsLambda\AWS Lambda.fsproj" />
     <PackageReference Update="FSharp.Core" Version="6.0.3" />
