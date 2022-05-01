@@ -10,7 +10,7 @@ let configuration =
 
 let loadSecrets path =
     match configuration.[path] with
-    | null ->  failwith $"""Secret with path "{path}" is null."""
-    | value ->  value
+    | null -> failwith $"""Secret with path "{path}" is null."""
+    | value -> value
 
 let connectionString = loadSecrets "MongoDB:connection string"

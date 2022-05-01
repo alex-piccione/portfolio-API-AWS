@@ -8,6 +8,7 @@ open YamlDotNet.Serialization
 open Portfolio.Core.Entities
 open System.Collections.Generic
 open System
+open Portfolio.Core.Logic
 
 let getCurrency (context:HttpContext) =
     let currencies:Currency list = [
@@ -15,8 +16,6 @@ let getCurrency (context:HttpContext) =
     ]
     context.Response.WriteAsJsonAsync(currencies)
   
-type data = 
-    abstract member functions:obj with get 
 
 type LambdaFunction (name:string, httpPath:string, httpMethod:string, clazz:Type, methodName:string) =
     let methodInfo = clazz.GetMethod(methodName)
@@ -66,11 +65,48 @@ let readFunctions serverLessFunctionsFile =
 
             LambdaFunction(functionName, httpPath, httpMethod, clazz, methodName)]
 
-let generateMapping (app:WebApplication, serverLessFunctionsFile) =
+let generateCall (f:LambdaFunction) =   
 
-    let functions = readFunctions serverLessFunctionsFile
-    
-    for f in functions do
-        printf $"Function \"{f.Name}\"" 
-        app.MapGet("/currency", RequestDelegate getCurrency) |> ignore
+    (*
+    let parameterlessConstructor =
+    try 
+         f.Class.GetConstructor(System.Type.EmptyTypes)
+        f.MethodInfo.Invoke(f.Class.)
+    with
+    | :? Exception as exc -> $"{f.MethodName} caused an error. {exc}"
+    *)
+
+    //let getFunction = Lazy<>
+
+    let call (context:HttpContext) = 
+        //let data = f.MethodName // $"function: {f.HttpMethod} {f.HttpPath} -> {f.MethodName}"
+
+        let data = 
+            try 
+                let parameterlessConstructor = f.Class.GetConstructor(System.Type.EmptyTypes)
+
+                // request:APIGatewayProxyRequest, context:ILambdaContext
+
+                let functionInstance = parameterlessConstructor.Invoke([||])
+                f.MethodInfo.Invoke(functionInstance, [||])
+            with exc -> $"{f.MethodName} caused an error. {exc}"            
+
+        context.Response.WriteAsJsonAsync(data)
+    call
+
+let generateMapping (app:WebApplication, serverLessFunctionsFile) =
+    let functions = readFunctions serverLessFunctionsFile 
+    let methods = [
+        for f in functions do
+            printf $"Function \"{f.Name}\": {f.HttpMethod} {f.HttpPath}" 
+            app.MapMethods("/" + f.HttpPath, [f.HttpMethod], RequestDelegate (generateCall f)) |> ignore
+            $"{f.HttpMethod} {f.HttpPath}"
+        ]
+
+    let getFunctions (context:HttpContext) =
+        context.Response.WriteAsJsonAsync methods
+        //context.Response.WriteAsync methods
+    app.MapGet("/", RequestDelegate getFunctions) |> ignore
+
+    functions
 

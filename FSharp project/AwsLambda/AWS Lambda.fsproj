@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="assembly.fs" />
     <None Include="configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="assembly.fs" />
+    <Compile Include="configuration.fs" />
     <Compile Include="Business\SessionManager.fs" />
     <Compile Include="Functions\request validator.fs" />
-    <Compile Include="Functions\helper.fs" />
     <Compile Include="Functions\exceptions.fs" />
     <Compile Include="Functions\Request and Responses\User Login.fs" />
     <Compile Include="Functions\Function Base.fs" />
@@ -32,6 +32,7 @@
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
   </ItemGroup>
 
