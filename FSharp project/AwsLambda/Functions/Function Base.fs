@@ -9,8 +9,9 @@ open Amazon.Lambda.APIGatewayEvents
 open Portfolio.Core.Entities
 open request_validator
 
-type FunctionBase () =
-    
+type FunctionBase () =    
+    let initializedOnHeader = ("Initialized-On", DateTime.UtcNow.ToString("u"))
+
     member this.Log (context:ILambdaContext, action:string, message:string) =    
         context.Logger.Log $"[function:{context.FunctionName}] [action:{action}] {message}"
 
@@ -20,14 +21,14 @@ type FunctionBase () =
         match data with 
         | None -> 
             response.Body <- ""
-            response.Headers <- dict<string, string>["Content-Type", "text/plain"]
+            response.Headers <- dict<string, string>["Content-Type", "text/plain"; initializedOnHeader]
         | Some value -> 
             if value :? string 
             then 
-                response.Headers <- dict<string, string>["Content-Type", "text/plain"]
+                response.Headers <- dict<string, string>["Content-Type", "text/plain"; initializedOnHeader]
                 response.Body <- value :?> string 
             else 
-                response.Headers <- dict<string, string>["Content-Type", "application/json"]
+                response.Headers <- dict<string, string>["Content-Type", "application/json"; initializedOnHeader]
                 response.Body <- Json.JsonSerializer.Serialize(value)
         response
 
