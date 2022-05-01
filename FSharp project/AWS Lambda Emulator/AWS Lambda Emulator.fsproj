@@ -13,6 +13,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include=".gitignore" />
+    <Content Include="Functions page template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Function item template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="AwsLambdaDummies.fs" />
     <Compile Include="LambdaFunctionsMappingGenerator.fs" />
     <Compile Include="Program.fs" />

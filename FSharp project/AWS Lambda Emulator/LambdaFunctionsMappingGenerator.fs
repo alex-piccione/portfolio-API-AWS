@@ -87,8 +87,6 @@ let generateCall (f:LambdaFunction) =
                 f.MethodInfo.Invoke(functionInstance, [|request; lambdaContext|]) :?> APIGatewayProxyResponse
             with exc -> failwith $"{f.MethodName} caused an error. {exc}"            
 
-        //let response:APIGatewayProxyResponse = LambdaResponse.fromData(data :? )
-
         context.Response.StatusCode <- lambdaResponse.StatusCode    
         context.Response.Headers["Content-Type"] <- lambdaResponse.Headers["Content-Type"]
         context.Response.WriteAsync (lambdaResponse.Body)      
@@ -97,16 +95,20 @@ let generateCall (f:LambdaFunction) =
 
 let generateMapping (app:WebApplication, serverLessFunctionsFile) =
     let functions = readFunctions serverLessFunctionsFile 
-    let methods = [
-        for f in functions do
-            printf $"Function \"{f.Name}\": {f.HttpMethod} {f.HttpPath}" 
-            app.MapMethods("/" + f.HttpPath, [f.HttpMethod], RequestDelegate (generateCall f)) |> ignore
-            $"{f.HttpMethod} {f.HttpPath}"
-        ]
+    for f in functions do
+        printfn $"Function \"{f.Name}\": {f.HttpMethod} {f.HttpPath}" 
+        app.MapMethods("/" + f.HttpPath, [f.HttpMethod], RequestDelegate (generateCall f)) |> ignore        
 
+    let pageHtmlTemplate = File.ReadAllText("Functions page template.html")
+    let functionHtmlTemplate = File.ReadAllText("Function item template.html")
+    let functionsHtml = List.fold (
+        fun s (f:LambdaFunction) -> s + functionHtmlTemplate
+                                            .Replace("{name}", f.Name)
+                                            .Replace("{method}", f.HttpMethod)
+                                            .Replace("{path}", f.HttpPath)
+                                            ) "" functions
     let getFunctions (context:HttpContext) =
-        context.Response.WriteAsJsonAsync methods
-        //context.Response.WriteAsync methods
+        context.Response.WriteAsync (pageHtmlTemplate.Replace("{functions}", functionsHtml))
     app.MapGet("/", RequestDelegate getFunctions) |> ignore
 
     functions
