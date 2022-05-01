@@ -2,7 +2,7 @@
 name: Improvement
 about: Improvement
 title: '[Improvement] '
-labels: backend, improvement
+labels: Backend, Enhancement
 assignees: alex-piccione
 
 ---
