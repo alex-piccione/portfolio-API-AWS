@@ -9,7 +9,7 @@ open System.Text.Json
 open Portfolio.Core.Entities
 
 
-[<Test>]
+//[<Test>]Todo: use an attribute to mark tests
 let ``All`` () =
     let response = 
         $"https://{secrets.url}/company"
@@ -26,7 +26,7 @@ let ``All`` () =
         content |> should not' (be NullOrEmptyString)
 
 
-[<Test>]
+//[<Test>]
 let ``All without AWS signature`` () =
     let response = 
         $"https://{secrets.url}/company/all"
@@ -42,7 +42,7 @@ let ``All without AWS signature`` () =
     else
         content |> should not' (be NullOrEmptyString)
 
-[<Test>]
+//[<Test>]
 let ``Single`` () =
 
 
@@ -60,7 +60,7 @@ let ``Single`` () =
     else
         content |> should not' (be NullOrEmptyString)
 
-[<Test>]
+//[<Test>]
 let ``Create & Delete`` () =
     
     let create () =
