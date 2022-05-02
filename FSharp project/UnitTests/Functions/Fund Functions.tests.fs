@@ -13,10 +13,14 @@ open Foq.Linq
 open Portfolio.Core.Entities
 open Portfolio.Core.Logic
 open Portfolio.Api.Functions
+open System.Text.Json
 
 type ``Fund Functions`` () =
 
     let aDate = DateTime(2000, 1, 1)
+    let context = Mock<ILambdaContext>()
+                    .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
+                    .Create()
 
     member this.emulateApi<'T> (item:'T) =
         let context = Mock<ILambdaContext>()
@@ -25,6 +29,7 @@ type ``Fund Functions`` () =
         let request = APIGatewayProxyRequest()
         request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> item
         (request, context)
+
 
     [<SetUp>]
     member this.Setup () =
@@ -39,9 +44,6 @@ type ``Fund Functions`` () =
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
         request.QueryStringParameters["from"] <- DateTime(2000, 1, 1).ToString("o") // "20000-01-01T00:00:00.000"
 
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409
@@ -55,9 +57,6 @@ type ``Fund Functions`` () =
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- dict [("currency","aaa")]        
 
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409
@@ -73,9 +72,6 @@ type ``Fund Functions`` () =
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- dict[("currency", "aaa"); ("from", from)]
 
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 409
@@ -101,9 +97,6 @@ type ``Fund Functions`` () =
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- dict [("currency", currency); ("from", minDate.ToString("o"))]
 
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
         // execute
         let response = functions.GetFund(request, context)
         response.StatusCode |> should equal 200   
@@ -111,3 +104,46 @@ type ``Fund Functions`` () =
         Json.JsonSerializer.Deserialize(response.Body) |> should not' (be Null)
    
         verify <@ balanceLogic.GetFundOfCurrencyByDate(currency, minDate) @> once
+
+    [<Test>]
+    member this.``Update [should] call Logic function``() =
+        let balanceLogic = Mock<IBalanceLogic>()
+                              .Setup(fun l -> l.CreateOrUpdate(any()))
+                              .Returns(Ok(BalanceUpdateResult.Created))
+                              .Create()
+                     
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request:BalanceUpdateRequest = { Date=DateTime.UtcNow; CurrencyCode="CCC"; CompanyId="C1"; Quantity=1m }
+        let proxyRequest = Mock<APIGatewayProxyRequest>().Create()
+        proxyRequest.Body <- JsonSerializer.Serialize(request)        
+
+        // execute
+        let response = functions.Update(proxyRequest, context)
+        response.StatusCode |> should equal 201
+    
+        let isExpectedRecord = 
+            fun (r:BalanceUpdateRequest) -> 
+                r.Date |> should equal request.Date
+                r.CurrencyCode |> should equal request.CurrencyCode                
+                r.CompanyId |> should equal request.CompanyId
+                r.Quantity |> should equal request.Quantity
+                true
+
+        verify <@ balanceLogic.CreateOrUpdate(is isExpectedRecord) @> once
+
+    [<Test>]
+    member this.``Update [when] Logic returns request validation error [should] return error``() =
+        let error = Error "invalid request"
+        let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()
+        let functions = BalanceFunctions(balanceLogic)
+
+        let request = Mock<APIGatewayProxyRequest>().Create()
+        request.Body <- $@"{{ }}"
+
+        // execute
+        let response = functions.Update(request, context)
+        response.StatusCode |> should equal 409
+        response.Body |> should contain "invalid request"
+
+        verify <@ balanceLogic.CreateOrUpdate(any()) @> once
