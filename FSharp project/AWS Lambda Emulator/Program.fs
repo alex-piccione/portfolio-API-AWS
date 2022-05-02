@@ -9,9 +9,11 @@ let lamdaFunctionsServerlessFilePath = "../../serverless/serverless.fsharp.yml"
 let builder = WebApplication.CreateBuilder()
 let app = builder.Build()
 
+printfn $"\n### Server API are exposed on {url}\n"  
+
 let functions = LambdaFunctionsMappingGenerator.generateMapping(app,lamdaFunctionsServerlessFilePath )
-for f in functions do
-    printfn $"Function \"{f.Name}\""     
+//for f in functions do
+//    printfn $"Function \"{f.Name}\""    
 
 app.Urls.Add(url)
 app.Run()
