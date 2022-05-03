@@ -31,7 +31,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -59,7 +59,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -81,7 +81,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -104,7 +104,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         let balance = logic.GetBalance date
@@ -129,7 +129,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                  .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         (logic.GetBalance date).LastUpdateDate |> should equal changeDate2
@@ -148,7 +148,7 @@ type ``BalanceLogic GetBalance Test``() =
         let fundRepository = Mock<IFundRepository>()
                                 .SetupFunc(fun r -> r.GetFundsToDate(date)).Returns(funds)
                                 .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         // execute
         let balance = logic.GetBalance date

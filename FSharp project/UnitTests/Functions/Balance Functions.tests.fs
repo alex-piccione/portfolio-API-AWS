@@ -35,7 +35,7 @@ type ``Balance Functions`` () =
         let date = DateTime(2020, 01, 31)
         let lastUpdateDate = date.AddMonths(-1)
         let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>; LastUpdateDate=lastUpdateDate}
-        let balanceLogic = Mock<IBalanceLogic>()
+        let balanceLogic = Mock<IFundLogic>()
                                .SetupFunc(fun l -> l.GetBalance(It.IsAny<DateTime>())).Returns(balance)
                                .Create()
         let functions = BalanceFunctions(balanceLogic)
@@ -62,7 +62,7 @@ type ``Balance Functions`` () =
 
     [<Test>]
     member this.``Get [when] querystring parameter is missing [should] return error``() =
-        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let balanceLogic = Mock<IFundLogic>().Create()
         let functions = BalanceFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
