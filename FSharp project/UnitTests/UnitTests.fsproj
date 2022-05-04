@@ -12,9 +12,9 @@
     <Compile Include="Core\Logic\match helper.fs" />
     <Compile Include="Core\Logic\CurrencyLogic.tests.fs" />
     <Compile Include="Core\Logic\CompanyLogic.tests.fs" />
-    <Compile Include="Core\Logic\BalanceLogic.test.fs" />
-    <Compile Include="Core\Logic\BalanceLogic GetFund.test.fs" />
-    <Compile Include="Core\Logic\BalanceLogic GetBalance.test.fs" />
+    <Compile Include="Core\Logic\FundLogic.test.fs" />
+    <Compile Include="Core\Logic\FundLogic GetFund.test.fs" />
+    <Compile Include="Core\Logic\FundLogic GetBalance.test.fs" />
     <Compile Include="Functions\test helper.fs" />
     <Compile Include="Functions\request validator.tests.fs" />
     <Compile Include="Functions\User Functions.tests.fs" />

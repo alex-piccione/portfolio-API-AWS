@@ -6,16 +6,16 @@ open Portfolio.Core.Entities
 open Portfolio.Core
 open validation
 
-type BalanceUpdateResult = | Created | Updated
+type FundUpdateResult = | Created | Updated
 
-type IBalanceLogic =
+type IFundLogic =
     abstract member GetBalance: date:DateTime -> Balance
-    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<BalanceUpdateResult, string>
+    abstract member CreateOrUpdate: request:BalanceUpdateRequest -> Result<FundUpdateResult, string>
     abstract member GetFundOfCurrencyByDate: currencyCode:string * minDate:DateTime -> CurrencyFundAtDate list
 
-type BalanceLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
+type FundLogic(fundRepository:IFundRepository, chronos:IChronos, idGenerator:IIdGenerator) = 
 
-    interface IBalanceLogic with
+    interface IFundLogic with
         member this.GetBalance(day: DateTime): Balance = 
             let funds = fundRepository.GetFundsToDate(day)
             let fundsByCurrency = funds |> List.groupBy (fun fund -> fund.CurrencyCode)
