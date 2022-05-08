@@ -20,8 +20,8 @@ functions:
   asset_list: ${file(./serverless/currency.yml):list}
 
   test_cron:
-    handler: cron_test
+    handler: python/functions/cron_test
     package:
       artifact: functions.zip
     events: 
-     - schedule: cron(35 * * * *)
+     - schedule: cron(40 * * * * *)
