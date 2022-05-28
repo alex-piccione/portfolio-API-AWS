@@ -31,6 +31,18 @@ type RepositoryBase<'T>(config:DatabaseConfig, collectionName:string, idField:Ex
     member this.Collection = database.GetCollection<'T>(collectionName);
     member this.Filter () = FilterDefinitionBuilder<'T>()
 
+    member this.test(item:'T) =
+        use session = client.StartSession()
+        let transactionOptions = TransactionOptions(ReadConcern.Local, ReadPreference.Primary, WriteConcern.WMajority)
+        
+        session.WithTransaction(fun s ct -> this.Collection.InsertOne(item), transactionOptions)
+
+    member this.WithTransaction(action:Func<IClientSessionHandle>) =
+        use session = client.StartSession()
+        let transactionOptions = TransactionOptions(ReadConcern.Local, ReadPreference.Primary, WriteConcern.WMajority)
+        
+        session.WithTransaction(fun s ct -> action.Invoke(), transactionOptions)
+
 
 type CrudRepository<'T>(config:DatabaseConfig, collectionName:string, idField:Expression<Func<'T, string>>, overloadMap: BsonClassMap<'T> -> unit) =
     inherit RepositoryBase<'T>(config, collectionName, idField, overloadMap)
