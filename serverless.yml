@@ -18,3 +18,10 @@ functions:
           cors: true
 
   asset_list: ${file(./serverless/currency.yml):list}
+
+  test_cron:
+    handler: python/functions/cron_test.handle
+    #package:
+    #  artifact: functions.zip
+    events: 
+     - schedule: cron(45 * * * * *)
