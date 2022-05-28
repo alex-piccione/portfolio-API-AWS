@@ -1,5 +1,5 @@
-## Context / Why we need to change
+## Context - Why we need a change
 
 
-## Description / What are we changing 
+## Description - What are we changing 
 
