@@ -15,7 +15,7 @@
     <Compile Include="Logic\helper.fs" />
     <Compile Include="Logic\CurrencyLogic.fs" />
     <Compile Include="Logic\CompanyLogic.fs" />
-    <Compile Include="Logic\BalanceLogic.fs" />
+    <Compile Include="Logic\FundLogic.fs" />
   </ItemGroup>
 
   <ItemGroup>

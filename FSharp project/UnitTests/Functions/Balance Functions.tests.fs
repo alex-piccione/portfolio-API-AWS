@@ -35,7 +35,7 @@ type ``Balance Functions`` () =
         let date = DateTime(2020, 01, 31)
         let lastUpdateDate = date.AddMonths(-1)
         let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>; LastUpdateDate=lastUpdateDate}
-        let balanceLogic = Mock<IBalanceLogic>()
+        let balanceLogic = Mock<IFundLogic>()
                                .SetupFunc(fun l -> l.GetBalance(It.IsAny<DateTime>())).Returns(balance)
                                .Create()
         let functions = BalanceFunctions(balanceLogic)
@@ -62,7 +62,7 @@ type ``Balance Functions`` () =
 
     [<Test>]
     member this.``Get [when] querystring parameter is missing [should] return error``() =
-        let balanceLogic = Mock<IBalanceLogic>().Create()
+        let balanceLogic = Mock<IFundLogic>().Create()
         let functions = BalanceFunctions(balanceLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
@@ -76,57 +76,3 @@ type ``Balance Functions`` () =
         let response = functions.Get(request, context)
         response.StatusCode |> should equal 409
         test_helper.verifyResponseContainsError response "Parameter \"base-currency\" not found in querystring"        
-
-    [<Test>]
-    member this.``Update [should] call Logic function``() =
-        let balanceLogic = Mock<IBalanceLogic>()
-                              .Setup(fun l -> l.CreateOrUpdate(any()))
-                              .Returns(Ok(BalanceUpdateResult.Created))
-                              .Create()
-                         
-        let functions = BalanceFunctions(balanceLogic)
-
-        let request = Mock<APIGatewayProxyRequest>().Create()
-        request.Body <- $@"{{            
-            ""currencyCode"": ""CCC"",
-            ""date"": ""2000-12-31"",
-            ""companyId"": ""AAA"",
-            ""quantity"": 11
-        }}"
-
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
-
-        // execute
-        let response = functions.Update(request, context)
-        response.StatusCode |> should equal 201
-        //response.Body |> should contain "Fund request"
-        
-        let isExpectedRecord = 
-            fun (r:BalanceUpdateRequest) -> 
-                // r.Date
-                r.CurrencyCode |> should equal "CCC"
-                r.Quantity |> should equal 11
-                r.CompanyId |> should equal "AAA"
-                true
-
-        verify <@ balanceLogic.CreateOrUpdate(is isExpectedRecord) @> once
-
-    [<Test>]
-    member this.``Update [when] Logic returns request validation error [should] return error``() =
-        let error = Error "invalid request"
-        let balanceLogic = Mock<IBalanceLogic>().Setup(fun l -> l.CreateOrUpdate(any())).Returns(error).Create()
-        let functions = BalanceFunctions(balanceLogic)
-
-        let request = Mock<APIGatewayProxyRequest>().Create()
-        request.Body <- $@"{{ }}"
-
-        let context = Mock<ILambdaContext>()
-                          .SetupPropertyGet(fun c -> c.Logger).Returns(Mock.Of<ILambdaLogger>())
-                          .Create()
-
-        // execute
-        let response = functions.Update(request, context)
-        response.StatusCode |> should equal 409
-        response.Body |> should contain "invalid request"

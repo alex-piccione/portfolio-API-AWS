@@ -52,7 +52,7 @@ type ``BalanceLogic GetFund Test``() =
                                 .Returns(funds)
                                 .Create()
         // execute
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equalCurrencyFundAtDateList expectedResult
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, minDate) @> once
@@ -106,7 +106,7 @@ type ``BalanceLogic GetFund Test``() =
                                 .Returns(funds)
                                 .Create()
         // execute
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equalCurrencyFundAtDateList expectedResult
 
@@ -153,7 +153,7 @@ type ``BalanceLogic GetFund Test``() =
                                 .Returns(funds)
                                 .Create()
         // execute
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         logic.GetFundOfCurrencyByDate(currencyCode, minDate) |> should equalCurrencyFundAtDateList expectedResult
         verify <@ fundRepository.GetFundsOfCurrency(currencyCode, minDate) @> once

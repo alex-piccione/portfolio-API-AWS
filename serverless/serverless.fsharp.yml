@@ -193,7 +193,7 @@ functions:
         path: balance/update
         cors: true
 
-  # Fund (under balance fuctions)
+  # Fund
   Fund-GetForCurrency:
     handler: ${self:provider.environment.fundFunctions}::GetFund
     package: 
@@ -202,4 +202,14 @@ functions:
     - http:
         method: GET
         path: fund
+        cors: true
+
+  Fund-Update:
+    handler: ${self:provider.environment.fundFunctions}::Update
+    package:
+      <<: *package
+    events:
+    - http:
+        method: PUT
+        path: fund/update
         cors: true

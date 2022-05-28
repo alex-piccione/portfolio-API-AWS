@@ -40,7 +40,7 @@ type BalanceLogicTest() =
                 .Setup(fun r -> r.UpdateFundAtDate (any()) ).Raises(error "UpdateFundAtDate") 
                 .Create()
 
-        match (BalanceLogic(mockRepository, chronos, idGenerator) :> IBalanceLogic).CreateOrUpdate(request) with
+        match (FundLogic(mockRepository, chronos, idGenerator) :> IFundLogic).CreateOrUpdate(request) with
         | Error error -> error |> should equal expectedError
         | x -> x |> failwith $"unexpected result: {x} instead of {Error}"
 
@@ -50,7 +50,7 @@ type BalanceLogicTest() =
                                  .Setup(fun r -> r.FindFundAtDate (any()))
                                  .Returns(Some(fundAtDate))
                                  .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         let update:BalanceUpdateRequest = {
             Date = fundAtDate.Date
@@ -90,7 +90,7 @@ type BalanceLogicTest() =
                                  .Create()
         let idGenerator = Mock<IIdGenerator>().Setup(fun g -> g.New()).Returns("new id").Create()
 
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         let request:BalanceUpdateRequest = {
             Date = fundAtDate.Date.AddDays(-1) // a different date
@@ -125,7 +125,7 @@ type BalanceLogicTest() =
                                 .Setup( fun r -> r.FindFundAtDate (any()) )
                                 .Returns(Some(fundAtDate))
                                 .Create()
-        let logic = BalanceLogic(fundRepository, chronos, idGenerator) :> IBalanceLogic
+        let logic = FundLogic(fundRepository, chronos, idGenerator) :> IFundLogic
 
         let request:BalanceUpdateRequest = {
             request with
@@ -183,7 +183,7 @@ and equalResult(expected:Result<_,_>) =
 
     override this.ApplyTo<'C> (actual:'C): ConstraintResult =   
         match box actual with 
-        | :? Result<BalanceUpdateResult,string> as result -> 
+        | :? Result<FundUpdateResult,string> as result -> 
             match expected with 
             | Ok x -> 
                match result with 

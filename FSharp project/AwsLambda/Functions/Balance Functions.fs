@@ -9,11 +9,11 @@ open Portfolio.Core.Logic
 open Portfolio.Core.Entities
 open request_validator
 
-type BalanceFunctions (balanceLogic:IBalanceLogic) =
+type BalanceFunctions (balanceLogic:IFundLogic) =
     inherit FunctionBase()
 
     new () =
-        BalanceFunctions(BalanceLogic(FundRepository(configuration.databaseConfig), Chronos(), IdGenerator()))
+        BalanceFunctions(FundLogic(FundRepository(configuration.databaseConfig), Chronos(), IdGenerator()))
 
     member this.Get (request:APIGatewayProxyRequest, context:ILambdaContext) =
         context.Logger.Log $"Get Balance. {request.Body}"
