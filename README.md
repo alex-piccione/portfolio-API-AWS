@@ -28,11 +28,11 @@ docs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-ac
 ## Serverless
 docs: ???
 
-GitHub action I'm using seems to be abandoned'  
+The GitHub action I'm using seems to be abandoned.    
 ``deploy`` command stopped to work within the --config parameter.  
-I use it to load the configuration grom another file, how to fo it withou the parameter?  
+I used it to load the configuration from a file, how to do it without the parameter?  
 The error says the configuration must stay in the service root folder (working directory), so moving the file will be enough?  
-Documentation is not easy to find. For example searching "deploy" in the servh box does not go where you want.  
+Documentation is not easy to find.   
 To find it I had to search on google: https://www.serverless.com/framework/docs/providers/aws/cli-reference/deploy/  
 
 
