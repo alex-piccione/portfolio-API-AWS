@@ -1,7 +1,6 @@
 namespace UnitTests.Functions
 
 open System
-open System.Text
 open System.Collections.Generic
 open Microsoft.FSharp.Core
 open Amazon.Lambda.Core
@@ -25,20 +24,15 @@ type ``Balance Functions`` () =
         request.Body <- System.Text.Json.JsonSerializer.Serialize<'T> item
         (request, context)
 
-
-    [<SetUp>]
-    member this.Setup () =
-        ()
-
     [<Test>]
     member this.``Get [should] return Balance at Today date``() =
         let date = DateTime(2020, 01, 31)
         let lastUpdateDate = date.AddMonths(-1)
         let balance:Balance = {Date=date; FundsByCurrency=List.empty<FundForCurrency>; LastUpdateDate=lastUpdateDate}
-        let balanceLogic = Mock<IFundLogic>()
+        let fundLogic = Mock<IFundLogic>()
                                .SetupFunc(fun l -> l.GetBalance(It.IsAny<DateTime>())).Returns(balance)
                                .Create()
-        let functions = BalanceFunctions(balanceLogic)
+        let functions = BalanceFunctions(fundLogic)
 
         let querystring = Dictionary<string, string>() :> IDictionary<string, string>
         querystring.["base-currency"] <- "EUR"
@@ -58,12 +52,12 @@ type ``Balance Functions`` () =
         let returnedBalance = System.Text.Json.JsonSerializer.Deserialize(response.Body)
         returnedBalance |> should not' (be Null)
         let today = DateTime.UtcNow.Date
-        verify <@ balanceLogic.GetBalance(today) @> once
+        verify <@ fundLogic.GetBalance(today) @> once
 
     [<Test>]
     member this.``Get [when] querystring parameter is missing [should] return error``() =
-        let balanceLogic = Mock<IFundLogic>().Create()
-        let functions = BalanceFunctions(balanceLogic)
+        let fundLogic = Mock<IFundLogic>().Create()
+        let functions = BalanceFunctions(fundLogic)
 
         let request = Mock<APIGatewayProxyRequest>().Create()
         request.QueryStringParameters <- Dictionary<string, string>() :> IDictionary<string, string>
